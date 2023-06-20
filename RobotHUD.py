@@ -54,7 +54,6 @@ class Gradebook(ttk.Frame):
             bootstyle=DANGER,
             width=20,
         )
-
         cancel_btn.pack(side=RIGHT, padx=5)
 
       
@@ -70,7 +69,6 @@ class Gradebook(ttk.Frame):
             subtext="Final Score",
             interactive=True,
         )
-
         meter.pack()
 
 
