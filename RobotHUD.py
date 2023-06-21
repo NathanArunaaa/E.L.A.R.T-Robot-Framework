@@ -77,10 +77,10 @@ class Gradebook(ttk.Frame):
     
     def create_table(self):
         coldata = [
-            {"text": "Name"},
-            {"text": "Student ID", "stretch": False},
-            {"text": "Course Name"},
-            {"text": "Final Score", "stretch": False}
+            {"text": "sensor1"},
+            {"text": "sensor2", "stretch": False},
+            {"text": "sensor3"},
+            {"text": "sensor4", "stretch": False}
         ]
 
         print(self.data)
