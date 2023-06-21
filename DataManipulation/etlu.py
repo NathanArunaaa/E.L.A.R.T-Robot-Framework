@@ -16,7 +16,7 @@ sampleData2 = {
   "C": 39.5,       #in celcius
 }
 
-msv = sampleData["msv"] - 1.8 #normal msv is 1.8
+msv = sampleData["msv"] - 1.38 #normal msv is 1.8
 co2 = sampleData["CO2"] - 700 #normal ppm is 700
 co = sampleData["CO"] - 0.1 #normal ppm is 0.1
 c = sampleData["C"] - 20  #normal celcius is 20
