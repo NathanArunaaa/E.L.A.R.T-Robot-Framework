@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html>
 
+
 <head>
 	<title>Robot Control</title>
 	<style>
@@ -44,19 +45,19 @@
 			z-index: 1;
 		}
 	</style>
+
+
+
 </head>
-
-
-
 <body>
 
-
+	<!-- Video Feed -->
 	<div class="video-container">
 		<video id="video" autoplay></video>
 	</div>
 
 
-
+	<!-- Information col on the left -->
 	<div class="form-container">
 		<form action="/control" method="post">
 			<div class="input-group mb-3">
@@ -68,10 +69,12 @@
 		<div class="alert alert-secondary" role="alert">
 			-----------Battery Level-----------
 			<div class="progress">
-				<div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25"
+				<div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="50"
 					aria-valuemin="0" aria-valuemax="100"></div>
 			</div>
 		</div>
+
+		<!-- Card 1 with sensor data -->
 		<div class="card">
 			<div class="card-header ">
 				Sensor Data
@@ -89,7 +92,7 @@
 				</div>
 				<div class="row mt-3">
 					<div class="col">
-						<h5 class="card-title">Pressure</h5>
+						<h5 class="card-title">CO Levele</h5>
 						<p class="card-text">1013 hPa</p>
 					</div>
 					<div class="col">
@@ -99,18 +102,101 @@
 				</div>
 			</div>
 		</div>
+
+
+		<div class="p-1"></div>
+
+
+		<div class="card">
+			<div class="card-header ">
+				ETLU Measurement 
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<div class="col">
+						<div class="progress">
+							<div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+						  </div>
+					</div>
+					<div class="col">
+						<div class="progress">
+							<div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+						  </div>
+					</div>
+				</div>
+				<div class="row mt-3">
+					<div class="col">
+						<div class="progress">
+							<div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+						  </div>
+					</div>
+					<div class="col">
+						<div class="progress">
+							<div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+						  </div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="p-1"></div>
+
+		<!-- Card 3 with nav lights -->
+		<div class="card">
+			<div class="card-header ">
+				Nav Lights 
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<div class="col">
+						<div class="form-check">
+							<input type="checkbox" class="form-check-input" id="dropdownCheck">
+							<label class="form-check-label" for="dropdownCheck">
+							  Light 1
+							</label>
+						  </div>
+					</div>
+					<div class="col">
+						<div class="form-check">
+							<input type="checkbox" class="form-check-input" id="dropdownCheck">
+							<label class="form-check-label" for="dropdownCheck">
+							  Light 2
+							</label>
+						  </div>
+					</div>
+				</div>
+				<div class="row mt-3">
+					<div class="col">
+						<div class="form-check">
+							<input type="checkbox" class="form-check-input" id="dropdownCheck">
+							<label class="form-check-label" for="dropdownCheck">
+							  Light 3
+							</label>
+						  </div>
+					</div>
+					<div class="col">
+						<div class="form-check">
+							<input type="checkbox" class="form-check-input" id="dropdownCheck">
+							<label class="form-check-label" for="dropdownCheck">
+							  Light 4
+							</label>
+						  </div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 
 
-	
+	<!-- Button on the right of the screen to shutdown -->
 	<div class="form-container-right">
 		<form action="/shutdown" method="post">
 			<div class="input-group mb-3">
 				<button onclick="closeApplication()" type="submit" class="btn btn-outline-danger">Robot Shutdown</button>
 			</div>
 		</form>
-		
 	</div>
+
 
 	<script>
 		const video = document.getElementById('video');
@@ -128,13 +214,11 @@
            if (confirm("Are you sure you want to close the application?")){
 			window.close();
 		   } 
-            
-            
         }
-
-		// Call the startVideo function when the page loads
 		window.addEventListener('DOMContentLoaded', startVideo);
 	</script>
-</body>
 
+
+
+</body>
 </html>
