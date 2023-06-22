@@ -66,17 +66,24 @@
 
 			</div>
 		</form>
-		<div class="alert alert-secondary" role="alert">
-			-----------Battery Level-----------
-			<div class="progress">
-				<div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="50"
-					aria-valuemin="0" aria-valuemax="100"></div>
+		
+		<div class="card">
+			<div class="card-header bold">
+				Battery Level
+			</div>
+			<div class="card-body">
+					<div class="progress">
+						<div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="50"
+							aria-valuemin="0" aria-valuemax="100"></div>
+					</div>
 			</div>
 		</div>
 
+		<div class="p-1"></div>
+
 		<!-- Card 1 with sensor data -->
 		<div class="card">
-			<div class="card-header ">
+			<div class="card-header bold">
 				Sensor Data
 			</div>
 			<div class="card-body">
@@ -114,6 +121,8 @@
 			<div class="card-body">
 				<div class="row">
 					<div class="col">
+
+						
 						<div class="progress">
 							<div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
 						  </div>
@@ -135,6 +144,7 @@
 							<div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
 						  </div>
 					</div>
+
 				</div>
 			</div>
 		</div>
@@ -188,13 +198,28 @@
 	</div>
 
 
+
+	
+
 	<!-- Button on the right of the screen to shutdown -->
 	<div class="form-container-right">
-		<form action="/shutdown" method="post">
-			<div class="input-group mb-3">
-				<button onclick="closeApplication()" type="submit" class="btn btn-outline-danger">Robot Shutdown</button>
+		<div class="card">
+			<div class="card-header ">
+				Nav Lights 
 			</div>
-		</form>
+			<div class="card-body">
+				<form action="/shutdown" method="post">
+					<div class="input-group mb-3">
+						<button   class="btn btn-outline-success">Connect</button>
+					</div>
+					<div class="input-group mb-3">
+						<button onclick="closeApplication()" type="submit" class="btn btn-outline-danger">Robot Shutdown</button>
+					</div>
+				</form>
+				
+			</div>
+		</div>
+		
 	</div>
 
 
