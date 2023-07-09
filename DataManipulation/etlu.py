@@ -16,10 +16,10 @@ sampleData2 = {
   "C": 39.5,       #in celcius
 }
 
-msv = sampleData["msv"] - 1.38 #normal msv is 1.8
-co2 = sampleData["CO2"] - 700 #normal ppm is 700
-co = sampleData["CO"] - 0.1 #normal ppm is 0.1
-c = sampleData["C"] - 20  #normal celcius is 20
+msv = float(input("What is the msv?")) - 1.38 #normal msv is 1.8
+co2 = float(input("What is the ppm of co2?")) - 700 #normal ppm is 700
+co = float(input("What is the ppm of co?")) - 0.1 #normal ppm is 0.1
+c = float(input("What is the temperature?")) - 20  #normal celcius is 20
 
 N1 = float(msv / 99998.2)
 N2 = float(co2 / 39600)
