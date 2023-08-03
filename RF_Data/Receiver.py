@@ -1,7 +1,9 @@
-import serial
+from serial import Serial
 
-ser = serial.Serial('COM3', 57600)  
+port = '/dev/tty.usbserial-D30F08HK'
+baud_rate = 57600
 
+ser = Serial(port, baud_rate)
 
 while True:
     command = ser.readline().decode().strip()  
