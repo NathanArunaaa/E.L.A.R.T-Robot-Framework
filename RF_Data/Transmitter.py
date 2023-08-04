@@ -1,16 +1,17 @@
 import socket
 
+# Create a socket object
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Connect to the Raspberry Pi's IP address and port
-host = '192.168.4.1'  # Replace with the Raspberry Pi's IP address on the access point network
-port = 12345                      # Use the same port number chosen on the Raspberry Pi
-client_socket.connect((host, port))
+# Connect to the Raspberry Pi's access point
+server_address = ('192.168.4.1', 12345)  # Replace 'x.x.x.x' with the Raspberry Pi's IP address
+client_socket.connect(server_address)
 
 while True:
-    command = input("Enter a command: ")
-    client_socket.send(command.encode())
-    if command.lower() == 'exit':
-        break
+    # Get user input for commands
+    command = input("Enter a command (forward, backward, left, right): ")
+    
+    # Send the command to the server
+    client_socket.sendall(command.encode())
 
 client_socket.close()
