@@ -1,9 +1,14 @@
 import socket
 import cv2
 import threading
-from io import BytesIO
 import struct
 import pickle
+
+# Function to send frames to the client
+def send_frame(conn, frame):
+    frame_data = pickle.dumps(frame)
+    frame_size = struct.pack('!L', len(frame_data))
+    conn.sendall(frame_size + frame_data)
 
 # Function to handle client connections
 def handle_client(conn, addr):
@@ -35,12 +40,6 @@ def handle_client(conn, addr):
     finally:
         conn.close()
         print("Client disconnected:", addr)
-
-# Function to send frames to the client
-def send_frame(conn, frame):
-    frame_data = pickle.dumps(frame)
-    frame_size = struct.pack('!L', len(frame_data))
-    conn.sendall(frame_size + frame_data)
 
 # Create a socket object for the server
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
