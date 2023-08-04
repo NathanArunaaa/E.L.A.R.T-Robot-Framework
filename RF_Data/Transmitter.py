@@ -4,7 +4,7 @@ import socket
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Connect to the Raspberry Pi's IP address and port
-host = 'RASPBERRY_PI_IP_ADDRESS'  # Replace with the Raspberry Pi's IP address on the access point network
+host = '192.168.4.1'  # Replace with the Raspberry Pi's IP address on the access point network
 port = 12345                      # Use the same port number chosen on the Raspberry Pi
 client_socket.connect((host, port))
 
