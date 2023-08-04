@@ -1,6 +1,9 @@
-import serial
+from serial import Serial
 
-ser = serial.Serial('COM3', 57600)  # Don't forget to change port 
+port = 'COM1'
+baud_rate = 57600
+
+ser = Serial(port, baud_rate)  # Don't forget to change port 
 
 while True:
    
