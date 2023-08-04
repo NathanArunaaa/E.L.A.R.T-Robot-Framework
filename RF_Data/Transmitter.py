@@ -1,29 +1,21 @@
-import serial
+import socket
 
-ser = serial.Serial('COM3', 57600)  # Don't forget to change port 
+# Create a socket object
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Connect to the Raspberry Pi's IP address and port
+host = 'RASPBERRY_PI_IP_ADDRESS'  # Replace with the Raspberry Pi's IP address on the access point network
+port = 12345                      # Use the same port number chosen on the Raspberry Pi
+client_socket.connect((host, port))
 
 while True:
-   
-    left_input = False  # Take these inputs from the hand held controller we will make
-    right_input = True  # These will be changed to a float because a joystick is planned to be used
-    front_input = False
-    back_input = False
-    
-    if left_input == True:
-        ser.write(b'LEFT\n')
-        print ("LEFT")
-        
-    if right_input == True:
-        ser.write(b'RIGHT\n')
-        print ("RIGHT")
-        
-    if front_input == True:
-        ser.write(b'FORWARD\n')
-        print ("FORWARD")
-	  
-    if back_input == True:
-        ser.write(b'BACK\n')
-        print ("BACK")
+    command = input("Enter a command: ")
+    client_socket.send(command.encode())
+    if command.lower() == 'exit':
+        break
+
+client_socket.close()
+
         
         
         
