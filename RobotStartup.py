@@ -24,7 +24,8 @@ def handle_client(conn, addr):
             elif data == 'camera_frame':
                 ret, frame = cap.read()
                 if ret:
-                    send_frame(conn, frame)
+                    cv2.imshow('Camera Feed', frame)
+                    cv2.waitKey(1)
             else:
                 # Process the received command
                 print("Received command:", data)
@@ -42,8 +43,10 @@ def handle_client(conn, addr):
         print("Error handling client:", e)
     finally:
         cap.release()
+        cv2.destroyAllWindows()
         conn.close()
         print("Client disconnected:", addr)
+
 
 # Function to start the server
 def start_server():
