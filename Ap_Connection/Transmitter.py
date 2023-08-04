@@ -7,6 +7,8 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_address = ('192.168.4.1', 12345)  # Replace 'x.x.x.x' with the Raspberry Pi's IP address
 client_socket.connect(server_address)
 
+print('Connected to:', server_address)
+
 while True:
     # Get user input for commands
     command = input("Enter a command (forward, backward, left, right): ")
