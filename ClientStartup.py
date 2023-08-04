@@ -9,14 +9,12 @@ client_socket.connect(server_address)
 
 print('Connected to:', server_address)
 
-CO2PPM = 10
-
-
 while True:
-    # Will be replaced with sensor data
-    SensorData = str(CO2PPM)    
+    
+    # Will be replaced with joystick input from raspberry pi
+    command = input("Enter a command (forward, backward, left, right): ")
     
     # Send the command to the server
-    client_socket.sendall(SensorData.encode())
+    client_socket.sendall(command.encode())
 
 client_socket.close()
