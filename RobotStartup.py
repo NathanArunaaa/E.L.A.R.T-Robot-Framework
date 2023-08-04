@@ -11,6 +11,7 @@ def send_frame(conn, frame):
     conn.sendall(frame_size + frame_data)
 
 # Function to handle client connections
+# Function to handle client connections
 def handle_client(conn, addr):
     print("Client connected:", addr)
     try:
