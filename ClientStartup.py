@@ -3,10 +3,8 @@ import tkinter as tk
 from PIL import Image, ImageTk
 import threading
 from io import BytesIO
-
-# Function to send commands to the server
-def send_command(command):
-    client_socket.sendall(command.encode())
+import struct
+import pickle
 
 # Function to update the camera feed
 def update_camera_feed():
@@ -14,16 +12,23 @@ def update_camera_feed():
         while True:
             # Request camera frame from the server
             client_socket.sendall("camera_frame".encode())
-            image_bytes = b''
-            while True:
-                data = client_socket.recv(4096)
+            frame_size_data = client_socket.recv(4)
+            if not frame_size_data:
+                break
+            frame_size = struct.unpack('!L', frame_size_data)[0]
+            frame_data = b''
+            while len(frame_data) < frame_size:
+                data = client_socket.recv(frame_size - len(frame_data))
                 if not data:
                     break
-                image_bytes += data
-            
-            if image_bytes:
-                # Convert the received bytes to an ImageTk object
-                image = Image.open(BytesIO(image_bytes))
+                frame_data += data
+
+            if len(frame_data) == frame_size:
+                # Convert the received bytes to a NumPy array
+                frame = pickle.loads(frame_data)
+
+                # Convert the NumPy array to an ImageTk object
+                image = Image.fromarray(frame)
 
                 # Resize the image to fit the label
                 label_width, label_height = camera_label.winfo_width(), camera_label.winfo_height()
@@ -44,25 +49,22 @@ def start_camera_thread():
     camera_thread.daemon = True
     camera_thread.start()
 
-# Create a socket object
+# ... (Other parts of the client-side code)
+
+# Create a socket object for the client
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Connect to the Raspberry Pi's access point
-server_address = ('192.168.4.1', 87)  # Replace 'x.x.x.x' with the Raspberry Pi's IP address
+server_address = ('x.x.x.x', 12345)  # Replace 'x.x.x.x' with the Raspberry Pi's IP address
 client_socket.connect(server_address)
 
-# Create the Tkinter GUI window
+# Create a Tkinter GUI window
 root = tk.Tk()
 root.title("Robot Controller")
 
 # Create the camera label to display the camera feed
 camera_label = tk.Label(root)
 camera_label.pack()
-
-# Function to handle button clicks
-def on_button_click(command):
-    print(f"Sending command: {command}")
-    send_command(command)
 
 # Create buttons for different commands
 button_forward = tk.Button(root, text="Forward", command=lambda: on_button_click("forward"))
@@ -79,6 +81,8 @@ button_right.pack()
 
 # Start the camera feed thread
 start_camera_thread()
+
+# ... (Other parts of the client-side code)
 
 # Run the Tkinter event loop
 root.mainloop()
