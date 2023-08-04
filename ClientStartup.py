@@ -1,8 +1,8 @@
 import socket
 import tkinter as tk
 from PIL import Image, ImageTk
-from io import BytesIO
 import threading
+from io import BytesIO
 
 # Function to send commands to the server
 def send_command(command):
@@ -22,9 +22,11 @@ def update_camera_feed():
                 image_bytes += data
             
             if image_bytes:
-                # Convert the received bytes to an ImageTk object and update the label
+                # Convert the received bytes to an ImageTk object
                 image = Image.open(BytesIO(image_bytes))
                 image = ImageTk.PhotoImage(image)
+                
+                # Update the label with the new image
                 camera_label.config(image=image)
                 camera_label.image = image
     except Exception as e:
