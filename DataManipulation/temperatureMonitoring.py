@@ -1,6 +1,6 @@
+#Written By: Nathan Aruna
 import os 
 import time
-
 
 sampleTemps = {
     'TempSens1': 70, #internal temp
