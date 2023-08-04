@@ -7,6 +7,8 @@ from io import BytesIO
 import struct
 import pickle
 
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 # Function to send commands to the server
 def send_command(command):
     client_socket.sendall(command.encode())
