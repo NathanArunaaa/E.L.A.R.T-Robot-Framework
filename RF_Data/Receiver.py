@@ -19,7 +19,21 @@ while True:
     data = conn.recv(1024).decode()
     if not data:
         break
-    # Process the received data/command here
-    print("Received:", data)
+    
+    # Process the received command
+    if data == 'forward':
+        print("Moving forward")
+        # Implement your robot's forward movement logic here
+    elif data == 'backward':
+        print("Moving backward")
+        # Implement your robot's backward movement logic here
+    elif data == 'left':
+        print("Turning left")
+        # Implement your robot's left-turn movement logic here
+    elif data == 'right':
+        print("Turning right")
+        # Implement your robot's right-turn movement logic here
+    else:
+        print("Invalid command")
 
 conn.close()
