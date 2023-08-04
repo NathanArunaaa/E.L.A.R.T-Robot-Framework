@@ -2,7 +2,6 @@ import socket
 import tkinter as tk
 from PIL import Image, ImageTk
 from io import BytesIO
-import time
 
 # Function to send commands to the server
 def send_command(command):
