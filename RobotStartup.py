@@ -48,8 +48,7 @@ while True:
     elif data == 'right':
         print("Turning right")
         # Implement your robot's right-turn movement logic here
-    else:
-        print("Invalid command")
+   
 
 conn.close()
 
