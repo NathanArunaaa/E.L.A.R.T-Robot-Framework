@@ -2,87 +2,90 @@ import socket
 import tkinter as tk
 from PIL import Image, ImageTk
 import threading
-from io import BytesIO
 import struct
 import pickle
 
-# Function to update the camera feed
-def update_camera_feed():
-    try:
-        while True:
-            # Request camera frame from the server
-            client_socket.sendall("camera_frame".encode())
-            frame_size_data = client_socket.recv(4)
-            if not frame_size_data:
-                break
-            frame_size = struct.unpack('!L', frame_size_data)[0]
-            frame_data = b''
-            while len(frame_data) < frame_size:
-                data = client_socket.recv(frame_size - len(frame_data))
-                if not data:
+class RobotControllerApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Robot Controller")
+
+        self.camera_label = tk.Label(self)
+        self.camera_label.pack()
+
+        self.button_forward = tk.Button(self, text="Forward", command=self.on_forward)
+        self.button_forward.pack()
+
+        self.button_backward = tk.Button(self, text="Backward", command=self.on_backward)
+        self.button_backward.pack()
+
+        self.button_left = tk.Button(self, text="Left", command=self.on_left)
+        self.button_left.pack()
+
+        self.button_right = tk.Button(self, text="Right", command=self.on_right)
+        self.button_right.pack()
+
+        self.camera_thread = threading.Thread(target=self.update_camera_feed)
+        self.camera_thread.daemon = True
+        self.camera_thread.start()
+
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_address = ('192.168.4.1', 87)  # Replace 'x.x.x.x' with the Raspberry Pi's IP address
+        self.client_socket.connect(server_address)
+
+    def on_forward(self):
+        print("Sending command: forward")
+        self.client_socket.sendall("forward".encode())
+
+    def on_backward(self):
+        print("Sending command: backward")
+        self.client_socket.sendall("backward".encode())
+
+    def on_left(self):
+        print("Sending command: left")
+        self.client_socket.sendall("left".encode())
+
+    def on_right(self):
+        print("Sending command: right")
+        self.client_socket.sendall("right".encode())
+
+    def update_camera_feed(self):
+        try:
+            while True:
+                # Request camera frame from the server
+                self.client_socket.sendall("camera_frame".encode())
+                frame_size_data = self.client_socket.recv(4)
+                if not frame_size_data:
                     break
-                frame_data += data
+                frame_size = struct.unpack('!L', frame_size_data)[0]
+                frame_data = b''
+                while len(frame_data) < frame_size:
+                    data = self.client_socket.recv(frame_size - len(frame_data))
+                    if not data:
+                        break
+                    frame_data += data
 
-            if len(frame_data) == frame_size:
-                # Convert the received bytes to a NumPy array
-                frame = pickle.loads(frame_data)
+                if len(frame_data) == frame_size:
+                    # Convert the received bytes to a NumPy array
+                    frame = pickle.loads(frame_data)
 
-                # Convert the NumPy array to an ImageTk object
-                image = Image.fromarray(frame)
+                    # Convert the NumPy array to an ImageTk object
+                    image = Image.fromarray(frame)
 
-                # Resize the image to fit the label
-                label_width, label_height = camera_label.winfo_width(), camera_label.winfo_height()
-                image = image.resize((label_width, label_height), Image.ANTIALIAS)
+                    # Resize the image to fit the label
+                    label_width, label_height = self.camera_label.winfo_width(), self.camera_label.winfo_height()
+                    image = image.resize((label_width, label_height), Image.ANTIALIAS)
 
-                # Convert the resized image to an ImageTk object
-                image = ImageTk.PhotoImage(image)
-                
-                # Update the label with the new image
-                camera_label.config(image=image)
-                camera_label.image = image
-    except Exception as e:
-        print("Error updating camera feed:", e)
+                    # Convert the resized image to an ImageTk object
+                    image_tk = ImageTk.PhotoImage(image)
 
-# Function to start the camera feed thread
-def start_camera_thread():
-    camera_thread = threading.Thread(target=update_camera_feed)
-    camera_thread.daemon = True
-    camera_thread.start()
+                    # Update the label with the new image
+                    self.camera_label.configure(image=image_tk)
+                    self.camera_label.image = image_tk  # Store the reference to avoid garbage collection
 
-# ... (Other parts of the client-side code)
+        except Exception as e:
+            print("Error updating camera feed:", e)
 
-# Create a socket object for the client
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-# Connect to the Raspberry Pi's access point
-server_address = ('192.168.4.1', 87)  # Replace 'x.x.x.x' with the Raspberry Pi's IP address
-client_socket.connect(server_address)
-
-# Create a Tkinter GUI window
-root = tk.Tk()
-root.title("Robot Controller")
-
-# Create the camera label to display the camera feed
-camera_label = tk.Label(root)
-camera_label.pack()
-
-# Create buttons for different commands
-button_forward = tk.Button(root, text="Forward", command=lambda: on_button_click("forward"))
-button_forward.pack()
-
-button_backward = tk.Button(root, text="Backward", command=lambda: on_button_click("backward"))
-button_backward.pack()
-
-button_left = tk.Button(root, text="Left", command=lambda: on_button_click("left"))
-button_left.pack()
-
-button_right = tk.Button(root, text="Right", command=lambda: on_button_click("right"))
-button_right.pack()
-
-# Start the camera feed thread
-start_camera_thread()
-
-# ... (Other parts of the client-side code)
-
-# Run the Tkinter event loop
-root.mainloop()
+if __name__ == "__main__":
+    app = RobotControllerApp()
+    app.mainloop()
