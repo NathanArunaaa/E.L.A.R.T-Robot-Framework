@@ -3,12 +3,25 @@ import cv2
 import threading
 import struct
 import pickle
+import time
+import os
 
 # Function to send frames to the client
 def send_frame(conn, frame):
     frame_data = pickle.dumps(frame)
     frame_size = struct.pack('!L', len(frame_data))
     conn.sendall(frame_size + frame_data)
+
+def sysReboot():
+    print('System Rebooting....')
+    time.sleep(5)
+    os.system('sudo reboot')
+
+def sysShutdown():
+    print('System Shutdown....')
+    time.sleep(5)
+    os.system('sudo shutdown')
+
 
 # Function to handle client connections
 def handle_client(conn, addr):
@@ -27,14 +40,23 @@ def handle_client(conn, addr):
                 print("Received command:", data)
                 # Implement actions based on the received command
                 # For example:
-                if data == 'forward':
-                    print("Moving forward")
-                elif data == 'backward':
-                    print("Moving backward")
-                elif data == 'left':
-                    print("Turning left")
-                elif data == 'right':
-                    print("Turning right")
+                if data == 'reboot':
+                    sysReboot()
+                elif data == 'shutdown':
+                    sysShutdown()
+                elif data == 'nav1':
+                    print("Turning On Navigation Lights 1")
+                elif data == 'auto':
+                    print("Auto Mode On")
+                elif data == 'overide':
+                    print("Overide Mode On")
+                elif data == 'nav2':
+                    print("Turning On Navigation Lights 2")
+                elif data == 'headlight1':
+                    print("Turning On Headlights 1")
+                elif data == 'headlight2':
+                    print("Turning On Headlights 2")
+                
     except Exception as e:
         print("Error handling client:", e)
     finally:

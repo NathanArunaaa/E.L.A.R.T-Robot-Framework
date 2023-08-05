@@ -1,5 +1,8 @@
 import socket
 import tkinter as tk
+from tkinter import ttk
+
+
 from PIL import Image, ImageTk
 import threading
 from io import BytesIO
@@ -32,7 +35,7 @@ def update_camera_feed():
 
                 # Resize the image to fit the label
                 label_width, label_height = camera_label.winfo_width(), camera_label.winfo_height()
-                image = image.resize((1200, 780), Image.ANTIALIAS)
+                image = image.resize((1180, 790), Image.ANTIALIAS)
 
                 # Convert the resized image to an ImageTk object
                 image = ImageTk.PhotoImage(image)
@@ -65,20 +68,66 @@ client_socket.connect(server_address)
 root = tk.Tk()
 root.title("E.L.A.R.T - Controller")
 
+sensor_frame = tk.Frame(root)
+sensor_frame.pack(side=tk.TOP, pady=10)
+
+
+
+
+# Function to update the sensor data
+def update_sensor_data():
+    # Replace this with your actual sensor data retrieval logic
+    sensor_reading = "Sensor Data: 123.45"
+    Temp1_label.config(text=sensor_reading)
+    root.after(1000, update_sensor_data)  # Update the data every 1000ms (1 second)
+
+def update_progress():
+    value = progress_var.get() + 10
+    if value > 100:
+        value = 0
+    progress_var.set(value)
+    root.after(1000, update_progress)
+
+Temp1_label = tk.Label(sensor_frame, fg='white', text="[Temp1: N/A]")
+Temp1_label.pack(side=tk.LEFT)
+
+Temp2_label = tk.Label(sensor_frame, fg='white', text="[Temp2: N/A]")
+Temp2_label.pack(side=tk.LEFT)
+
+Temp3_label = tk.Label(sensor_frame, fg='white', text="[Temp3: N/A]")
+Temp3_label.pack(side=tk.LEFT)
+
+
+
+
 left_frame = tk.Frame(root)
 left_frame.pack(side=tk.LEFT)
 
-button_forward = tk.Button(left_frame, text="Forward", command=lambda: on_button_click("forward"))
+
+Text1_label = tk.Label(left_frame, fg='white', text="E.L.A.R.T")
+Text1_label.pack(side=tk.TOP, padx=5, pady=5)
+
+button_forward = tk.Button(left_frame, fg='red', text="SHUTDOWN", activebackground='tomato', command=lambda: on_button_click("shutdown"))
 button_forward.pack(side=tk.TOP, padx=5, pady=5)
 
-button_backward = tk.Button(left_frame, text="Backward", command=lambda: on_button_click("backward"))
+button_backward = tk.Button(left_frame, fg='red', text="  REBOOT  ", command=lambda: on_button_click("reboot"))
 button_backward.pack(side=tk.TOP, padx=5, pady=5)
 
-button_left = tk.Button(left_frame, text="Left", command=lambda: on_button_click("left"))
+button_left = tk.Button(left_frame,  fg='blue', text="   NAV-1   ", command=lambda: on_button_click("nav1"))
 button_left.pack(side=tk.TOP, padx=5, pady=5)
 
-button_right = tk.Button(left_frame, text="Right", command=lambda: on_button_click("right"))
+button_right = tk.Button(left_frame, fg='blue', text="HEADLIGHT1", command=lambda: on_button_click("headlight1"))
 button_right.pack(side=tk.TOP, padx=5, pady=5)
+
+progress_var = tk.DoubleVar(left_frame)
+vertical_progress = ttk.Progressbar(left_frame, orient='vertical', variable=progress_var, length=200, mode='determinate')
+vertical_progress.pack(pady=10)
+
+Text1_label = tk.Label(left_frame, fg='white', text="ETLU")
+Text1_label.pack(side=tk.TOP, padx=5, pady=5)
+
+
+
 
 # Create the camera label to display the camera feed
 camera_label = tk.Label(root, text="Camera View")
@@ -88,22 +137,34 @@ camera_label.pack(side=tk.LEFT, padx=5, pady=5)
 right_frame = tk.Frame(root)
 right_frame.pack(side=tk.LEFT)
 
-button_forward = tk.Button(right_frame, text="Forward", command=lambda: on_button_click("forward"))
+Text1_label = tk.Label(right_frame, fg='white', text="Version 1")
+Text1_label.pack(side=tk.TOP, padx=5, pady=5)
+
+button_forward = tk.Button(right_frame, fg='red',text="OVERIDE", command=lambda: on_button_click("overide"))
 button_forward.pack(side=tk.TOP, padx=5, pady=5)
 
-button_backward = tk.Button(right_frame, text="Backward", command=lambda: on_button_click("backward"))
+button_backward = tk.Button(right_frame, fg='green', text="AUTO", command=lambda: on_button_click("auto"))
 button_backward.pack(side=tk.TOP, padx=5, pady=5)
 
-button_left = tk.Button(right_frame, text="Left", command=lambda: on_button_click("left"))
+button_left = tk.Button(right_frame, fg='blue', text="  NAV-2  ", command=lambda: on_button_click("nav2"))
 button_left.pack(side=tk.TOP, padx=5, pady=5)
 
-button_right = tk.Button(right_frame, text="Right", command=lambda: on_button_click("right"))
+button_right = tk.Button(right_frame, fg='blue', text="HEADLIGHT2", command=lambda: on_button_click("headlight2"))
 button_right.pack(side=tk.TOP, padx=5, pady=5)
+
+progress_var = tk.DoubleVar(right_frame)
+vertical_progress = ttk.Progressbar(right_frame, orient='vertical', variable=progress_var, length=200, mode='determinate')
+vertical_progress.pack(pady=10)
+
+Text1_label = tk.Label(right_frame, fg='white', text="Battery Level")
+Text1_label.pack(side=tk.TOP, padx=5, pady=5)
+
 
 
 
 
 # Create buttons for different commands
+update_progress()  # Start updating the progress bar
 
 
 # Start the camera feed thread
