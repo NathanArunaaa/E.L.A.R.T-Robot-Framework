@@ -10,5 +10,6 @@
 
 ```
 Port 85: Robot movement 
-Port 86: Sensor Data 
+Port 86: Sensor Data
+Port 87: Controller
 ```
