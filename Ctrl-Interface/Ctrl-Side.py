@@ -63,7 +63,7 @@ client_socket.connect(server_address)
 
 # Create a Tkinter GUI window
 root = tk.Tk()
-root.title("Robot Controller")
+root.title("E.L.A.R.T - Controller")
 
 # Create the camera label to display the camera feed
 camera_label = tk.Label(root)
@@ -71,16 +71,16 @@ camera_label.pack()
 
 # Create buttons for different commands
 button_forward = tk.Button(root, text="Forward", command=lambda: on_button_click("forward"))
-button_forward.pack()
+button_forward.pack(side=tk.LEFT, padx=5, pady=5)
 
 button_backward = tk.Button(root, text="Backward", command=lambda: on_button_click("backward"))
-button_backward.pack()
+button_backward.pack(side=tk.LEFT, padx=5, pady=5)
 
 button_left = tk.Button(root, text="Left", command=lambda: on_button_click("left"))
-button_left.pack()
+button_left.pack(side=tk.LEFT, padx=5, pady=5)
 
 button_right = tk.Button(root, text="Right", command=lambda: on_button_click("right"))
-button_right.pack()
+button_right.pack(side=tk.LEFT, padx=5, pady=5)
 
 # Start the camera feed thread
 start_camera_thread()
