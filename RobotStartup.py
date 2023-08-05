@@ -2,25 +2,25 @@ import socket
 import threading
 import struct
 import pickle
-import picamera
-import io
+import cv2
 
 def handle_client(conn, addr):
     print("Client connected:", addr)
 
-    with picamera.PiCamera() as camera:
-        camera.resolution = (320, 240)  # Adjust the resolution as needed
+    cap = cv2.VideoCapture(0)  # Use 0 for the first USB camera, 1 for the second, and so on
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)  # Adjust the resolution as needed
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
 
-        try:
-            while True:
-                data = conn.recv(1024).decode()
-                if not data:
-                    break
-                elif data == 'camera_frame':
-                    # Capture a frame from the camera
-                    stream = io.BytesIO()
-                    camera.capture(stream, format='jpeg')
-                    frame_data = stream.getvalue()
+    try:
+        while True:
+            data = conn.recv(1024).decode()
+            if not data:
+                break
+            elif data == 'camera_frame':
+                ret, frame = cap.read()
+                if ret:
+                    # Convert the frame to a byte array
+                    frame_data = pickle.dumps(frame)
 
                     # Send the size of the frame first
                     frame_size = len(frame_data)
@@ -28,30 +28,31 @@ def handle_client(conn, addr):
 
                     # Send the frame data
                     conn.sendall(frame_data)
-                else:
-                    # Process the received command
-                    print("Received command:", data)
-                    # Implement actions based on the received command
-                    # For example:
-                    if data == 'forward':
-                        print("Moving forward")
-                    elif data == 'backward':
-                        print("Moving backward")
-                    elif data == 'left':
-                        print("Turning left")
-                    elif data == 'right':
-                        print("Turning right")
+            else:
+                # Process the received command
+                print("Received command:", data)
+                # Implement actions based on the received command
+                # For example:
+                if data == 'forward':
+                    print("Moving forward")
+                elif data == 'backward':
+                    print("Moving backward")
+                elif data == 'left':
+                    print("Turning left")
+                elif data == 'right':
+                    print("Turning right")
 
-        except Exception as e:
-            print("Error handling client:", e)
+    except Exception as e:
+        print("Error handling client:", e)
 
-        finally:
-            conn.close()
-            print("Client disconnected:", addr)
+    finally:
+        cap.release()
+        conn.close()
+        print("Client disconnected:", addr)
 
 if __name__ == "__main__":
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_address = ('', 12345)
+    server_address = ('', 87)
     server_socket.bind(server_address)
     server_socket.listen(5)
 
