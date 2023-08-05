@@ -1,33 +1,27 @@
 import socket
+import cv2
 import threading
 import struct
 import pickle
-import cv2
 
+# Function to send frames to the client
+def send_frame(conn, frame):
+    frame_data = pickle.dumps(frame)
+    frame_size = struct.pack('!L', len(frame_data))
+    conn.sendall(frame_size + frame_data)
+
+# Function to handle client connections
 def handle_client(conn, addr):
     print("Client connected:", addr)
-
-    cap = cv2.VideoCapture(0)  # Use 0 for the first USB camera, 1 for the second, and so on
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)  # Adjust the resolution as needed
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
-
     try:
         while True:
             data = conn.recv(1024).decode()
             if not data:
                 break
             elif data == 'camera_frame':
-                ret, frame = cap.read()
+                ret, frame = camera.read()
                 if ret:
-                    # Convert the frame to a byte array
-                    frame_data = pickle.dumps(frame)
-
-                    # Send the size of the frame first
-                    frame_size = len(frame_data)
-                    conn.sendall(struct.pack('!L', frame_size))
-
-                    # Send the frame data
-                    conn.sendall(frame_data)
+                    send_frame(conn, frame)
             else:
                 # Process the received command
                 print("Received command:", data)
@@ -41,24 +35,37 @@ def handle_client(conn, addr):
                     print("Turning left")
                 elif data == 'right':
                     print("Turning right")
-
     except Exception as e:
         print("Error handling client:", e)
-
     finally:
-        cap.release()
         conn.close()
         print("Client disconnected:", addr)
 
-if __name__ == "__main__":
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_address = ('', 87)
-    server_socket.bind(server_address)
-    server_socket.listen(5)
+# Create a socket object for the server
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    print("Waiting for connections...")
+# Bind the socket to a specific IP and port
+host = '0.0.0.0'  # Use 0.0.0.0 to listen on all available interfaces
+port = 12345     # Choose a port number for the communication
+server_socket.bind((host, port))
+
+# Start listening for incoming connections
+server_socket.listen()
+
+print("Waiting for connections...")
+
+# OpenCV Video Capture
+camera = cv2.VideoCapture(0)  # Use 0 for the first camera device (change the index if needed)
+
+try:
     while True:
-        client_socket, client_address = server_socket.accept()
-        client_thread = threading.Thread(target=handle_client, args=(client_socket, client_address))
-        client_thread.daemon = True
-        client_thread.start()
+        conn, addr = server_socket.accept()
+        client_handler = threading.Thread(target=handle_client, args=(conn, addr))
+        client_handler.daemon = True
+        client_handler.start()
+except KeyboardInterrupt:
+    print("Server stopped.")
+
+# Release the camera and close the server socket
+camera.release()
+server_socket.close()
