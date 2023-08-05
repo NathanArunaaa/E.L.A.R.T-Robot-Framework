@@ -71,6 +71,7 @@ def handle_client(conn, addr):
                     sysShutdown()
                     
                 elif data == 'nav1':
+                    ledOn()
                     #add logic to turn on navigation lights
                     print("Turning On Navigation Lights 1")
                     
