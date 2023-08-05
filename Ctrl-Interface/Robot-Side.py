@@ -1,3 +1,5 @@
+#E.L.A.R.T Controller Reciever(robot side) By: Nathan Aruna
+
 import socket
 import cv2
 import threading
@@ -36,25 +38,37 @@ def handle_client(conn, addr):
                 if ret:
                     send_frame(conn, frame)
             else:
-                # Process the received command
                 print("Received command:", data)
-                # Implement actions based on the received command
-                # For example:
+                # Checking for commands from the controller
+              
                 if data == 'reboot':
                     sysReboot()
+                    
                 elif data == 'shutdown':
                     sysShutdown()
+                    
                 elif data == 'nav1':
+                    #add logic to turn on navigation lights
                     print("Turning On Navigation Lights 1")
+                    
                 elif data == 'auto':
+                    #add logic to turn on auto mode
                     print("Auto Mode On")
+                    
                 elif data == 'overide':
+                    #add logic to turn on overide mode
                     print("Overide Mode On")
+                    
                 elif data == 'nav2':
+                    #add logic to turn on navigation lights
                     print("Turning On Navigation Lights 2")
+                    
                 elif data == 'headlight1':
+                    #add logic to turn on headlights
                     print("Turning On Headlights 1")
+                    
                 elif data == 'headlight2':
+                    #add logic to turn on headlights
                     print("Turning On Headlights 2")
                 
     except Exception as e:

@@ -1,8 +1,8 @@
+#E.L.A.R.T Robot Controller Interface By: Nathan Aruna
+
 import socket
 import tkinter as tk
 from tkinter import ttk
-
-
 from PIL import Image, ImageTk
 import threading
 from io import BytesIO
@@ -46,48 +46,80 @@ def update_camera_feed():
     except Exception as e:
         print("Error updating camera feed:", e)
 
-# Function to start the camera feed thread
+
+
+# ----------Function to start the camera feed thread----------
 def start_camera_thread():
     camera_thread = threading.Thread(target=update_camera_feed)
     camera_thread.daemon = True
     camera_thread.start()
+#---------------------------------------------------------------
 
-# Function to send commands to the server
+
+
+# -----------Function to send commands to the server-----------
 def on_button_click(command):
     print(f"Sending command: {command}")
     client_socket.sendall(command.encode())
+#---------------------------------------------------------------
+
+
 
 # Create a socket object for the client
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Connect to the Raspberry Pi's access point
-server_address = ('192.168.4.1', 87)  # Replace 'x.x.x.x' with the Raspberry Pi's IP address
+server_address = ('192.168.4.1', 87)  
 client_socket.connect(server_address)
 
-# Create a Tkinter GUI window
+
+
+
+# ---------Function to update the temp sensor data----------------
+def update_Temp1_data():
+    # Replace this with actual sensor data retrieval logic
+    sensor_reading = "Sensor Data: 123.45"
+    Temp1_label.config(text=sensor_reading)
+    root.after(1000, update_Temp1_data)  # Update the data every 1000ms (1 second)
+
+def update_Temp2_data():
+    sensor_reading = "Sensor Data: 123.45"
+    Temp1_label.config(text=sensor_reading)
+    root.after(1000, update_Temp2_data)  
+    
+def update_Temp3_data():
+    sensor_reading = "Sensor Data: 123.45"
+    Temp1_label.config(text=sensor_reading)
+    root.after(1000, update_Temp3_data)  
+
+#---------------------------------------------------------------   
+
+
+
+# --------------Function to update the progress bar-------------
+def update_progress_etlu():
+    value = progress_var_etlu.get() + 10
+    if value > 100:
+        value = 0
+    progress_var_etlu.set(value)
+    root.after(1000, update_progress_etlu)
+    
+def update_progress_battery():
+    value = progress_var_battery.get() + 10
+    if value > 100:
+        value = 0
+    progress_var_battery.set(value)
+    root.after(1000, update_progress_battery)
+#---------------------------------------------------------------  
+    
+    
 root = tk.Tk()
 root.title("E.L.A.R.T - Controller")
 
 sensor_frame = tk.Frame(root)
 sensor_frame.pack(side=tk.TOP, pady=10)
-
-
-
-
-# Function to update the sensor data
-def update_sensor_data():
-    # Replace this with your actual sensor data retrieval logic
-    sensor_reading = "Sensor Data: 123.45"
-    Temp1_label.config(text=sensor_reading)
-    root.after(1000, update_sensor_data)  # Update the data every 1000ms (1 second)
-
-def update_progress():
-    value = progress_var.get() + 10
-    if value > 100:
-        value = 0
-    progress_var.set(value)
-    root.after(1000, update_progress)
-
+   
+# ---------------------Temperature Lables------------------------
 Temp1_label = tk.Label(sensor_frame, fg='white', text="[Temp1: N/A]")
 Temp1_label.pack(side=tk.LEFT)
 
@@ -96,7 +128,7 @@ Temp2_label.pack(side=tk.LEFT)
 
 Temp3_label = tk.Label(sensor_frame, fg='white', text="[Temp3: N/A]")
 Temp3_label.pack(side=tk.LEFT)
-
+#---------------------------------------------------------------
 
 
 
@@ -104,6 +136,7 @@ left_frame = tk.Frame(root)
 left_frame.pack(side=tk.LEFT)
 
 
+#----------------------Left Row Buttons-------------------------
 Text1_label = tk.Label(left_frame, fg='white', text="E.L.A.R.T")
 Text1_label.pack(side=tk.TOP, padx=5, pady=5)
 
@@ -119,21 +152,24 @@ button_left.pack(side=tk.TOP, padx=5, pady=5)
 button_right = tk.Button(left_frame, fg='blue', text="HEADLIGHT1", command=lambda: on_button_click("headlight1"))
 button_right.pack(side=tk.TOP, padx=5, pady=5)
 
-progress_var = tk.DoubleVar(left_frame)
-vertical_progress = ttk.Progressbar(left_frame, orient='vertical', variable=progress_var, length=200, mode='determinate')
+progress_var_etlu = tk.DoubleVar(left_frame)
+vertical_progress = ttk.Progressbar(left_frame, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
 vertical_progress.pack(pady=10)
 
 Text1_label = tk.Label(left_frame, fg='white', text="ETLU")
 Text1_label.pack(side=tk.TOP, padx=5, pady=5)
+#----------------------------------------------------------------
 
 
 
-
-# Create the camera label to display the camera feed
+#----------------------------Camera------------------------------
 camera_label = tk.Label(root, text="Camera View")
 camera_label.pack(side=tk.LEFT, padx=5, pady=5)
+#---------------------------------------------------------------
 
-# Create the frame for the right column of buttons
+
+
+#----------------------Right Row Buttons-------------------------
 right_frame = tk.Frame(root)
 right_frame.pack(side=tk.LEFT)
 
@@ -152,22 +188,20 @@ button_left.pack(side=tk.TOP, padx=5, pady=5)
 button_right = tk.Button(right_frame, fg='blue', text="HEADLIGHT2", command=lambda: on_button_click("headlight2"))
 button_right.pack(side=tk.TOP, padx=5, pady=5)
 
-progress_var = tk.DoubleVar(right_frame)
-vertical_progress = ttk.Progressbar(right_frame, orient='vertical', variable=progress_var, length=200, mode='determinate')
+progress_var_battery = tk.DoubleVar(right_frame)
+vertical_progress = ttk.Progressbar(right_frame, orient='vertical', variable=progress_var_battery, length=200, mode='determinate')
 vertical_progress.pack(pady=10)
 
 Text1_label = tk.Label(right_frame, fg='white', text="Battery Level")
 Text1_label.pack(side=tk.TOP, padx=5, pady=5)
+#----------------------------------------------------------------
 
 
 
 
 
-# Create buttons for different commands
-update_progress()  # Start updating the progress bar
-
-
-# Start the camera feed thread
+update_progress_etlu() 
+update_progress_battery()
 start_camera_thread()
 
 # Run the Tkinter event loop
