@@ -13,10 +13,12 @@ def send_frame(conn, frame):
 # Function to handle client connections
 def handle_client(conn, addr):
     print("Client connected:", addr)
+
+    cap = cv2.VideoCapture(0)  # Use 0 for the first USB camera, 1 for the second, and so on
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)  # Adjust the resolution as needed
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+
     try:
-        cap = cv2.VideoCapture(0)  # Use 0 for the first USB camera, 1 for the second, and so on
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)  # Adjust the resolution as needed
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
         while True:
             data = conn.recv(1024).decode()
             if not data:
@@ -24,8 +26,11 @@ def handle_client(conn, addr):
             elif data == 'camera_frame':
                 ret, frame = cap.read()
                 if ret:
-                    cv2.imshow('Camera Feed', frame)
-                    cv2.waitKey(1)
+                    # Send the camera frame to the client
+                    frame_data = pickle.dumps(frame)
+                    frame_size = len(frame_data)
+                    conn.sendall(struct.pack('!L', frame_size))
+                    conn.sendall(frame_data)
             else:
                 # Process the received command
                 print("Received command:", data)
@@ -39,11 +44,12 @@ def handle_client(conn, addr):
                     print("Turning left")
                 elif data == 'right':
                     print("Turning right")
+
     except Exception as e:
         print("Error handling client:", e)
+
     finally:
         cap.release()
-        cv2.destroyAllWindows()
         conn.close()
         print("Client disconnected:", addr)
 

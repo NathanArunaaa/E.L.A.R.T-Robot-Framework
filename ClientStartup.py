@@ -1,9 +1,9 @@
 import socket
 import tkinter as tk
-from PIL import Image, ImageTk
 import threading
 import struct
 import pickle
+import cv2
 
 class RobotControllerApp(tk.Tk):
     def __init__(self):
@@ -50,41 +50,44 @@ class RobotControllerApp(tk.Tk):
         self.client_socket.sendall("right".encode())
 
     def update_camera_feed(self):
-        try:
-            while True:
-                # Request camera frame from the server
-                self.client_socket.sendall("camera_frame".encode())
-                frame_size_data = self.client_socket.recv(4)
-                if not frame_size_data:
+     try:
+        while True:
+            # Request camera frame from the server
+            self.client_socket.sendall("camera_frame".encode())
+            frame_size_data = self.client_socket.recv(4)
+            if not frame_size_data:
+                break
+            frame_size = struct.unpack('!L', frame_size_data)[0]
+            frame_data = b''
+            while len(frame_data) < frame_size:
+                data = self.client_socket.recv(frame_size - len(frame_data))
+                if not data:
                     break
-                frame_size = struct.unpack('!L', frame_size_data)[0]
-                frame_data = b''
-                while len(frame_data) < frame_size:
-                    data = self.client_socket.recv(frame_size - len(frame_data))
-                    if not data:
-                        break
-                    frame_data += data
+                frame_data += data
 
-                if len(frame_data) == frame_size:
-                    # Convert the received bytes to a NumPy array
-                    frame = pickle.loads(frame_data)
+            if len(frame_data) == frame_size:
+                print("Received frame data:", len(frame_data), "bytes")
 
-                    # Convert the NumPy array to an ImageTk object
-                    image = Image.fromarray(frame)
+                # Convert the received bytes to a NumPy array
+                frame = pickle.loads(frame_data)
 
-                    # Resize the image to fit the label
-                    label_width, label_height = self.camera_label.winfo_width(), self.camera_label.winfo_height()
-                    image = image.resize((label_width, label_height), Image.ANTIALIAS)
+                # Convert the NumPy array to an OpenCV image
+                frame = cv2.imdecode(frame, cv2.IMREAD_COLOR)
 
-                    # Convert the resized image to an ImageTk object
-                    image_tk = ImageTk.PhotoImage(image)
+                # Display the video feed
+                cv2.imshow("Camera Feed", frame)
 
-                    # Update the label with the new image
-                    self.camera_label.configure(image=image_tk)
-                    self.camera_label.image = image_tk  # Store the reference to avoid garbage collection
+            # Check for a key press (for closing the window gracefully)
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord("q"):
+                break
 
-        except Exception as e:
-            print("Error updating camera feed:", e)
+     except Exception as e:
+        print("Error updating camera feed:", e)
+
+     finally:
+        cv2.destroyAllWindows()
+
 
 if __name__ == "__main__":
     app = RobotControllerApp()
