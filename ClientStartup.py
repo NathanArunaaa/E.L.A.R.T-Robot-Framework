@@ -32,7 +32,7 @@ def update_camera_feed():
 
                 # Resize the image to fit the label
                 label_width, label_height = camera_label.winfo_width(), camera_label.winfo_height()
-                image = image.resize((label_width, label_height), Image.ANTIALIAS)
+                image = image.resize((500, 500), Image.ANTIALIAS)
 
                 # Convert the resized image to an ImageTk object
                 image = ImageTk.PhotoImage(image)
