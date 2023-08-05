@@ -32,7 +32,7 @@ def update_camera_feed():
 
                 # Resize the image to fit the label
                 label_width, label_height = camera_label.winfo_width(), camera_label.winfo_height()
-                image = image.resize((500, 500), Image.ANTIALIAS)
+                image = image.resize((1200, 780), Image.ANTIALIAS)
 
                 # Convert the resized image to an ImageTk object
                 image = ImageTk.PhotoImage(image)
@@ -65,22 +65,46 @@ client_socket.connect(server_address)
 root = tk.Tk()
 root.title("E.L.A.R.T - Controller")
 
+left_frame = tk.Frame(root)
+left_frame.pack(side=tk.LEFT)
+
+button_forward = tk.Button(left_frame, text="Forward", command=lambda: on_button_click("forward"))
+button_forward.pack(side=tk.TOP, padx=5, pady=5)
+
+button_backward = tk.Button(left_frame, text="Backward", command=lambda: on_button_click("backward"))
+button_backward.pack(side=tk.TOP, padx=5, pady=5)
+
+button_left = tk.Button(left_frame, text="Left", command=lambda: on_button_click("left"))
+button_left.pack(side=tk.TOP, padx=5, pady=5)
+
+button_right = tk.Button(left_frame, text="Right", command=lambda: on_button_click("right"))
+button_right.pack(side=tk.TOP, padx=5, pady=5)
+
 # Create the camera label to display the camera feed
-camera_label = tk.Label(root)
-camera_label.pack()
+camera_label = tk.Label(root, text="Camera View")
+camera_label.pack(side=tk.LEFT, padx=5, pady=5)
+
+# Create the frame for the right column of buttons
+right_frame = tk.Frame(root)
+right_frame.pack(side=tk.LEFT)
+
+button_forward = tk.Button(right_frame, text="Forward", command=lambda: on_button_click("forward"))
+button_forward.pack(side=tk.TOP, padx=5, pady=5)
+
+button_backward = tk.Button(right_frame, text="Backward", command=lambda: on_button_click("backward"))
+button_backward.pack(side=tk.TOP, padx=5, pady=5)
+
+button_left = tk.Button(right_frame, text="Left", command=lambda: on_button_click("left"))
+button_left.pack(side=tk.TOP, padx=5, pady=5)
+
+button_right = tk.Button(right_frame, text="Right", command=lambda: on_button_click("right"))
+button_right.pack(side=tk.TOP, padx=5, pady=5)
+
+
+
 
 # Create buttons for different commands
-button_forward = tk.Button(root, text="Forward", command=lambda: on_button_click("forward"))
-button_forward.pack(side=tk.LEFT, padx=5, pady=5)
 
-button_backward = tk.Button(root, text="Backward", command=lambda: on_button_click("backward"))
-button_backward.pack(side=tk.LEFT, padx=5, pady=5)
-
-button_left = tk.Button(root, text="Left", command=lambda: on_button_click("left"))
-button_left.pack(side=tk.LEFT, padx=5, pady=5)
-
-button_right = tk.Button(root, text="Right", command=lambda: on_button_click("right"))
-button_right.pack(side=tk.LEFT, padx=5, pady=5)
 
 # Start the camera feed thread
 start_camera_thread()
