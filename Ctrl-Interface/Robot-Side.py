@@ -8,9 +8,6 @@ import pickle
 import time
 import os
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
-GPIO.setup(14,GPIO.OUT)
 
 # Function to send frames to the client
 def send_frame(conn, frame):
