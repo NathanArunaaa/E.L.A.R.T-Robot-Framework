@@ -122,8 +122,6 @@ server_address = ('192.168.4.1', 87)
 client_socket.connect(server_address)
 
 
-
-
 # ---------Function to update the temp sensor data----------------
 def update_Temp1_data():
     # Replace this with actual sensor data retrieval logic
@@ -143,12 +141,13 @@ def update_Temp3_data():
 
 #---------------------------------------------------------------   
 
+
+
 # ------------Function to update the date and time--------------
 def update_time():
     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     time_label.config(text="Current Time: " + current_time)
     root.after(1000, update_time)  # Update the time every 1000ms (1 second)
- 
 #---------------------------------------------------------------
 
     
@@ -178,6 +177,7 @@ def console_window():
     label = tk.Label(smaller_window, text="This is a smaller window.")
     label.pack()
 
+
 root = tk.Tk()
 root.title("E.L.A.R.T - Controller")
 
@@ -199,7 +199,7 @@ Temp3_label.pack(side=tk.LEFT)
 time_label = tk.Label(sensor_frame, fg='gray', text="Current Time: ")
 time_label.pack(side=tk.LEFT, pady=10)
 
-#---------------------Temperature Lables------------------------
+#------------------------Sensor Lables--------------------------
 Temp1_label = tk.Label(sensor_frame, fg='white', text="[Sens1: N/A]")
 Temp1_label.pack(side=tk.LEFT)
 
@@ -211,28 +211,27 @@ Temp3_label.pack(side=tk.LEFT)
 #---------------------------------------------------------------
 
 
-left_frame = tk.Frame(root)
-left_frame.pack(side=tk.LEFT)
+
 
 
 #----------------------Left Row Buttons-------------------------
+left_frame = tk.Frame(root)
+left_frame.pack(side=tk.LEFT)
+
 Text1_label = tk.Label(left_frame, fg='white', text="E.L.A.R.T")
 Text1_label.pack(side=tk.TOP, padx=5, pady=5)
 
+button_shutdown = tk.Button(left_frame, fg='red', text="SHUTDOWN", activebackground='tomato', command=lambda: on_button_click("shutdown"))
+button_shutdown.pack(side=tk.TOP, padx=5, pady=5)
 
+button_reboot = tk.Button(left_frame, fg='red', text="  REBOOT  ", command=lambda: on_button_click("reboot"))
+button_reboot.pack(side=tk.TOP, padx=5, pady=5)
 
+button_nav1 = tk.Button(left_frame,  fg='blue', text="   NAV-1   ", command=lambda: on_button_click("nav1"))
+button_nav1.pack(side=tk.TOP, padx=5, pady=5)
 
-button_forward = tk.Button(left_frame, fg='red', text="SHUTDOWN", activebackground='tomato', command=lambda: on_button_click("shutdown"))
-button_forward.pack(side=tk.TOP, padx=5, pady=5)
-
-button_backward = tk.Button(left_frame, fg='red', text="  REBOOT  ", command=lambda: on_button_click("reboot"))
-button_backward.pack(side=tk.TOP, padx=5, pady=5)
-
-button_left = tk.Button(left_frame,  fg='blue', text="   NAV-1   ", command=lambda: on_button_click("nav1"))
-button_left.pack(side=tk.TOP, padx=5, pady=5)
-
-button_right = tk.Button(left_frame, fg='blue', text="HEADLIGHT1", command=lambda: on_button_click("headlight1"))
-button_right.pack(side=tk.TOP, padx=5, pady=5)
+button_headlight1 = tk.Button(left_frame, fg='blue', text="HEADLIGHT1", command=lambda: on_button_click("headlight1"))
+button_headlight1.pack(side=tk.TOP, padx=5, pady=5)
 
 button_console = tk.Button(left_frame, fg='blue', text="CONSOLE", command=console_window)
 button_console.pack(side=tk.TOP, padx=5, pady=5)
@@ -265,17 +264,17 @@ git_version_label = tk.Label(right_frame, text="Stable Version 2.87.1 (Controlle
 git_version_label.pack(padx=20, pady=10)
 
 
-button_forward = tk.Button(right_frame, fg='red',text="OVERIDE", command=lambda: on_button_click("overide"))
-button_forward.pack(side=tk.TOP, padx=5, pady=5)
+button_overide = tk.Button(right_frame, fg='red',text="OVERIDE", command=lambda: on_button_click("overide"))
+button_overide.pack(side=tk.TOP, padx=5, pady=5)
 
-button_backward = tk.Button(right_frame, fg='green', text="AUTO", command=lambda: on_button_click("auto"))
-button_backward.pack(side=tk.TOP, padx=5, pady=5)
+button_auto = tk.Button(right_frame, fg='green', text="AUTO", command=lambda: on_button_click("auto"))
+button_auto.pack(side=tk.TOP, padx=5, pady=5)
 
-button_left = tk.Button(right_frame, fg='blue', text="  NAV-2  ", command=lambda: on_button_click("nav2"))
-button_left.pack(side=tk.TOP, padx=5, pady=5)
+button_nav2 = tk.Button(right_frame, fg='blue', text="  NAV-2  ", command=lambda: on_button_click("nav2"))
+button_nav2.pack(side=tk.TOP, padx=5, pady=5)
 
-button_right = tk.Button(right_frame, fg='blue', text="HEADLIGHT2", command=lambda: on_button_click("headlight2"))
-button_right.pack(side=tk.TOP, padx=5, pady=5)
+button_headlight2 = tk.Button(right_frame, fg='blue', text="HEADLIGHT2", command=lambda: on_button_click("headlight2"))
+button_headlight2.pack(side=tk.TOP, padx=5, pady=5)
 
 progress_var_battery = tk.DoubleVar(right_frame)
 vertical_progress = ttk.Progressbar(right_frame, orient='vertical', variable=progress_var_battery, length=200, mode='determinate')
@@ -285,17 +284,12 @@ Text1_label = tk.Label(right_frame, fg='white', text="Battery Level")
 Text1_label.pack(side=tk.TOP, padx=5, pady=5)
 #----------------------------------------------------------------
 
-bottom_frame = tk.Frame(root)
-bottom_frame.pack(side=tk.BOTTOM, pady=10)
-
-
 
 
 
 update_progress_etlu() 
 update_progress_battery()
-update_time()  # Start updating the time label
+update_time()  
 start_camera_thread()
 
-# Run the Tkinter event loop
 root.mainloop()
