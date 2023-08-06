@@ -7,7 +7,9 @@ from PIL import Image, ImageTk
 import threading
 from io import BytesIO
 import struct
+import datetime
 import pickle
+
 
 # Function to update the camera feed
 def update_camera_feed():
@@ -94,8 +96,15 @@ def update_Temp3_data():
 
 #---------------------------------------------------------------   
 
+# ------------Function to update the date and time--------------
+def update_time():
+    current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    time_label.config(text="Current Time: " + current_time)
+    root.after(1000, update_time)  # Update the time every 1000ms (1 second)
+ 
+#---------------------------------------------------------------
 
-
+    
 # --------------Function to update the progress bar-------------
 def update_progress_etlu():
     value = progress_var_etlu.get() + 10
@@ -111,10 +120,20 @@ def update_progress_battery():
     progress_var_battery.set(value)
     root.after(1000, update_progress_battery)
 #---------------------------------------------------------------  
-    
-    
+
+
+def console_window():
+    smaller_window = tk.Toplevel(root)
+    smaller_window.title("E.L.A.R.TConsole Window")
+    smaller_window.geometry("300x200")  # Set the size of the new window
+
+    # Add widgets to the smaller window
+    label = tk.Label(smaller_window, text="This is a smaller window.")
+    label.pack()
+
 root = tk.Tk()
 root.title("E.L.A.R.T - Controller")
+
 
 sensor_frame = tk.Frame(root)
 sensor_frame.pack(side=tk.TOP, pady=10)
@@ -130,6 +149,19 @@ Temp3_label = tk.Label(sensor_frame, fg='white', text="[Temp3: N/A]")
 Temp3_label.pack(side=tk.LEFT)
 #---------------------------------------------------------------
 
+time_label = tk.Label(sensor_frame, fg='gray', text="Current Time: ")
+time_label.pack(side=tk.LEFT, pady=10)
+
+#---------------------Temperature Lables------------------------
+Temp1_label = tk.Label(sensor_frame, fg='white', text="[Sens1: N/A]")
+Temp1_label.pack(side=tk.LEFT)
+
+Temp2_label = tk.Label(sensor_frame, fg='white', text="[Sens2: N/A]")
+Temp2_label.pack(side=tk.LEFT)
+
+Temp3_label = tk.Label(sensor_frame, fg='white', text="[Sens3: N/A]")
+Temp3_label.pack(side=tk.LEFT)
+#---------------------------------------------------------------
 
 
 left_frame = tk.Frame(root)
@@ -139,6 +171,9 @@ left_frame.pack(side=tk.LEFT)
 #----------------------Left Row Buttons-------------------------
 Text1_label = tk.Label(left_frame, fg='white', text="E.L.A.R.T")
 Text1_label.pack(side=tk.TOP, padx=5, pady=5)
+
+
+
 
 button_forward = tk.Button(left_frame, fg='red', text="SHUTDOWN", activebackground='tomato', command=lambda: on_button_click("shutdown"))
 button_forward.pack(side=tk.TOP, padx=5, pady=5)
@@ -151,6 +186,10 @@ button_left.pack(side=tk.TOP, padx=5, pady=5)
 
 button_right = tk.Button(left_frame, fg='blue', text="HEADLIGHT1", command=lambda: on_button_click("headlight1"))
 button_right.pack(side=tk.TOP, padx=5, pady=5)
+
+button_console = tk.Button(left_frame, fg='blue', text="CONSOLE", command=console_window)
+button_console.pack(side=tk.TOP, padx=5, pady=5)
+
 
 progress_var_etlu = tk.DoubleVar(left_frame)
 vertical_progress = ttk.Progressbar(left_frame, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
@@ -173,8 +212,9 @@ camera_label.pack(side=tk.LEFT, padx=5, pady=5)
 right_frame = tk.Frame(root)
 right_frame.pack(side=tk.LEFT)
 
-Text1_label = tk.Label(right_frame, fg='white', text="Version 1")
-Text1_label.pack(side=tk.TOP, padx=5, pady=5)
+git_version_label = tk.Label(right_frame, text="Stable Version 2.87.1 (Controller Client)", font=("Helvetica", 12), wraplength=85)
+git_version_label.pack(padx=20, pady=10)
+
 
 button_forward = tk.Button(right_frame, fg='red',text="OVERIDE", command=lambda: on_button_click("overide"))
 button_forward.pack(side=tk.TOP, padx=5, pady=5)
@@ -196,12 +236,16 @@ Text1_label = tk.Label(right_frame, fg='white', text="Battery Level")
 Text1_label.pack(side=tk.TOP, padx=5, pady=5)
 #----------------------------------------------------------------
 
+bottom_frame = tk.Frame(root)
+bottom_frame.pack(side=tk.BOTTOM, pady=10)
+
 
 
 
 
 update_progress_etlu() 
 update_progress_battery()
+update_time()  # Start updating the time label
 start_camera_thread()
 
 # Run the Tkinter event loop
