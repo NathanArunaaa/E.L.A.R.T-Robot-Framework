@@ -9,6 +9,42 @@ from io import BytesIO
 import struct
 import datetime
 import pickle
+import random
+import math
+
+
+def get_pitch_angle():
+    return random.uniform(-30, 30)  # Replace this with your actual pitch angle retrieval logic
+
+# Sample function to get the roll angle (random for testing purposes)
+def get_roll_angle():
+    return random.uniform(100, 150)
+
+def calculate_horizon_coords(canvas_width, canvas_height, pitch, roll):
+    horizon_length = 100  # You can adjust this length as needed
+    pitch_radians = math.radians(pitch)
+    roll_radians = math.radians(roll)
+
+    # Calculate the coordinates of the two ends of the horizon line
+    x1 = canvas_width / 2 - horizon_length * math.sin(roll_radians)
+    y1 = canvas_height / 2 - horizon_length * math.cos(roll_radians) * math.sin(pitch_radians)
+    x2 = canvas_width / 2 + horizon_length * math.sin(roll_radians)
+    y2 = canvas_height / 2 + horizon_length * math.cos(roll_radians) * math.sin(pitch_radians)
+
+    return x1, y1, x2, y2
+
+def draw_artificial_horizon(canvas, pitch, roll):
+    canvas.delete("horizon")
+
+    # Get the canvas size
+    canvas_width = canvas.winfo_width()
+    canvas_height = canvas.winfo_height()
+
+    # Calculate the coordinates of the horizon line
+    x1, y1, x2, y2 = calculate_horizon_coords(canvas_width, canvas_height, pitch, roll)
+
+    # Draw the horizon line
+    canvas.create_line(x1, y1, x2, y2, fill="white", tags="horizon", width=2, arrow=tk.BOTH)
 
 
 # Function to update the camera feed
@@ -35,18 +71,29 @@ def update_camera_feed():
                 # Convert the NumPy array to an ImageTk object
                 image = Image.fromarray(frame)
 
-                # Resize the image to fit the label
-                label_width, label_height = camera_label.winfo_width(), camera_label.winfo_height()
-                image = image.resize((1180, 790), Image.ANTIALIAS)
+                # Resize the image to fit the canvas
+                image = image.resize((canvas.winfo_width(), canvas.winfo_height()), Image.ANTIALIAS)
 
                 # Convert the resized image to an ImageTk object
                 image = ImageTk.PhotoImage(image)
-                
-                # Update the label with the new image
-                camera_label.config(image=image)
-                camera_label.image = image
+
+                # Update the canvas with the new image
+                canvas.create_image(0, 0, anchor=tk.NW, image=image)
+                canvas.image = image
+
+                # Get the pitch and roll angles (replace this with your actual angle calculation)
+                pitch = get_pitch_angle()
+                roll = get_roll_angle()
+
+                # Update the canvas with the new pitch and roll angles
+                draw_artificial_horizon(canvas, pitch, roll)
+
+                angle_text = f"Pitch: {pitch:.2f}°\nRoll: {roll:.2f}°"
+                canvas.create_text(10, 10, anchor=tk.NW, text=angle_text, fill="white", font=("Arial", 14))
+
     except Exception as e:
         print("Error updating camera feed:", e)
+
 
 
 
@@ -202,8 +249,10 @@ Text1_label.pack(side=tk.TOP, padx=5, pady=5)
 
 
 #----------------------------Camera------------------------------
-camera_label = tk.Label(root, text="Camera View")
-camera_label.pack(side=tk.LEFT, padx=5, pady=5)
+
+canvas = tk.Canvas(root, width=1180, height=790)
+canvas.pack(side=tk.LEFT)
+
 #---------------------------------------------------------------
 
 
