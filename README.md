@@ -8,7 +8,16 @@
 ΣΤ = (w1 x n1) + (w2 x n2) + (w3 x n3) + (w4 x n4) 
 ```
 
+<h1> Data Communication</h1>
 ```
 Port 85: Robot movement 
-Port 86: Sensor Data 
+Port 86: Sensor Data
+Port 87: Controller
 ```
+<p>Port 85 will be listening for user inputs from the controller side. Joysticks a physical input method will be used like buttons or joysticks. (controller=transmiiter, robot=receiver</p>
+
+<p>Port 86 will be listening for sensor data from the robot. (controller=Receiver, robot=transmitter)  </p>
+
+<p>Port 87 will be listening for user input from the controller and sending data to the robot (controller=trasnmitter </p>
+
+![Uploading Screenshot 2023-08-05 at 12.53.58 AM.png…]()

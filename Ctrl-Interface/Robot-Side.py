@@ -7,6 +7,12 @@ import struct
 import pickle
 import time
 import os
+import RPi.GPIO as GPIO
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setup(14,GPIO.OUT)
+
 
 # Function to send frames to the client
 def send_frame(conn, frame):
@@ -23,6 +29,23 @@ def sysShutdown():
     print('System Shutdown....')
     time.sleep(5)
     os.system('sudo shutdown')
+    
+def ledOn():
+    while True:
+        # set GPIO14 pin to HIGH
+        GPIO.output(14,GPIO.HIGH)
+        # show message to Terminal
+        print ("LED is ON")
+        # pause for one second
+        time.sleep(1)
+
+        # set GPIO14 pin to HIGH
+        GPIO.output(14,GPIO.LOW)
+        # show message to Terminal
+        print("LED is OFF")
+        # pause for one second
+        time.sleep(1)
+    
 
 
 # Function to handle client connections
@@ -48,6 +71,7 @@ def handle_client(conn, addr):
                     sysShutdown()
                     
                 elif data == 'nav1':
+                    ledOn()
                     #add logic to turn on navigation lights
                     print("Turning On Navigation Lights 1")
                     
