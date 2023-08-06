@@ -7,12 +7,10 @@ import struct
 import pickle
 import time
 import os
-import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 GPIO.setup(14,GPIO.OUT)
-
 
 # Function to send frames to the client
 def send_frame(conn, frame):
@@ -30,24 +28,6 @@ def sysShutdown():
     time.sleep(5)
     os.system('sudo shutdown')
     
-def ledOn():
-    while True:
-        # set GPIO14 pin to HIGH
-        GPIO.output(14,GPIO.HIGH)
-        # show message to Terminal
-        print ("LED is ON")
-        # pause for one second
-        time.sleep(1)
-
-        # set GPIO14 pin to HIGH
-        GPIO.output(14,GPIO.LOW)
-        # show message to Terminal
-        print("LED is OFF")
-        # pause for one second
-        time.sleep(1)
-    
-
-
 # Function to handle client connections
 def handle_client(conn, addr):
     print("Client connected:", addr)
@@ -71,7 +51,6 @@ def handle_client(conn, addr):
                     sysShutdown()
                     
                 elif data == 'nav1':
-                    ledOn()
                     #add logic to turn on navigation lights
                     print("Turning On Navigation Lights 1")
                     
@@ -106,7 +85,7 @@ server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Bind the socket to a specific IP and port
 host = '0.0.0.0'  # Use 0.0.0.0 to listen on all available interfaces
-port = 87    # Choose a port number for the communication
+port = 87    
 server_socket.bind((host, port))
 
 # Start listening for incoming connections
@@ -114,7 +93,6 @@ server_socket.listen()
 
 print("Waiting for connections...")
 
-# OpenCV Video Capture
 camera = cv2.VideoCapture(0)  # Use 0 for the first camera device (change the index if needed)
 
 try:
