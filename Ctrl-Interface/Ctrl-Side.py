@@ -12,6 +12,7 @@ import pickle
 import random
 import math
 
+command_history = []
 
 def get_pitch_angle():
     return random.uniform(-30, 30)  # Replace this with your actual pitch angle retrieval logic
@@ -88,8 +89,19 @@ def update_camera_feed():
                 # Update the canvas with the new pitch and roll angles
                 draw_artificial_horizon(canvas, pitch, roll)
 
+                canvas_width = canvas.winfo_width()
                 angle_text = f"Pitch: {pitch:.2f}°\nRoll: {roll:.2f}°"
                 canvas.create_text(10, 10, anchor=tk.NW, text=angle_text, fill="white", font=("Arial", 14))
+                
+                
+                x_offset = 10  # Distance from the right edge
+                y_offset = 10  # Distance from the top edge
+
+                
+                command_text = "\n".join(command_history[-5:])  # Show the last 5 commands
+                canvas.create_text(canvas_width - x_offset, y_offset, anchor=tk.NE, text=command_text, fill="white", font=("Arial", 12))
+
+
 
     except Exception as e:
         print("Error updating camera feed:", e)
@@ -110,6 +122,11 @@ def start_camera_thread():
 def on_button_click(command):
     print(f"Sending command: {command}")
     client_socket.sendall(command.encode())
+
+    command_history.append(command) 
+    if len(command_history) > 10:
+        command_history.pop(0)
+
 #---------------------------------------------------------------
 
 
@@ -148,7 +165,6 @@ def update_time():
     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     time_label.config(text="Current Time: " + current_time)
     root.after(1000, update_time)  # Update the time every 1000ms (1 second)
-#---------------------------------------------------------------
 
     
 # --------------Function to update the progress bar-------------
