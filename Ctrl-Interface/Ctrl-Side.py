@@ -12,15 +12,28 @@ import pickle
 import random
 import math
 
+#----------------------List for commands---------------------
 command_history = []
+#------------------------------------------------------------
 
+
+#--------------------Connect to the robot--------------------
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_address = ('192.168.4.1', 87)  
+client_socket.connect(server_address)
+#------------------------------------------------------------
+
+
+#------------------Get the angles from IMU's-----------------
 def get_pitch_angle():
-    return random.uniform(-30, 30)  # Replace this with your actual pitch angle retrieval logic
+    return random.uniform(-30, 30)  
 
-# Sample function to get the roll angle (random for testing purposes)
 def get_roll_angle():
     return random.uniform(100, 150)
+#------------------------------------------------------------
 
+
+#----------------Getting the coords for horizon---------------
 def calculate_horizon_coords(canvas_width, canvas_height, pitch, roll):
     horizon_length = 100  # You can adjust this length as needed
     pitch_radians = math.radians(pitch)
@@ -33,7 +46,10 @@ def calculate_horizon_coords(canvas_width, canvas_height, pitch, roll):
     y2 = canvas_height / 2 + horizon_length * math.cos(roll_radians) * math.sin(pitch_radians)
 
     return x1, y1, x2, y2
+#------------------------------------------------------------
 
+
+#---------------------Drawing the horizon--------------------
 def draw_artificial_horizon(canvas, pitch, roll):
     canvas.delete("horizon")
 
@@ -46,9 +62,10 @@ def draw_artificial_horizon(canvas, pitch, roll):
 
     # Draw the horizon line
     canvas.create_line(x1, y1, x2, y2, fill="white", tags="horizon", width=2, arrow=tk.BOTH)
+#------------------------------------------------------------
 
 
-# Function to update the camera feed
+# -------------------Update Camera Feed----------------------
 def update_camera_feed():
     try:
         while True:
@@ -93,18 +110,15 @@ def update_camera_feed():
                 angle_text = f"Pitch: {pitch:.2f}°\nRoll: {roll:.2f}°"
                 canvas.create_text(10, 10, anchor=tk.NW, text=angle_text, fill="white", font=("Arial", 14))
                 
-                
-                x_offset = 10  # Distance from the right edge
-                y_offset = 10  # Distance from the top edge
+                x_offset = 10  
+                y_offset = 10  
 
-                
                 command_text = "\n".join(command_history[-5:])  # Show the last 5 commands
                 canvas.create_text(canvas_width - x_offset, y_offset, anchor=tk.NE, text=command_text, fill="white", font=("Arial", 12))
 
-
-
     except Exception as e:
         print("Error updating camera feed:", e)
+#---------------------------------------------------------------
 
 
 
@@ -115,7 +129,6 @@ def start_camera_thread():
     camera_thread.daemon = True
     camera_thread.start()
 #---------------------------------------------------------------
-
 
 
 # -----------Function to send commands to the server-----------
@@ -129,14 +142,6 @@ def on_button_click(command):
 
 #---------------------------------------------------------------
 
-
-
-# Create a socket object for the client
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-# Connect to the Raspberry Pi's access point
-server_address = ('192.168.4.1', 87)  
-client_socket.connect(server_address)
 
 
 # ---------Function to update the temp sensor data----------------
@@ -183,7 +188,7 @@ def update_progress_battery():
     root.after(1000, update_progress_battery)
 #---------------------------------------------------------------  
 
-
+#--------------------------Console Window-----------------------
 def console_window():
     smaller_window = tk.Toplevel(root)
     smaller_window.title("E.L.A.R.TConsole Window")
@@ -192,6 +197,7 @@ def console_window():
     # Add widgets to the smaller window
     label = tk.Label(smaller_window, text="This is a smaller window.")
     label.pack()
+#---------------------------------------------------------------  
 
 
 root = tk.Tk()
@@ -228,8 +234,6 @@ Temp3_label.pack(side=tk.LEFT)
 
 
 
-
-
 #----------------------Left Row Buttons-------------------------
 left_frame = tk.Frame(root)
 left_frame.pack(side=tk.LEFT)
@@ -262,14 +266,12 @@ Text1_label.pack(side=tk.TOP, padx=5, pady=5)
 #----------------------------------------------------------------
 
 
-
 #----------------------------Camera------------------------------
 
 canvas = tk.Canvas(root, width=1180, height=790)
 canvas.pack(side=tk.LEFT)
 
 #---------------------------------------------------------------
-
 
 
 #----------------------Right Row Buttons-------------------------
@@ -299,8 +301,6 @@ vertical_progress.pack(pady=10)
 Text1_label = tk.Label(right_frame, fg='white', text="Battery Level")
 Text1_label.pack(side=tk.TOP, padx=5, pady=5)
 #----------------------------------------------------------------
-
-
 
 
 update_progress_etlu() 
