@@ -164,7 +164,6 @@ def update_Temp3_data():
 #---------------------------------------------------------------   
 
 
-
 # ------------Function to update the date and time--------------
 def update_time():
     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -188,15 +187,38 @@ def update_progress_battery():
     root.after(1000, update_progress_battery)
 #---------------------------------------------------------------  
 
-#--------------------------Console Window-----------------------
-def console_window():
+#--------------------------Reboot Window------------------------
+def confirm_reboot():
     smaller_window = tk.Toplevel(root)
-    smaller_window.title("E.L.A.R.TConsole Window")
+    smaller_window.title("E.L.A.R.T")
     smaller_window.geometry("300x200")  # Set the size of the new window
 
     # Add widgets to the smaller window
-    label = tk.Label(smaller_window, text="This is a smaller window.")
+    label = tk.Label(smaller_window, text="CONFIRM REBOOT")
     label.pack()
+    
+    button_shutdown_yes = tk.Button(left_frame, fg='red', text="Yes", activebackground='tomato', command=lambda: on_button_click("reboot"))
+    button_shutdown_yes.pack(side=tk.TOP, padx=5, pady=5)
+    button_shutdown_no = tk.Button(left_frame, fg='green', text="No", activebackground='tomato', command=lambda: on_button_click("reboot"))
+    button_shutdown_no.pack(side=tk.TOP, padx=5, pady=5)
+
+#---------------------------------------------------------------  
+
+#--------------------------Console Window-----------------------
+def confirm_Shutdown():
+    smaller_window = tk.Toplevel(root)
+    smaller_window.title("E.L.A.R.T ")
+    smaller_window.geometry("300x200")  # Set the size of the new window
+
+    # Add widgets to the smaller window
+    label = tk.Label(smaller_window, text="CONFIRM SHUTDOWN")
+    label.pack()
+    
+    button_shutdown_yes = tk.Button(left_frame, fg='red', text="Yes", activebackground='tomato', command=lambda: on_button_click("shutdown"))
+    button_shutdown_yes.pack(side=tk.TOP, padx=5, pady=5)
+    button_shutdown_no = tk.Button(left_frame, fg='green', text="No", activebackground='tomato', command=lambda: on_button_click("shutdown"))
+    button_shutdown_no.pack(side=tk.TOP, padx=5, pady=5)
+
 #---------------------------------------------------------------  
 
 
@@ -241,10 +263,10 @@ left_frame.pack(side=tk.LEFT)
 Text1_label = tk.Label(left_frame, fg='white', text="E.L.A.R.T")
 Text1_label.pack(side=tk.TOP, padx=5, pady=5)
 
-button_shutdown = tk.Button(left_frame, fg='red', text="SHUTDOWN", activebackground='tomato', command=lambda: on_button_click("shutdown"))
+button_shutdown = tk.Button(left_frame, fg='red', text="SHUTDOWN", activebackground='tomato', command=confirm_Shutdown)
 button_shutdown.pack(side=tk.TOP, padx=5, pady=5)
 
-button_reboot = tk.Button(left_frame, fg='red', text="  REBOOT  ", command=lambda: on_button_click("reboot"))
+button_reboot = tk.Button(left_frame, fg='red', text="  REBOOT  ", command=confirm_reboot)
 button_reboot.pack(side=tk.TOP, padx=5, pady=5)
 
 button_nav1 = tk.Button(left_frame,  fg='blue', text="   NAV-1   ", command=lambda: on_button_click("nav1"))
@@ -253,7 +275,7 @@ button_nav1.pack(side=tk.TOP, padx=5, pady=5)
 button_headlight1 = tk.Button(left_frame, fg='blue', text="HEADLIGHT1", command=lambda: on_button_click("headlight1"))
 button_headlight1.pack(side=tk.TOP, padx=5, pady=5)
 
-button_console = tk.Button(left_frame, fg='blue', text="CONSOLE", command=console_window)
+button_console = tk.Button(left_frame, fg='blue', text="CONSOLE")
 button_console.pack(side=tk.TOP, padx=5, pady=5)
 
 
