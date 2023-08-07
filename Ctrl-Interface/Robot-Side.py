@@ -17,13 +17,13 @@ def send_frame(conn, frame):
 
 def sysReboot():
     print('System Rebooting....')
-    time.sleep(5)
+    time.sleep(5) 
     os.system('sudo reboot')
 
 def sysShutdown():
     print('System Shutdown....')
     time.sleep(5)
-    os.system('sudo shutdown')
+    os.system('sudo shutdown -h now')
     
 # Function to handle client connections
 def handle_client(conn, addr):

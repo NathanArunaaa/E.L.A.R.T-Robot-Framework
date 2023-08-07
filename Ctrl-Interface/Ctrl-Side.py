@@ -189,35 +189,35 @@ def update_progress_battery():
 
 #--------------------------Reboot Window------------------------
 def confirm_reboot():
-    smaller_window = tk.Toplevel(root)
-    smaller_window.title("E.L.A.R.T")
-    smaller_window.geometry("300x200")  # Set the size of the new window
+    smaller_window_reboot = tk.Toplevel(root)
+    smaller_window_reboot.title("E.L.A.R.T")
+    smaller_window_reboot.geometry("200x100")  # Set the size of the new window
 
     # Add widgets to the smaller window
-    label = tk.Label(smaller_window, text="CONFIRM REBOOT")
+    label = tk.Label(smaller_window_reboot, text="CONFIRM REBOOT")
     label.pack()
     
-    button_shutdown_yes = tk.Button(left_frame, fg='red', text="Yes", activebackground='tomato', command=lambda: on_button_click("reboot"))
-    button_shutdown_yes.pack(side=tk.TOP, padx=5, pady=5)
-    button_shutdown_no = tk.Button(left_frame, fg='green', text="No", activebackground='tomato', command=lambda: on_button_click("reboot"))
-    button_shutdown_no.pack(side=tk.TOP, padx=5, pady=5)
+    button_reboot_yes = tk.Button(smaller_window_reboot, fg='red', text="Yes", activebackground='tomato', command=lambda: on_button_click("reboot"))
+    button_reboot_yes.pack()
+    button_reboot_no = tk.Button(smaller_window_reboot, fg='green', text="No", activebackground='tomato', command=lambda: on_button_click("reboot"))
+    button_reboot_no.pack()
 
 #---------------------------------------------------------------  
 
 #--------------------------Console Window-----------------------
 def confirm_Shutdown():
-    smaller_window = tk.Toplevel(root)
-    smaller_window.title("E.L.A.R.T ")
-    smaller_window.geometry("300x200")  # Set the size of the new window
+    smaller_window_shutdown = tk.Toplevel(root)
+    smaller_window_shutdown.title("E.L.A.R.T ")
+    smaller_window_shutdown.geometry("200x100")  # Set the size of the new window
 
     # Add widgets to the smaller window
-    label = tk.Label(smaller_window, text="CONFIRM SHUTDOWN")
+    label = tk.Label(smaller_window_shutdown, text="CONFIRM SHUTDOWN")
     label.pack()
     
-    button_shutdown_yes = tk.Button(left_frame, fg='red', text="Yes", activebackground='tomato', command=lambda: on_button_click("shutdown"))
-    button_shutdown_yes.pack(side=tk.TOP, padx=5, pady=5)
-    button_shutdown_no = tk.Button(left_frame, fg='green', text="No", activebackground='tomato', command=lambda: on_button_click("shutdown"))
-    button_shutdown_no.pack(side=tk.TOP, padx=5, pady=5)
+    button_shutdown_yes = tk.Button(smaller_window_shutdown, fg='red', text="Yes", activebackground='tomato', command=lambda: on_button_click("shutdown"))
+    button_shutdown_yes.pack()
+    button_shutdown_no = tk.Button(smaller_window_shutdown, fg='green', text="No", activebackground='tomato', command=lambda: on_button_click("shutdown"))
+    button_shutdown_no.pack()
 
 #---------------------------------------------------------------  
 
