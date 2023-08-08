@@ -10,6 +10,7 @@ import struct
 import datetime
 import pickle
 import random
+import os
 import math
 
 #----------------------List for commands---------------------
@@ -139,7 +140,6 @@ def on_button_click(command):
     command_history.append(command) 
     if len(command_history) > 10:
         command_history.pop(0)
-
 #---------------------------------------------------------------
 
 
@@ -201,7 +201,6 @@ def confirm_reboot():
     button_reboot_yes.pack()
     button_reboot_no = tk.Button(smaller_window_reboot, fg='green', text="No", activebackground='tomato', command=lambda: on_button_click("reboot"))
     button_reboot_no.pack()
-
 #---------------------------------------------------------------  
 
 #--------------------------Console Window-----------------------
@@ -218,7 +217,6 @@ def confirm_Shutdown():
     button_shutdown_yes.pack()
     button_shutdown_no = tk.Button(smaller_window_shutdown, fg='green', text="No", activebackground='tomato', command=lambda: on_button_click("shutdown"))
     button_shutdown_no.pack()
-
 #---------------------------------------------------------------  
 
 
@@ -257,11 +255,18 @@ Temp3_label.pack(side=tk.LEFT)
 
 
 #----------------------Left Row Buttons-------------------------
+current_directory = os.path.dirname(os.path.abspath(__file__))
+image_path = os.path.join(current_directory, "assets", "logo-no-background.png")
+image = Image.open(image_path)
+image = image.resize((95, 60))  # Resize the image if needed
+photo = ImageTk.PhotoImage(image)
+
 left_frame = tk.Frame(root)
 left_frame.pack(side=tk.LEFT)
 
-Text1_label = tk.Label(left_frame, fg='white', text="E.L.A.R.T")
-Text1_label.pack(side=tk.TOP, padx=5, pady=5)
+image_label = tk.Label(left_frame, image=photo)
+image_label.pack(side=tk.TOP,  padx=5, pady=5)
+
 
 button_shutdown = tk.Button(left_frame, fg='red', text="SHUTDOWN", activebackground='tomato', command=confirm_Shutdown)
 button_shutdown.pack(side=tk.TOP, padx=5, pady=5)
