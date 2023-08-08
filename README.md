@@ -1,4 +1,4 @@
-﻿# ScienceFair2024
+﻿# E.L.A.R.T Science Fair 2024
 
 
 <h1> ETLU Formula</h1>
