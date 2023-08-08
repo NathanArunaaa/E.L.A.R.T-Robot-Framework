@@ -290,6 +290,8 @@ vertical_progress.pack(pady=10)
 
 Text1_label = tk.Label(left_frame, fg='white', text="ETLU")
 Text1_label.pack(side=tk.TOP, padx=5, pady=5)
+
+
 #----------------------------------------------------------------
 
 
