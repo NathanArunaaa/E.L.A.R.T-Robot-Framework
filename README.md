@@ -18,14 +18,15 @@ Port 87: Controller
 ```
 
 ```
-Port 85 will be listening for user inputs from the controller side. Joysticks a physical input method will
+Port 85: will be listening for user inputs from the controller side. Joysticks a physical input method will
 be used like buttons or joysticks. (controller=transmiiter, robot=receiver
 ```
 ```
-Port 86 will be listening for sensor data from the robot. (controller=Receiver, robot=transmitter)  
+Port 86: will be listening for sensor data from the robot. (controller=Receiver, robot=transmitter)  
 ```
 ```
-Port 87 will be listening for user input from the controller and sending data to the robot (controller=trasnmitter 
+Port 87: will be listening for user input from the controller and sending data to the robot
+(controller=trasnmitter)
 ```
 
 ![Uploading Screenshot 2023-08-05 at 12.53.58 AM.png…]()
