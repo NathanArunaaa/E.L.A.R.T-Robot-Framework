@@ -70,7 +70,7 @@ def motor_test():
         pwm_obj.ChangeDutyCycle(abs(speed))
 
     try:
-        speed = 50  # Set the speed as a percentage (-100 to 100)
+        speed = 100  # Set the speed as a percentage (-100 to 100)
         set_motor_speed(motor1_pwm_obj, motor1_in1, motor1_in2, speed)
         set_motor_speed(motor2_pwm_obj, motor2_in1, motor2_in2, -speed)
         
