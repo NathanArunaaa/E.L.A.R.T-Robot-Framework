@@ -41,7 +41,7 @@ def motor_test():
     # Define motor control pins for Motor 2
     motor2_pwm = 27  # Example GPIO pin for Motor 2 PWM
     motor2_in1 = 20  # Example GPIO pin for Motor 2 IN1
-    motor2_in2 = 21  # Example GPIO pin for Motor 2 IN2
+    motor2_in2 = 12  # Example GPIO pin for Motor 2 IN2
 
     # Set up pins as output for Motor 1
     GPIO.setup(motor1_pwm, GPIO.OUT)
