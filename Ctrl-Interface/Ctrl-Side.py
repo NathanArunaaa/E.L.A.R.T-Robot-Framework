@@ -203,7 +203,7 @@ def confirm_reboot():
     button_reboot_no.pack()
 #---------------------------------------------------------------  
 
-#--------------------------Console Window-----------------------
+#--------------------------Shutdow Window-----------------------
 def confirm_Shutdown():
     smaller_window_shutdown = tk.Toplevel(root)
     smaller_window_shutdown.title("E.L.A.R.T ")
@@ -217,6 +217,40 @@ def confirm_Shutdown():
     button_shutdown_yes.pack()
     button_shutdown_no = tk.Button(smaller_window_shutdown, fg='green', text="No", activebackground='tomato', command=lambda: on_button_click("shutdown"))
     button_shutdown_no.pack()
+#--------------------------------------------------------------- 
+
+#--------------------------Sensor Window------------------------
+def sensor_window():
+    sensor_readings = tk.Toplevel(root)
+    sensor_readings.title("E.L.A.R.T Sensors")
+    sensor_readings.geometry("200x100")  # Set the size of the new window
+
+
+    # Add widgets to the smaller window
+    label = tk.Label(sensor_readings, text="SENSOR READINGS")
+    label.pack()
+
+    progress_var_etlu = tk.DoubleVar(sensor_readings)
+    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
+    vertical_progress.pack(side=tk.LEFT, padx=30)
+
+    progress_var_etlu = tk.DoubleVar(sensor_readings)
+    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
+    vertical_progress.pack(side=tk.LEFT, padx=30)
+
+    progress_var_etlu = tk.DoubleVar(sensor_readings)
+    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
+    vertical_progress.pack(side=tk.LEFT, padx=30)
+    
+    progress_var_etlu = tk.DoubleVar(sensor_readings)
+    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
+    vertical_progress.pack(side=tk.LEFT, padx=30)
+
+
+   
+
+    
+    
 #---------------------------------------------------------------  
 
 
@@ -253,7 +287,6 @@ Temp3_label.pack(side=tk.LEFT)
 #---------------------------------------------------------------
 
 
-
 #----------------------Left Row Buttons-------------------------
 current_directory = os.path.dirname(os.path.abspath(__file__))
 image_path = os.path.join(current_directory, "assets", "logo-no-background.png")
@@ -280,7 +313,7 @@ button_nav1.pack(side=tk.TOP, padx=5, pady=5)
 button_headlight1 = tk.Button(left_frame, fg='blue', text="HEADLIGHT1", command=lambda: on_button_click("headlight1"))
 button_headlight1.pack(side=tk.TOP, padx=5, pady=5)
 
-button_console = tk.Button(left_frame, fg='blue', text="CONSOLE")
+button_console = tk.Button(left_frame, fg='blue', text="SENSORS", command=sensor_window)
 button_console.pack(side=tk.TOP, padx=5, pady=5)
 
 
@@ -288,8 +321,11 @@ progress_var_etlu = tk.DoubleVar(left_frame)
 vertical_progress = ttk.Progressbar(left_frame, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
 vertical_progress.pack(pady=10)
 
-Text1_label = tk.Label(left_frame, fg='white', text="ETLU")
-Text1_label.pack(side=tk.TOP, padx=5, pady=5)
+etlu = tk.Label(left_frame, fg='white', text="ETLU")
+etlu.pack(side=tk.TOP, padx=5, pady=5)
+
+etlu_warning = tk.Label(left_frame, fg='Green', text="Evironment Is Safe")
+etlu_warning.pack(side=tk.TOP, padx=5, pady=5)
 #----------------------------------------------------------------
 
 
@@ -325,8 +361,11 @@ progress_var_battery = tk.DoubleVar(right_frame)
 vertical_progress = ttk.Progressbar(right_frame, orient='vertical', variable=progress_var_battery, length=200, mode='determinate')
 vertical_progress.pack(pady=10)
 
-Text1_label = tk.Label(right_frame, fg='white', text="Battery Level")
-Text1_label.pack(side=tk.TOP, padx=5, pady=5)
+battery_level = tk.Label(right_frame, fg='white', text="Battery Level")
+battery_level.pack(side=tk.TOP, padx=5, pady=5)
+
+battery_value = tk.Label(right_frame, fg='white', text=progress_var_battery)
+battery_value.pack(side=tk.TOP)
 #----------------------------------------------------------------
 
 
