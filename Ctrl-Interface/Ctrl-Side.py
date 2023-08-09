@@ -313,7 +313,7 @@ button_nav1.pack(side=tk.TOP, padx=5, pady=5)
 button_headlight1 = tk.Button(left_frame, fg='blue', text="HEADLIGHT1", command=lambda: on_button_click("headlight1"))
 button_headlight1.pack(side=tk.TOP, padx=5, pady=5)
 
-button_console = tk.Button(left_frame, fg='blue', text="SENSORS", command=sensor_window)
+button_console = tk.Button(left_frame, fg='green', text="SENSORS", command=sensor_window)
 button_console.pack(side=tk.TOP, padx=5, pady=5)
 
 
@@ -357,12 +357,17 @@ button_nav2.pack(side=tk.TOP, padx=5, pady=5)
 button_headlight2 = tk.Button(right_frame, fg='blue', text="HEADLIGHT2", command=lambda: on_button_click("headlight2"))
 button_headlight2.pack(side=tk.TOP, padx=5, pady=5)
 
+button_motortest = tk.Button(right_frame, fg='green', text="MOTORTEST", command=lambda: on_button_click("motortest"))
+button_motortest.pack(side=tk.TOP, padx=5, pady=5)
+
+
 progress_var_battery = tk.DoubleVar(right_frame)
 vertical_progress = ttk.Progressbar(right_frame, orient='vertical', variable=progress_var_battery, length=200, mode='determinate')
 vertical_progress.pack(pady=10)
 
 battery_level = tk.Label(right_frame, fg='white', text="Battery Level")
 battery_level.pack(side=tk.TOP, padx=5, pady=5)
+
 
 battery_value = tk.Label(right_frame, fg='white', text=progress_var_battery)
 battery_value.pack(side=tk.TOP)

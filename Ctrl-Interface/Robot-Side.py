@@ -10,9 +10,6 @@ import os
 import RPi.GPIO as GPIO
 import time
 
-# Set GPIO mode to BCM
-
-
 # Function to send frames to the client
 def send_frame(conn, frame):
     frame_data = pickle.dumps(frame)
@@ -106,12 +103,13 @@ def handle_client(conn, addr):
                 elif data == 'shutdown':
                     sysShutdown()
                     
-                elif data == 'nav1':
+                elif data == 'motortest':
                     motor_test()
+                
+                elif data == 'nav1':
                     print("Turning On Navigation Lights 1")
                     
                 elif data == 'auto':
-                    motor_test()
                     print("Auto Mode On")
                     
                 elif data == 'overide':
@@ -119,7 +117,6 @@ def handle_client(conn, addr):
                     print("Overide Mode On")
                     
                 elif data == 'nav2':
-                    motor_test()
                     print("Turning On Navigation Lights 2")
                     
                 elif data == 'headlight1':
