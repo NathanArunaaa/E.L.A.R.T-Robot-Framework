@@ -71,6 +71,7 @@ def motor_test():
 
     try:
         speed = 100  # Set the speed as a percentage (-100 to 100)
+        print("at try stage")
         set_motor_speed(motor1_pwm_obj, motor1_in1, motor1_in2, speed)
         set_motor_speed(motor2_pwm_obj, motor2_in1, motor2_in2, -speed)
         
@@ -106,11 +107,11 @@ def handle_client(conn, addr):
                     sysShutdown()
                     
                 elif data == 'nav1':
-                    #add logic to turn on navigation lights
+                    motor_test()
                     print("Turning On Navigation Lights 1")
                     
                 elif data == 'auto':
-                    #add logic to turn on auto mode
+                    motor_test()
                     print("Auto Mode On")
                     
                 elif data == 'overide':
