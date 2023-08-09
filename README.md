@@ -29,4 +29,4 @@ Port 87: will be listening for user input from the controller and sending data t
 (controller=trasnmitter)
 ```
 <img width="1440" alt="Screenshot 2023-08-08 at 9 57 22 PM" src="https://github.com/NathanArunaaa/ScienceFair2024/assets/88948653/56ff60a3-ec47-4c49-825b-e7229fcacab1">
-
+<p>E.L.A.R.T Interface V1</p>
