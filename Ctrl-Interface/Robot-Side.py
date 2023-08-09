@@ -7,38 +7,11 @@ import struct
 import pickle
 import time
 import os
-
 import RPi.GPIO as GPIO
 import time
 
 # Set GPIO mode to BCM
-GPIO.setmode(GPIO.BCM)
 
-# Define motor control pins
-motorA_pwm = 17  # Example GPIO pin for Motor 1 PWM
-motorA_in1 = 18  # Example GPIO pin for Motor 1 IN1
-motorA_in2 = 19  # Example GPIO pin for Motor 1 IN2
-
-motorB_pwm = 27  # Example GPIO pin for Motor 2 PWM
-motorB_in1 = 20  # Example GPIO pin for Motor 2 IN1
-motorB_in2 = 21  # Example GPIO pin for Motor 2 IN2
-
-
-# Set up pins as output for Motor 1
-GPIO.setup(motorA_pwm, GPIO.OUT)
-GPIO.setup(motorA_in1, GPIO.OUT)
-GPIO.setup(motorA_in2, GPIO.OUT)
-
-# Set up pins as output for Motor 2
-GPIO.setup(motorB_pwm, GPIO.OUT)
-GPIO.setup(motorB_in1, GPIO.OUT)
-GPIO.setup(motorB_in2, GPIO.OUT)
-
-# Set up PWM for both motors
-motor1_pwm_obj = GPIO.PWM(motorA_pwm, 1000)  # Frequency: 1000 Hz
-motor2_pwm_obj = GPIO.PWM(motorB_pwm, 1000)
-motor1_pwm_obj.start(0)  # Start PWM with 0% duty cycle
-motor2_pwm_obj.start(0)
 
 # Function to send frames to the client
 def send_frame(conn, frame):
@@ -56,25 +29,59 @@ def sysShutdown():
     time.sleep(5)
     os.system('sudo shutdown -h now')
     
-def set_motor_speed(pwm_obj, in1, in2, speed):
-    if speed >= 0:
-        GPIO.output(in1, GPIO.HIGH)
-        GPIO.output(in2, GPIO.LOW)
-    else:
-        GPIO.output(in1, GPIO.LOW)
-        GPIO.output(in2, GPIO.HIGH)
-    pwm_obj.ChangeDutyCycle(abs(speed))
+def motor_test():
+    # Set GPIO mode to BCM
+    GPIO.setmode(GPIO.BCM)
 
-try:
-    speed = 50  # Set the speed as a percentage (-100 to 100)
-    set_motor_speed(motor1_pwm_obj, motorA_in1, motorA_in2, speed)
-    set_motor_speed(motor2_pwm_obj, motorB_in1, motorB_in2, speed)
-    
-    while True:
-        pass  # Keep the motors running at the specified speed
+    # Define motor control pins for Motor 1
+    motor1_pwm = 17  # Example GPIO pin for Motor 1 PWM
+    motor1_in1 = 18  # Example GPIO pin for Motor 1 IN1
+    motor1_in2 = 19  # Example GPIO pin for Motor 1 IN2
+
+    # Define motor control pins for Motor 2
+    motor2_pwm = 27  # Example GPIO pin for Motor 2 PWM
+    motor2_in1 = 20  # Example GPIO pin for Motor 2 IN1
+    motor2_in2 = 21  # Example GPIO pin for Motor 2 IN2
+
+    # Set up pins as output for Motor 1
+    GPIO.setup(motor1_pwm, GPIO.OUT)
+    GPIO.setup(motor1_in1, GPIO.OUT)
+    GPIO.setup(motor1_in2, GPIO.OUT)
+
+    # Set up pins as output for Motor 2
+    GPIO.setup(motor2_pwm, GPIO.OUT)
+    GPIO.setup(motor2_in1, GPIO.OUT)
+    GPIO.setup(motor2_in2, GPIO.OUT)
+
+    # Set up PWM for both motors
+    motor1_pwm_obj = GPIO.PWM(motor1_pwm, 1000)  # Frequency: 1000 Hz
+    motor2_pwm_obj = GPIO.PWM(motor2_pwm, 1000)
+    motor1_pwm_obj.start(0)  # Start PWM with 0% duty cycle
+    motor2_pwm_obj.start(0)
+
+    # Function to set motor speed
+    def set_motor_speed(pwm_obj, in1, in2, speed):
+        if speed >= 0:
+            GPIO.output(in1, GPIO.HIGH)
+            GPIO.output(in2, GPIO.LOW)
+        else:
+            GPIO.output(in1, GPIO.LOW)
+            GPIO.output(in2, GPIO.HIGH)
+        pwm_obj.ChangeDutyCycle(abs(speed))
+
+    try:
+        speed = 50  # Set the speed as a percentage (-100 to 100)
+        set_motor_speed(motor1_pwm_obj, motor1_in1, motor1_in2, speed)
+        set_motor_speed(motor2_pwm_obj, motor2_in1, motor2_in2, -speed)
         
-except KeyboardInterrupt:
-    pass
+        # Allow motors to run for 5 seconds
+        time.sleep(5)
+        
+    finally:
+        # Stop PWM and cleanup
+        motor1_pwm_obj.stop()
+        motor2_pwm_obj.stop()
+        GPIO.cleanup()
     
 # Function to handle client connections
 def handle_client(conn, addr):
@@ -111,7 +118,7 @@ def handle_client(conn, addr):
                     print("Overide Mode On")
                     
                 elif data == 'nav2':
-                    set_motor_speed()
+                    motor_test()
                     print("Turning On Navigation Lights 2")
                     
                 elif data == 'headlight1':
