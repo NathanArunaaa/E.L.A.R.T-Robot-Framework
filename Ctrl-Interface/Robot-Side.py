@@ -8,6 +8,37 @@ import pickle
 import time
 import os
 
+import RPi.GPIO as GPIO
+import time
+
+# Set GPIO mode to BCM
+GPIO.setmode(GPIO.BCM)
+
+# Define motor control pins
+motorA_pwm = 17  # Example GPIO pin for Motor 1 PWM
+motorA_in1 = 18  # Example GPIO pin for Motor 1 IN1
+motorA_in2 = 19  # Example GPIO pin for Motor 1 IN2
+
+motorB_pwm = 27  # Example GPIO pin for Motor 2 PWM
+motorB_in1 = 20  # Example GPIO pin for Motor 2 IN1
+motorB_in2 = 21  # Example GPIO pin for Motor 2 IN2
+
+
+# Set up pins as output for Motor 1
+GPIO.setup(motorA_pwm, GPIO.OUT)
+GPIO.setup(motorA_in1, GPIO.OUT)
+GPIO.setup(motorA_in2, GPIO.OUT)
+
+# Set up pins as output for Motor 2
+GPIO.setup(motorB_pwm, GPIO.OUT)
+GPIO.setup(motorB_in1, GPIO.OUT)
+GPIO.setup(motorB_in2, GPIO.OUT)
+
+# Set up PWM for both motors
+motor1_pwm_obj = GPIO.PWM(motorA_pwm, 1000)  # Frequency: 1000 Hz
+motor2_pwm_obj = GPIO.PWM(motorB_pwm, 1000)
+motor1_pwm_obj.start(0)  # Start PWM with 0% duty cycle
+motor2_pwm_obj.start(0)
 
 # Function to send frames to the client
 def send_frame(conn, frame):
@@ -24,6 +55,26 @@ def sysShutdown():
     print('System Shutdown....')
     time.sleep(5)
     os.system('sudo shutdown -h now')
+    
+def set_motor_speed(pwm_obj, in1, in2, speed):
+    if speed >= 0:
+        GPIO.output(in1, GPIO.HIGH)
+        GPIO.output(in2, GPIO.LOW)
+    else:
+        GPIO.output(in1, GPIO.LOW)
+        GPIO.output(in2, GPIO.HIGH)
+    pwm_obj.ChangeDutyCycle(abs(speed))
+
+try:
+    speed = 50  # Set the speed as a percentage (-100 to 100)
+    set_motor_speed(motor1_pwm_obj, motorA_in1, motorA_in2, speed)
+    set_motor_speed(motor2_pwm_obj, motorB_in1, motorB_in2, speed)
+    
+    while True:
+        pass  # Keep the motors running at the specified speed
+        
+except KeyboardInterrupt:
+    pass
     
 # Function to handle client connections
 def handle_client(conn, addr):
@@ -60,7 +111,7 @@ def handle_client(conn, addr):
                     print("Overide Mode On")
                     
                 elif data == 'nav2':
-                    #add logic to turn on navigation lights
+                    set_motor_speed()
                     print("Turning On Navigation Lights 2")
                     
                 elif data == 'headlight1':
