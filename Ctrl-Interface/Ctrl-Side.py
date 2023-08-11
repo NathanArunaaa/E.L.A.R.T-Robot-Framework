@@ -17,7 +17,6 @@ import math
 command_history = []
 #------------------------------------------------------------
 
-
 #--------------------Connect to the robot--------------------
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_address = ('192.168.4.1', 87)  
@@ -86,39 +85,6 @@ def draw_artificial_horizon(canvas, pitch, roll):
 #------------------------------------------------------------
 
 
-
-
-#------------------Get the angles from IMU's-----------------
-def get_pitch_angle():
-    return random.uniform(-30, 30)  
-
-def get_roll_angle():
-    return random.uniform(100, 150)
-#------------------------------------------------------------
-
-
-#---------------------Receiving Sensor Data------------------
-def update_sensor_data():
-    try:
-       sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-       sensor_client_socket.connect(('192.168.4.1', 86))  
-
-       while True:
-            rpiTemp = sensor_client_socket.recv(1024).decode()
-            update_label_variable(rpiTemp)
-
-            
-    except Exception as e:
-        print("Error updating sensor data:", e)
-
-    finally:
-        sensor_client_socket.close()
-                
-def update_label_variable(new_value):
-    rpiTemp.set("RPi Temp:" + new_value)
-#------------------------------------------------------------
- 
-    
 # -------------------Update Camera Feed----------------------
 def update_camera_feed():
     try:
@@ -175,13 +141,11 @@ def update_camera_feed():
 #---------------------------------------------------------------
 
 
-# ----------Function to start the Sensor feed thread-----------
 
-def start_sensor_thread():
+def sensor_thread():
     update_thread = threading.Thread(target=update_sensor_data)
     update_thread.daemon = True
     update_thread.start()
-#---------------------------------------------------------------
 
 # ----------Function to start the camera feed thread----------
 def start_camera_thread():
@@ -189,7 +153,6 @@ def start_camera_thread():
     camera_thread.daemon = True
     camera_thread.start()
 #---------------------------------------------------------------
-
 
 
 # -----------Function to send commands to the server-----------
@@ -202,6 +165,26 @@ def on_button_click(command):
         command_history.pop(0)
 #---------------------------------------------------------------
 
+
+
+# ---------Function to update the temp sensor data----------------
+def update_Temp1_data():
+    # Replace this with actual sensor data retrieval logic
+    sensor_reading = "Sensor Data: 123.45"
+    Temp1_label.config(text=sensor_reading)
+    root.after(1000, update_Temp1_data)  # Update the data every 1000ms (1 second)
+
+def update_Temp2_data():
+    sensor_reading = "Sensor Data: 123.45"
+    Temp1_label.config(text=sensor_reading)
+    root.after(1000, update_Temp2_data)  
+    
+def update_Temp3_data():
+    sensor_reading = "Sensor Data: 123.45"
+    Temp1_label.config(text=sensor_reading)
+    root.after(1000, update_Temp3_data)  
+
+#---------------------------------------------------------------   
 
 
 # ------------Function to update the date and time--------------
@@ -289,6 +272,9 @@ def sensor_window():
 
    
     
+#-----------------------------  
+
+
 root = tk.Tk()
 root.title("E.L.A.R.T - Controller")
 
@@ -429,7 +415,7 @@ battery_level.pack(side=tk.TOP, padx=5, pady=5)
 battery_value = tk.Label(right_frame, fg='white', text=progress_var_battery)
 battery_value.pack(side=tk.TOP)
 #----------------------------------------------------------------
-start_sensor_thread()
+sensor_thread()
 update_progress_etlu() 
 update_progress_battery()
 update_time()
