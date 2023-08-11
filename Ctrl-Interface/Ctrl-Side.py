@@ -16,9 +16,6 @@ import math
 #----------------------List for commands---------------------
 command_history = []
 #------------------------------------------------------------
-sensor_data_var = tk.StringVar()
-sensor_data_var.set("Sensor Data: N/A")  # Set initial value
-
 
 #--------------------Connect to the robot--------------------
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -44,7 +41,7 @@ def update_sensor_data():
 
        while True:
             sensor_data = sensor_client_socket.recv(1024).decode()
-            sensor_data.set(sensor_data)
+            update_label_variable(sensor_data)
 
             
     except Exception as e:
@@ -53,7 +50,8 @@ def update_sensor_data():
     finally:
         sensor_client_socket.close()
                 
-    
+def update_label_variable(new_value):
+    sensor_var.set("RPi Temp:" + new_value)
 
 #----------------Getting the coords for horizon---------------
 def calculate_horizon_coords(canvas_width, canvas_height, pitch, roll):
@@ -144,7 +142,7 @@ def update_camera_feed():
 
 
 
-def start_sensor_thread():
+def sensor_thread():
     update_thread = threading.Thread(target=update_sensor_data)
     update_thread.daemon = True
     update_thread.start()
@@ -288,8 +286,11 @@ sensor_frame.pack(side=tk.TOP, pady=10)
    
 # ---------------------Temperature Lables------------------------
 
-rpi = tk.Label(sensor_frame, fg='white', textvariable=sensor_data)
-rpi.pack(side=tk.LEFT)
+sensor_var = tk.StringVar()
+sensor_var.set("test")
+
+sensor_label = tk.Label(sensor_frame, fg='white', textvariable=sensor_var)
+sensor_label.pack(side=tk.LEFT)
 
 Temp2_label = tk.Label(sensor_frame, fg='white', text="[Temp2: N/A]")
 Temp2_label.pack(side=tk.LEFT)
@@ -398,11 +399,10 @@ battery_level.pack(side=tk.TOP, padx=5, pady=5)
 battery_value = tk.Label(right_frame, fg='white', text=progress_var_battery)
 battery_value.pack(side=tk.TOP)
 #----------------------------------------------------------------
-
+sensor_thread()
 update_progress_etlu() 
 update_progress_battery()
 update_time()
-start_sensor_thread() 
 start_camera_thread()
 
 root.mainloop()
