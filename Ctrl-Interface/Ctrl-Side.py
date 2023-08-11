@@ -25,35 +25,8 @@ client_socket.connect(server_address)
 
 
 
-#------------------Get the angles from IMU's-----------------
-def get_pitch_angle():
-    return random.uniform(-30, 30)  
 
-def get_roll_angle():
-    return random.uniform(100, 150)
-#------------------------------------------------------------
-
-
-def update_sensor_data():
-    try:
-       sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-       sensor_client_socket.connect(('192.168.4.1', 86))  # Replace with the robot's IP and sensor data port
-
-       while True:
-            sensor_data = sensor_client_socket.recv(1024).decode()
-            update_label_variable(sensor_data)
-
-            
-    except Exception as e:
-        print("Error updating sensor data:", e)
-
-    finally:
-        sensor_client_socket.close()
-                
-def update_label_variable(new_value):
-    sensor_var.set(new_value)
-
-#----------------Getting the coords for horizon---------------
+#----------------------Artificial Horizon--------------------
 def calculate_horizon_coords(canvas_width, canvas_height, pitch, roll):
     horizon_length = 100  # You can adjust this length as needed
     pitch_radians = math.radians(pitch)
@@ -66,10 +39,7 @@ def calculate_horizon_coords(canvas_width, canvas_height, pitch, roll):
     y2 = canvas_height / 2 + horizon_length * math.cos(roll_radians) * math.sin(pitch_radians)
 
     return x1, y1, x2, y2
-#------------------------------------------------------------
 
-
-#---------------------Drawing the horizon--------------------
 def draw_artificial_horizon(canvas, pitch, roll):
     canvas.delete("horizon")
 
@@ -85,6 +55,37 @@ def draw_artificial_horizon(canvas, pitch, roll):
 #------------------------------------------------------------
 
 
+
+
+#---------------------Receiving Sensor Data------------------
+def get_pitch_angle():
+    return random.uniform(-30, 30)  
+
+def get_roll_angle():
+    return random.uniform(100, 150)
+
+def update_sensor_data():
+    try:
+       sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+       sensor_client_socket.connect(('192.168.4.1', 86))  
+
+       while True:
+            rpiTemp = sensor_client_socket.recv(1024).decode()
+            update_label_variable(rpiTemp)
+
+            
+    except Exception as e:
+        print("Error updating sensor data:", e)
+
+    finally:
+        sensor_client_socket.close()
+                
+def update_label_variable(new_value):
+    rpiTemp.set("RPi Temp:" + new_value)
+#------------------------------------------------------------
+ 
+    
+    
 # -------------------Update Camera Feed----------------------
 def update_camera_feed():
     try:
@@ -142,17 +143,20 @@ def update_camera_feed():
 
 
 
-def sensor_thread():
+# ---------Function to start the Sensor + camera thread---------
+def start_sensor_thread():
     update_thread = threading.Thread(target=update_sensor_data)
     update_thread.daemon = True
     update_thread.start()
 
-# ----------Function to start the camera feed thread----------
+
 def start_camera_thread():
     camera_thread = threading.Thread(target=update_camera_feed)
     camera_thread.daemon = True
     camera_thread.start()
 #---------------------------------------------------------------
+
+
 
 
 # -----------Function to send commands to the server-----------
@@ -192,6 +196,8 @@ def update_time():
     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     time_label.config(text="Current Time: " + current_time)
     root.after(1000, update_time)  # Update the time every 1000ms (1 second)
+#---------------------------------------------------------------  
+
 
     
 # --------------Function to update the progress bar-------------
@@ -210,6 +216,14 @@ def update_progress_battery():
     root.after(1000, update_progress_battery)
 #---------------------------------------------------------------  
 
+
+def close_window():
+    root.destroy()  
+
+def shutdown_controller():
+    quit()
+
+
 #--------------------------Reboot Window------------------------
 def confirm_reboot():
     smaller_window_reboot = tk.Toplevel(root)
@@ -222,7 +236,7 @@ def confirm_reboot():
     
     button_reboot_yes = tk.Button(smaller_window_reboot, fg='red', text="Yes", activebackground='tomato', command=lambda: on_button_click("reboot"))
     button_reboot_yes.pack()
-    button_reboot_no = tk.Button(smaller_window_reboot, fg='green', text="No", activebackground='tomato', command=lambda: on_button_click("reboot"))
+    button_reboot_no = tk.Button(smaller_window_reboot, fg='green', text="No", activebackground='tomato', command=close_window)
     button_reboot_no.pack()
 #---------------------------------------------------------------  
 
@@ -238,9 +252,27 @@ def confirm_Shutdown():
     
     button_shutdown_yes = tk.Button(smaller_window_shutdown, fg='red', text="Yes", activebackground='tomato', command=lambda: on_button_click("shutdown"))
     button_shutdown_yes.pack()
-    button_shutdown_no = tk.Button(smaller_window_shutdown, fg='green', text="No", activebackground='tomato', command=lambda: on_button_click("shutdown"))
+    button_shutdown_no = tk.Button(smaller_window_shutdown, fg='green', text="No", activebackground='tomato', command=close_window)
     button_shutdown_no.pack()
 #--------------------------------------------------------------- 
+
+
+#--------------------------Close Controller-----------------------
+def confirm_controller_Shutdown():
+    smaller_window_shutdown = tk.Toplevel(root)
+    smaller_window_shutdown.title("E.L.A.R.T ")
+    smaller_window_shutdown.geometry("200x100")  # Set the size of the new window
+
+    # Add widgets to the smaller window
+    label = tk.Label(smaller_window_shutdown, text="CONFIRM CONRTOLLER SHUTDOWN")
+    label.pack()
+    
+    button_shutdown_yes = tk.Button(smaller_window_shutdown, fg='red', text="Yes", activebackground='tomato', command=shutdown_controller)
+    button_shutdown_yes.pack()
+    button_shutdown_no = tk.Button(smaller_window_shutdown, fg='green', text="No", activebackground='tomato', command=close_window)
+    button_shutdown_no.pack()
+#--------------------------------------------------------------- 
+
 
 #--------------------------Sensor Window------------------------
 def sensor_window():
@@ -248,8 +280,6 @@ def sensor_window():
     sensor_readings.title("E.L.A.R.T Sensors")
     sensor_readings.geometry("200x100")  # Set the size of the new window
 
-
-    # Add widgets to the smaller window
     label = tk.Label(sensor_readings, text="SENSOR READINGS")
     label.pack()
 
@@ -268,15 +298,13 @@ def sensor_window():
     progress_var_etlu = tk.DoubleVar(sensor_readings)
     vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
     vertical_progress.pack(side=tk.LEFT, padx=30)
-
-
+#---------------------------------------------------------------
    
     
-#-----------------------------  
-
-
+    
 root = tk.Tk()
 root.title("E.L.A.R.T - Controller")
+
 
 #----------------------------------
 sensor_frame = tk.Frame(root)
@@ -415,7 +443,7 @@ battery_level.pack(side=tk.TOP, padx=5, pady=5)
 battery_value = tk.Label(right_frame, fg='white', text=progress_var_battery)
 battery_value.pack(side=tk.TOP)
 #----------------------------------------------------------------
-sensor_thread()
+start_sensor_thread()
 update_progress_etlu() 
 update_progress_battery()
 update_time()
