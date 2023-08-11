@@ -33,6 +33,25 @@ def get_roll_angle():
     return random.uniform(100, 150)
 #------------------------------------------------------------
 
+def update_sensor_data():
+    try:
+        while True:
+            # Connect to the robot's IP and port
+            robot_address = ('192.168.4.1', 86)  # Replace with the robot's IP and port
+            robot_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            robot_socket.connect(robot_address)
+
+            # Receive sensor data
+            sensor_data = robot_socket.recv(1024).decode()
+
+            # Update the GUI with sensor data
+            Temp1_label.config(text=sensor_data)
+
+            robot_socket.close()
+            root.update()  # Update the GUI
+
+    except Exception as e:
+        print("Error:", e)
 
 #----------------Getting the coords for horizon---------------
 def calculate_horizon_coords(canvas_width, canvas_height, pitch, roll):
@@ -374,6 +393,9 @@ battery_value.pack(side=tk.TOP)
 #----------------------------------------------------------------
 
 
+update_thread = threading.Thread(target=update_sensor_data)
+update_thread.daemon = True
+update_thread.start()
 update_progress_etlu() 
 update_progress_battery()
 update_time()  
