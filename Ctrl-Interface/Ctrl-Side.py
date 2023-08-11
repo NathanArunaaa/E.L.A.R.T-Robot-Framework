@@ -16,9 +16,6 @@ import math
 #----------------------List for commands---------------------
 command_history = []
 #------------------------------------------------------------
-sensor_data_var = tk.StringVar()
-sensor_data_var.set("Sensor Data: N/A")  # Set initial value
-
 
 #--------------------Connect to the robot--------------------
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -27,7 +24,8 @@ client_socket.connect(server_address)
 #------------------------------------------------------------
 
 sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sensor_client_socket.connect(('192.168.4.1', 86))  # Replace with the robot's IP and sensor data port
+sensor_client_socket.connect(('192.168.4.1', 86))
+# Replace with the robot's IP and sensor data port
 
 
 #------------------Get the angles from IMU's-----------------
@@ -51,6 +49,7 @@ def update_sensor_data():
 
         # Schedule the next update after 1000ms (1 second)
                root.after(1000, update_sensor_data)
+
             except Exception as e:
                 print("Error updating sensor data:", e)
             finally:
@@ -290,8 +289,12 @@ sensor_frame = tk.Frame(root)
 sensor_frame.pack(side=tk.TOP, pady=10)
    
 # ---------------------Temperature Lables------------------------
-sensor_data_var = tk.Label(sensor_frame, fg='white', text="[Temp1: N/A]")
-sensor_data_var.pack(side=tk.LEFT)
+sensor_data_var = tk.StringVar()
+sensor_data_var.set("Sensor Data: N/A")  # Set initial value
+
+# Create a label to display the sensor data
+sensor_label = tk.Label(root, textvariable=sensor_data_var)
+sensor_label.pack()
 
 Temp2_label = tk.Label(sensor_frame, fg='white', text="[Temp2: N/A]")
 Temp2_label.pack(side=tk.LEFT)
