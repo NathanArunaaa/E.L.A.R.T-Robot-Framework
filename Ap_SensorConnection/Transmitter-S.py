@@ -11,27 +11,30 @@ def sensor_thread():
     server_socket.listen(1)
 
     print("Sensor Script: Waiting for controller connection...")
-    conn, addr = server_socket.accept()
-    print("Sensor Script: Connected to:", addr)
-
     try:
         while True:
-            result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
-            temperature_str = result.stdout.strip()
-            temperature = float(temperature_str.split('=')[1].replace("'C", ""))
-            temperature_data = f"Sensor data: {temperature:.2f} °C"
+            conn, addr = server_socket.accept()
+            print("Sensor Script: Connected to:", addr)
 
-            # Send sensor data to the controller
-            try:
-                conn.sendall(temperature_data.encode())
-            except (BrokenPipeError, ConnectionResetError):
-                print("Sensor Script: Client disconnected.")
-                break
+            while True:
+                result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
+                temperature_str = result.stdout.strip()
+                temperature = float(temperature_str.split('=')[1].replace("'C", ""))
+                temperature_data = f"Sensor data: {temperature:.2f} °C"
 
-            time.sleep(1)  # Adjust the delay based on your requirements
+                # Send sensor data to the controller
+                try:
+                    conn.sendall(temperature_data.encode())
+                except (BrokenPipeError, ConnectionResetError):
+                    print("Sensor Script: Client disconnected.")
+                    break
+
+                time.sleep(1)  # Adjust the delay based on your requirements
+
+            conn.close()
+            print("Sensor Script: Connection closed.")
 
     finally:
-        conn.close()
         server_socket.close()
 
 # Start the sensor thread
