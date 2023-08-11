@@ -44,7 +44,7 @@ def update_sensor_data():
                 sensor_data = sensor_client_socket.recv(1024).decode()
 
                 # Update the GUI with sensor data
-                Temp1_label.config(text=sensor_data)
+                rpiTemp_label.config(text=sensor_data)
             except Exception as e:
                 print("Error updating sensor data:", e)
             finally:
@@ -284,8 +284,8 @@ sensor_frame = tk.Frame(root)
 sensor_frame.pack(side=tk.TOP, pady=10)
    
 # ---------------------Temperature Lables------------------------
-Temp1_label = tk.Label(sensor_frame, fg='white', text="[Temp1: N/A]")
-Temp1_label.pack(side=tk.LEFT)
+rpiTemp_label = tk.Label(sensor_frame, fg='white', text="[Temp1: N/A]")
+rpiTemp_labell.pack(side=tk.LEFT)
 
 Temp2_label = tk.Label(sensor_frame, fg='white', text="[Temp2: N/A]")
 Temp2_label.pack(side=tk.LEFT)
