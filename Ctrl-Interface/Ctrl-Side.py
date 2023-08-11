@@ -42,7 +42,7 @@ def update_sensor_data():
             robot_socket.connect(robot_address)
 
             # Receive sensor data
-            sensor_data = robot_socket.recv(1024).decode()
+            sensor_data = robot_socket.recv(1256).decode()
 
             # Update the GUI with sensor data
             Temp1_label.config(text=sensor_data)
@@ -396,6 +396,7 @@ battery_value.pack(side=tk.TOP)
 update_thread = threading.Thread(target=update_sensor_data)
 update_thread.daemon = True
 update_thread.start()
+update_sensor_data()
 update_progress_etlu() 
 update_progress_battery()
 update_time()  
