@@ -408,7 +408,6 @@ battery_value.pack(side=tk.TOP)
 update_thread = threading.Thread(target=update_sensor_data)
 update_thread.daemon = True
 update_thread.start()
-update_sensor_data()
 update_progress_etlu() 
 update_progress_battery()
 update_time()  
