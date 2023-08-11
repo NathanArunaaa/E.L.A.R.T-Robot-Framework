@@ -39,28 +39,26 @@ def get_roll_angle():
 
 def update_sensor_data():
     try:
-        def update_gui_with_sensor_data():
-            try:
-                # Receive sensor data from the robot
-               sensor_data = sensor_client_socket.recv(1024).decode()
+        # Set up a socket to connect to the robot's sensor data port
+        sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sensor_client_socket.connect(('192.168.4.1', 86))  # Replace with the robot's IP and sensor data port
 
-        # Update the sensor data StringVar
-               sensor_data_var.set(sensor_data)
+        while True:
+            # Receive sensor data from the robot
+            sensor_data = sensor_client_socket.recv(1024).decode()
 
-        # Schedule the next update after 1000ms (1 second)
-               root.after(1000, update_sensor_data)
-
-            except Exception as e:
-                print("Error updating sensor data:", e)
-            finally:
-                # Schedule the next update after 1000ms (1 second)
-                root.after(1000, update_gui_with_sensor_data)
-
-        # Start the first update
-        update_gui_with_sensor_data()
+            # Update the GUI with sensor data
+            sensor_label.config(text=sensor_data)
 
     except Exception as e:
         print("Error updating sensor data:", e)
+    finally:
+        sensor_client_socket.close()  # Close the socket when done
+
+def start_sensor_thread():
+    sensor_thread = threading.Thread(target=update_sensor_data)
+    sensor_thread.daemon = True
+    sensor_thread.start()
 #----------------Getting the coords for horizon---------------
 def calculate_horizon_coords(canvas_width, canvas_height, pitch, roll):
     horizon_length = 100  # You can adjust this length as needed
@@ -404,13 +402,10 @@ battery_value = tk.Label(right_frame, fg='white', text=progress_var_battery)
 battery_value.pack(side=tk.TOP)
 #----------------------------------------------------------------
 
-
-update_thread = threading.Thread(target=update_sensor_data)
-update_thread.daemon = True
-update_thread.start()
+start_camera_thread()
+start_sensor_thread()  # Start the sensor data update thread
 update_progress_etlu() 
 update_progress_battery()
 update_time()  
-start_camera_thread()
 
 root.mainloop()
