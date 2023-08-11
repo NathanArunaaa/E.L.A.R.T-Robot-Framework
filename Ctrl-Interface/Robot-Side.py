@@ -9,27 +9,8 @@ import RPi.GPIO as GPIO
 import time
 import subprocess
 
-# Function to handle sensor data
-def handle_sensor_connection(conn, addr):
-    try:
-        while True:
-            result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
-            temperature_str = result.stdout.strip()
-            temperature = float(temperature_str.split('=')[1].replace("'C", ""))
-            temperature_data = f"Sensor data: {temperature:.2f} °C"
-            try:
-                conn.sendall(temperature_data.encode())
-            except (BrokenPipeError, ConnectionResetError):
-                print("Sensor Script: Client disconnected.")
-                break
-    except:
-        print("Sensor connection error:", addr)
-    finally:
-        conn.close()
-
-# Function to handle movement control
-def handle_controller_clinet(conn, addr):
-    
+# Define the handle_controller_client function
+def handle_controller_client(conn, addr):
     def motor_test():
     # Set GPIO mode to BCM
         GPIO.setmode(GPIO.BCM)
@@ -100,7 +81,6 @@ def handle_controller_clinet(conn, addr):
         time.sleep(5)
         os.system('sudo shutdown -h now')
         print("Client connected:", addr)
-        
     try:
         while True:
             data = conn.recv(1024).decode()
@@ -149,9 +129,27 @@ def handle_controller_clinet(conn, addr):
     finally:
         conn.close()
         print("Client disconnected:", addr)
+
+
+# Function to handle sensor data
+def handle_sensor_connection(conn, addr):
+    try:
+        while True:
+            result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
+            temperature_str = result.stdout.strip()
+            temperature = float(temperature_str.split('=')[1].replace("'C", ""))
+            temperature_data = f"Sensor data: {temperature:.2f} °C"
+            try:
+                conn.sendall(temperature_data.encode())
+            except (BrokenPipeError, ConnectionResetError):
+                print("Sensor Script: Client disconnected.")
+                break
+    except:
+        print("Sensor connection error:", addr)
+    finally:
+        conn.close()
         
 camera = cv2.VideoCapture(0)  # Use 0 for the first camera device (change the index if needed)
-
 
 # Set up a socket server for sensor data
 sensor_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -174,6 +172,5 @@ while True:
 
     movement_conn, movement_addr = movement_server_socket.accept()
     print("Central Controller: Movement connected:", movement_addr)
-    movement_thread = threading.Thread(target=handle_controller_clinet, args=(movement_conn, movement_addr))
+    movement_thread = threading.Thread(target=handle_controller_client, args=(movement_conn, movement_addr))
     movement_thread.start()
-
