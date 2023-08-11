@@ -24,6 +24,10 @@ server_address = ('192.168.4.1', 87)
 client_socket.connect(server_address)
 #------------------------------------------------------------
 
+movement_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+movement_robot_address = ('192.168.4.1', 86)  # Replace with your robot's IP and port for movement control
+movement_client_socket.connect(movement_robot_address)
+
 
 #------------------Get the angles from IMU's-----------------
 def get_pitch_angle():
@@ -35,23 +39,21 @@ def get_roll_angle():
 
 def update_sensor_data():
     try:
-        while True:
-            # Connect to the robot's IP and port
-            robot_address = ('192.168.4.1', 86)  # Replace with the robot's IP and port
-            robot_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            robot_socket.connect(robot_address)
+        # Set up a socket to connect to the robot's sensor data port
+        sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sensor_client_socket.connect(('192.168.4.1', 86))  # Replace with the robot's IP and sensor data port
 
-            # Receive sensor data
-            sensor_data = robot_socket.recv(1256).decode()
+        while True:
+            # Receive sensor data from the robot
+            sensor_data = sensor_client_socket.recv(1024).decode()
 
             # Update the GUI with sensor data
             Temp1_label.config(text=sensor_data)
-
-            robot_socket.close()
             root.update()  # Update the GUI
-
     except Exception as e:
-        print("Error:", e)
+        print("Error updating sensor data:", e)
+    finally:
+        sensor_client_socket.close()  # Close the socket when done
 
 #----------------Getting the coords for horizon---------------
 def calculate_horizon_coords(canvas_width, canvas_height, pitch, roll):
