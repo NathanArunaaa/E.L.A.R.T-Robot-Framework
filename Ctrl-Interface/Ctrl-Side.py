@@ -43,17 +43,24 @@ def update_sensor_data():
         sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sensor_client_socket.connect(('192.168.4.1', 86))  # Replace with the robot's IP and sensor data port
 
-        while True:
-            # Receive sensor data from the robot
-            sensor_data = sensor_client_socket.recv(1024).decode()
+        def update_gui_with_sensor_data():
+            try:
+                # Receive sensor data from the robot
+                sensor_data = sensor_client_socket.recv(1024).decode()
 
-            # Update the GUI with sensor data
-            Temp1_label.config(text=sensor_data)
-            root.update()  # Update the GUI
+                # Update the GUI with sensor data
+                Temp1_label.config(text=sensor_data)
+            except Exception as e:
+                print("Error updating sensor data:", e)
+            finally:
+                # Schedule the next update after 1000ms (1 second)
+                root.after(1000, update_gui_with_sensor_data)
+
+        # Start the first update
+        update_gui_with_sensor_data()
+
     except Exception as e:
-        print("Error updating sensor data:", e)
-    finally:
-        sensor_client_socket.close()  # Close the socket when done
+        print("Error setting up sensor connection:", e)
 
 #----------------Getting the coords for horizon---------------
 def calculate_horizon_coords(canvas_width, canvas_height, pitch, roll):
