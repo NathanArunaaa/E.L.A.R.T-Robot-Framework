@@ -39,7 +39,7 @@ def get_roll_angle():
 
 def update_sensor_data():
     try:
-        # Set up a socket to connect to the robot's sensor data port
+        # Set up a socket to onnect to the robot's sensor data port
         sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sensor_client_socket.connect(('192.168.4.1', 86))  # Replace with the robot's IP and sensor data port
 
@@ -54,6 +54,7 @@ def update_sensor_data():
         print("Error updating sensor data:", e)
     finally:
         sensor_client_socket.close()  # Close the socket when done
+
 
 def start_sensor_thread():
     sensor_thread = threading.Thread(target=update_sensor_data)
