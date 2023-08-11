@@ -36,15 +36,21 @@ def get_roll_angle():
     return random.uniform(100, 150)
 #------------------------------------------------------------
 
+sensor_data_var = tk.StringVar()
+sensor_data_var.set("Sensor Data: N/A")  # Set initial value
+
 def update_sensor_data():
     try:
         def update_gui_with_sensor_data():
             try:
                 # Receive sensor data from the robot
-                sensor_data = sensor_client_socket.recv(1024).decode()
+               sensor_data = sensor_client_socket.recv(1024).decode()
 
-                # Update the GUI with sensor data
-                rpiTemp_label.config(text=sensor_data)
+        # Update the sensor data StringVar
+               sensor_data_var.set(sensor_data)
+
+        # Schedule the next update after 1000ms (1 second)
+               root.after(1000, update_sensor_data)
             except Exception as e:
                 print("Error updating sensor data:", e)
             finally:
@@ -284,8 +290,8 @@ sensor_frame = tk.Frame(root)
 sensor_frame.pack(side=tk.TOP, pady=10)
    
 # ---------------------Temperature Lables------------------------
-rpiTemp_label = tk.Label(sensor_frame, fg='white', text="[Temp1: N/A]")
-rpiTemp_labell.pack(side=tk.LEFT)
+sensor_data_var = tk.Label(sensor_frame, fg='white', text="[Temp1: N/A]")
+sensor_data_var.pack(side=tk.LEFT)
 
 Temp2_label = tk.Label(sensor_frame, fg='white', text="[Temp2: N/A]")
 Temp2_label.pack(side=tk.LEFT)
