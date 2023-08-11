@@ -36,8 +36,6 @@ def get_roll_angle():
     return random.uniform(100, 150)
 #------------------------------------------------------------
 
-sensor_data_var = tk.StringVar()
-sensor_data_var.set("Sensor Data: N/A")  # Set initial value
 
 def update_sensor_data():
     try:
@@ -77,6 +75,8 @@ def calculate_horizon_coords(canvas_width, canvas_height, pitch, roll):
     return x1, y1, x2, y2
 #------------------------------------------------------------
 
+sensor_data_var = tk.StringVar()
+sensor_data_var.set("Sensor Data: N/A")  # Set initial value
 
 #---------------------Drawing the horizon--------------------
 def draw_artificial_horizon(canvas, pitch, roll):
