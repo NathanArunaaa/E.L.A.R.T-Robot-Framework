@@ -145,13 +145,6 @@ def update_camera_feed():
 
 
 
-# ----------Function to start the camera feed thread----------
-def start_camera_thread():
-    camera_thread = threading.Thread(target=update_camera_feed)
-    camera_thread.daemon = True
-    camera_thread.start()
-#---------------------------------------------------------------
-
 
 # -----------Function to send commands to the server-----------
 def on_button_click(command):
@@ -398,10 +391,12 @@ battery_value.pack(side=tk.TOP)
 update_thread = threading.Thread(target=update_sensor_data)
 update_thread.daemon = True
 update_thread.start()
+camera_thread = threading.Thread(target=update_camera_feed)
+camera_thread.daemon = True
+camera_thread.start()
 update_sensor_data()
 update_progress_etlu() 
 update_progress_battery()
 update_time()  
-start_camera_thread()
 
 root.mainloop()
