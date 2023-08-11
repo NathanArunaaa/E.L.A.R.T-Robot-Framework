@@ -138,7 +138,7 @@ def handle_sensor_connection(conn, addr):
             result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
             temperature_str = result.stdout.strip()
             temperature = float(temperature_str.split('=')[1].replace("'C", ""))
-            temperature_data = f"Sensor data: {temperature:.2f} °C"
+            temperature_data = f"[CPU TEMP: {temperature:.2f} °C]"
             try:
                 conn.sendall(temperature_data.encode())
             except (BrokenPipeError, ConnectionResetError):
