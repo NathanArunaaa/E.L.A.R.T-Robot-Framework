@@ -1,33 +1,39 @@
 import socket
 import time
 import subprocess
+import threading
 
-# Set up a socket server
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address = ('0.0.0.0', 86)  # Replace with your server's IP and port
-server_socket.bind(server_address)
-server_socket.listen(1)
+def sensor_thread():
+    # Set up a socket server
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_address = ('0.0.0.0', 86)  # Replace with your server's IP and port
+    server_socket.bind(server_address)
+    server_socket.listen(1)
 
-print("Waiting for controller connection...")
-conn, addr = server_socket.accept()
-print("Connected to:", addr)
+    print("Sensor Script: Waiting for controller connection...")
+    conn, addr = server_socket.accept()
+    print("Sensor Script: Connected to:", addr)
 
-try:
-    while True:
-        try:
+    try:
+        while True:
             result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
             temperature_str = result.stdout.strip()
             temperature = float(temperature_str.split('=')[1].replace("'C", ""))
             temperature_data = f"Sensor data: {temperature:.2f} °C"
 
             # Send sensor data to the controller
-            conn.sendall(temperature_data.encode())
-        except (BrokenPipeError, ConnectionResetError):
-            print("Client disconnected.")
-            break
+            try:
+                conn.sendall(temperature_data.encode())
+            except (BrokenPipeError, ConnectionResetError):
+                print("Sensor Script: Client disconnected.")
+                break
 
-        time.sleep(1)  # Adjust the delay based on your requirements
+            time.sleep(1)  # Adjust the delay based on your requirements
 
-finally:
-    conn.close()
-    server_socket.close()
+    finally:
+        conn.close()
+        server_socket.close()
+
+# Start the sensor thread
+sensor_thread = threading.Thread(target=sensor_thread)
+sensor_thread.start()
