@@ -18,13 +18,16 @@ try:
             result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
             temperature_str = result.stdout.strip()
             temperature = float(temperature_str.split('=')[1].replace("'C", ""))
+            temperature_data = f"Sensor data: {temperature:.2f} °C"
 
-            # Send sensor data to the controller with a newline character
-            conn.sendall(f"Temperature: {temperature}°C\n".encode())
-        except (socket.error, subprocess.CalledProcessError) as e:
-            print("Error:", e)
+            # Send sensor data to the controller
+            conn.sendall(temperature_data.encode())
+        except (BrokenPipeError, ConnectionResetError):
+            print("Client disconnected.")
             break
 
         time.sleep(1)  # Adjust the delay based on your requirements
+
 finally:
     conn.close()
+    server_socket.close()
