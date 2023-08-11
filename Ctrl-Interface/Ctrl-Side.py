@@ -16,8 +16,6 @@ import math
 #----------------------List for commands---------------------
 command_history = []
 #------------------------------------------------------------
-sensor_data_var = tk.StringVar()
-sensor_data_var.set("Sensor Data: N/A")  # Set initial value
 
 
 #--------------------Connect to the robot--------------------
@@ -26,8 +24,6 @@ server_address = ('192.168.4.1', 87)
 client_socket.connect(server_address)
 #------------------------------------------------------------
 
-sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sensor_client_socket.connect(('192.168.4.1', 86))  # Replace with the robot's IP and sensor data port
 
 
 #------------------Get the angles from IMU's-----------------
@@ -41,27 +37,22 @@ def get_roll_angle():
 
 def update_sensor_data():
     try:
-        def update_gui_with_sensor_data():
-            try:
-                # Receive sensor data from the robot
-               sensor_data = sensor_client_socket.recv(1024).decode()
+       sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+       sensor_client_socket.connect(('192.168.4.1', 86))  # Replace with the robot's IP and sensor data port
 
-        # Update the sensor data StringVar
-               sensor_data_var.set(sensor_data)
+       while True:
+            sensor_data = sensor_client_socket.recv(1024).decode()
+            sensor_data.set(sensor_data)
 
-        # Schedule the next update after 1000ms (1 second)
-               root.after(1000, update_sensor_data)
-            except Exception as e:
-                print("Error updating sensor data:", e)
-            finally:
-                # Schedule the next update after 1000ms (1 second)
-                root.after(1000, update_gui_with_sensor_data)
-
-        # Start the first update
-        update_gui_with_sensor_data()
-
+            
     except Exception as e:
         print("Error updating sensor data:", e)
+
+    finally:
+        sensor_client_socket.close()
+                
+    
+
 #----------------Getting the coords for horizon---------------
 def calculate_horizon_coords(canvas_width, canvas_height, pitch, roll):
     horizon_length = 100  # You can adjust this length as needed
@@ -151,6 +142,10 @@ def update_camera_feed():
 
 
 
+def start_sensor_thread():
+    update_thread = threading.Thread(target=update_sensor_data)
+    update_thread.daemon = True
+    update_thread.start()
 
 # ----------Function to start the camera feed thread----------
 def start_camera_thread():
@@ -276,22 +271,23 @@ def sensor_window():
 
 
    
-
     
-    
-#---------------------------------------------------------------  
+#-----------------------------  
 
 
 root = tk.Tk()
 root.title("E.L.A.R.T - Controller")
 
 
+
+#----------------------------------
 sensor_frame = tk.Frame(root)
 sensor_frame.pack(side=tk.TOP, pady=10)
    
 # ---------------------Temperature Lables------------------------
-sensor_data_var = tk.Label(sensor_frame, fg='white', text="[Temp1: N/A]")
-sensor_data_var.pack(side=tk.LEFT)
+
+rpi = tk.Label(sensor_frame, fg='white', textvariable=sensor_data)
+rpi.pack(side=tk.LEFT)
 
 Temp2_label = tk.Label(sensor_frame, fg='white', text="[Temp2: N/A]")
 Temp2_label.pack(side=tk.LEFT)
@@ -401,14 +397,10 @@ battery_value = tk.Label(right_frame, fg='white', text=progress_var_battery)
 battery_value.pack(side=tk.TOP)
 #----------------------------------------------------------------
 
-
-update_thread = threading.Thread(target=update_sensor_data)
-update_thread.daemon = True
-update_thread.start()
-update_sensor_data()
 update_progress_etlu() 
 update_progress_battery()
-update_time()  
+update_time()
+start_sensor_thread() 
 start_camera_thread()
 
 root.mainloop()
