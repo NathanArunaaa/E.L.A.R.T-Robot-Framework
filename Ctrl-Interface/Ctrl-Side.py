@@ -51,7 +51,7 @@ def update_sensor_data():
         sensor_client_socket.close()
                 
 def update_label_variable(new_value):
-    sensor_var.set("RPi Temp:" + new_value)
+    sensor_var.set(new_value)
 
 #----------------Getting the coords for horizon---------------
 def calculate_horizon_coords(canvas_width, canvas_height, pitch, roll):
@@ -278,19 +278,19 @@ def sensor_window():
 root = tk.Tk()
 root.title("E.L.A.R.T - Controller")
 
-
-
 #----------------------------------
 sensor_frame = tk.Frame(root)
 sensor_frame.pack(side=tk.TOP, pady=10)
    
 # ---------------------Temperature Lables------------------------
-
 sensor_var = tk.StringVar()
 sensor_var.set("test")
 
-sensor_label = tk.Label(sensor_frame, fg='white', textvariable=sensor_var)
-sensor_label.pack(side=tk.LEFT)
+rpiTemp = tk.Label(sensor_frame, fg='red', textvariable=sensor_var)
+rpiTemp.pack()
+
+Temp1_label = tk.Label(sensor_frame, fg='white', text="[Temp2: N/A]")
+Temp1_label.pack(side=tk.LEFT)
 
 Temp2_label = tk.Label(sensor_frame, fg='white', text="[Temp2: N/A]")
 Temp2_label.pack(side=tk.LEFT)
@@ -332,16 +332,22 @@ button_shutdown = tk.Button(left_frame, fg='red', text="SHUTDOWN", activebackgro
 button_shutdown.pack(side=tk.TOP, padx=5, pady=5)
 
 button_reboot = tk.Button(left_frame, fg='red', text="  REBOOT  ", command=confirm_reboot)
-button_reboot.pack(side=tk.TOP, padx=5, pady=5)
+button_reboot.pack(side=tk.TOP, padx=5, pady=0)
+
+divider = tk.Label(left_frame, text="-----------------------", font=("Helvetica", 12), wraplength=85, fg='grey')
+divider.pack()
 
 button_nav1 = tk.Button(left_frame,  fg='blue', text="   NAV-1   ", command=lambda: on_button_click("nav1"))
-button_nav1.pack(side=tk.TOP, padx=5, pady=5)
+button_nav1.pack(side=tk.TOP, padx=5, pady=0)
 
 button_headlight1 = tk.Button(left_frame, fg='blue', text="HEADLIGHT1", command=lambda: on_button_click("headlight1"))
-button_headlight1.pack(side=tk.TOP, padx=5, pady=5)
+button_headlight1.pack(side=tk.TOP, padx=5, pady=0)
+
+divider = tk.Label(left_frame, text="-----------------------", font=("Helvetica", 12), fg='grey', wraplength=85)
+divider.pack()
 
 button_console = tk.Button(left_frame, fg='green', text="SENSORS", command=sensor_window)
-button_console.pack(side=tk.TOP, padx=5, pady=5)
+button_console.pack(side=tk.TOP, padx=5, pady=0)
 
 
 progress_var_etlu = tk.DoubleVar(left_frame)
@@ -375,18 +381,28 @@ git_version_label.pack(padx=20, pady=10)
 button_overide = tk.Button(right_frame, fg='red',text="OVERIDE", command=lambda: on_button_click("overide"))
 button_overide.pack(side=tk.TOP, padx=5, pady=5)
 
-button_auto = tk.Button(right_frame, fg='green', text="AUTO", command=lambda: on_button_click("auto"))
-button_auto.pack(side=tk.TOP, padx=5, pady=5)
+close_controller = tk.Button(right_frame, fg='red',text="C-SHUTDOWN", command=lambda: on_button_click("overide"))
+close_controller.pack(side=tk.TOP, padx=5, pady=5)
+
+divider = tk.Label(right_frame, text="-----------------------", font=("Helvetica", 12), fg='grey', wraplength=85)
+divider.pack()
+
 
 button_nav2 = tk.Button(right_frame, fg='blue', text="  NAV-2  ", command=lambda: on_button_click("nav2"))
-button_nav2.pack(side=tk.TOP, padx=5, pady=5)
+button_nav2.pack(side=tk.TOP, padx=5, pady=0)
 
 button_headlight2 = tk.Button(right_frame, fg='blue', text="HEADLIGHT2", command=lambda: on_button_click("headlight2"))
-button_headlight2.pack(side=tk.TOP, padx=5, pady=5)
+button_headlight2.pack(side=tk.TOP, padx=5, pady=0)
+
+divider = tk.Label(right_frame, text="-----------------------", font=("Helvetica", 12), fg='grey', wraplength=85)
+divider.pack()
+
 
 button_motortest = tk.Button(right_frame, fg='green', text="MOTORTEST", command=lambda: on_button_click("motortest"))
 button_motortest.pack(side=tk.TOP, padx=5, pady=5)
 
+button_auto = tk.Button(right_frame, fg='green', text="AUTO", command=lambda: on_button_click("auto"))
+button_auto.pack(side=tk.TOP, padx=5, pady=5)
 
 progress_var_battery = tk.DoubleVar(right_frame)
 vertical_progress = ttk.Progressbar(right_frame, orient='vertical', variable=progress_var_battery, length=200, mode='determinate')
