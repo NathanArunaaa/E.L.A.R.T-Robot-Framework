@@ -16,6 +16,8 @@ import math
 #----------------------List for commands---------------------
 command_history = []
 #------------------------------------------------------------
+sensor_data_var = tk.StringVar()
+sensor_data_var.set("Sensor Data: N/A")  # Set initial value
 
 
 #--------------------Connect to the robot--------------------
