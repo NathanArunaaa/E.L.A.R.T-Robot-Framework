@@ -314,30 +314,30 @@ sensor_frame.config(bg='#323232')
 rpiTemp_var = tk.StringVar()
 rpiTemp_var.set("test")
 
-rpiTemp_label = tk.Label(sensor_frame, fg='red', textvariable=rpiTemp_var)
+rpiTemp_label = tk.Label(sensor_frame, bg='#323232', fg='red', textvariable=rpiTemp_var)
 rpiTemp_label.pack()
 
-Temp1_label = tk.Label(sensor_frame, fg='white', text="[Temp2: N/A]")
+Temp1_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp2: N/A]")
 Temp1_label.pack(side=tk.LEFT)
 
-Temp2_label = tk.Label(sensor_frame, fg='white', text="[Temp2: N/A]")
+Temp2_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp2: N/A]")
 Temp2_label.pack(side=tk.LEFT)
 
-Temp3_label = tk.Label(sensor_frame, fg='white', text="[Temp3: N/A]")
+Temp3_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp3: N/A]")
 Temp3_label.pack(side=tk.LEFT)
 #---------------------------------------------------------------
 
-time_label = tk.Label(sensor_frame, fg='gray', text="Current Time: ")
+time_label = tk.Label(sensor_frame,bg='#323232',  fg='gray', text="Current Time: ")
 time_label.pack(side=tk.LEFT, pady=10)
 
 #------------------------Sensor Lables--------------------------
-Temp1_label = tk.Label(sensor_frame, fg='white', text="[Sens1: N/A]")
+Temp1_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Sens1: N/A]")
 Temp1_label.pack(side=tk.LEFT)
 
-Temp2_label = tk.Label(sensor_frame, fg='white', text="[Sens2: N/A]")
+Temp2_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Sens2: N/A]")
 Temp2_label.pack(side=tk.LEFT)
 
-Temp3_label = tk.Label(sensor_frame, fg='white', text="[Sens3: N/A]")
+Temp3_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Sens3: N/A]")
 Temp3_label.pack(side=tk.LEFT)
 #---------------------------------------------------------------
 
@@ -353,40 +353,40 @@ left_frame = tk.Frame(root)
 left_frame.pack(side=tk.LEFT)
 left_frame.config(bg='#323232')
 
-image_label = tk.Label(left_frame, image=photo)
+image_label = tk.Label(left_frame, bg='#323232', image=photo)
 image_label.pack(side=tk.TOP,  padx=5, pady=5)
 
 
-button_shutdown = tk.Button(left_frame, fg='red', text="SHUTDOWN", activebackground='tomato', command=confirm_Shutdown)
+button_shutdown = tk.Button(left_frame, bg='#323232', fg='red', text="SHUTDOWN", activebackground='tomato', command=confirm_Shutdown)
 button_shutdown.pack(side=tk.TOP, padx=5, pady=5)
 
-button_reboot = tk.Button(left_frame, fg='red', text="  REBOOT  ", command=confirm_reboot)
+button_reboot = tk.Button(left_frame,  bg='#323232', fg='red', text="  REBOOT  ", command=confirm_reboot)
 button_reboot.pack(side=tk.TOP, padx=5, pady=0)
 
-divider = tk.Label(left_frame, text="-----------------------", font=("Helvetica", 12), wraplength=85, fg='grey')
+divider = tk.Label(left_frame,  bg='#323232', text="-----------------------", font=("Helvetica", 12), wraplength=85, fg='grey')
 divider.pack()
 
-button_nav1 = tk.Button(left_frame,  fg='blue', text="   NAV-1   ", command=lambda: on_button_click("nav1"))
+button_nav1 = tk.Button(left_frame,  bg='#323232',  fg='blue', text="   NAV-1   ", command=lambda: on_button_click("nav1"))
 button_nav1.pack(side=tk.TOP, padx=5, pady=0)
 
-button_headlight1 = tk.Button(left_frame, fg='blue', text="HEADLIGHT1", command=lambda: on_button_click("headlight1"))
+button_headlight1 = tk.Button(left_frame, bg='#323232',  fg='blue', text="HEADLIGHT1", command=lambda: on_button_click("headlight1"))
 button_headlight1.pack(side=tk.TOP, padx=5, pady=0)
 
-divider = tk.Label(left_frame, text="-----------------------", font=("Helvetica", 12), fg='grey', wraplength=85)
+divider = tk.Label(left_frame,  bg='#323232', text="-----------------------", font=("Helvetica", 12), fg='grey', wraplength=85)
 divider.pack()
 
-button_console = tk.Button(left_frame, fg='green', text="SENSORS", command=sensor_window)
+button_console = tk.Button(left_frame, bg='#323232',  fg='green', text="SENSORS", command=sensor_window)
 button_console.pack(side=tk.TOP, padx=5, pady=0)
 
 
 progress_var_etlu = tk.DoubleVar(left_frame)
-vertical_progress = ttk.Progressbar(left_frame, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
+vertical_progress = ttk.Progressbar(left_frame,  orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
 vertical_progress.pack(pady=10)
 
-etlu = tk.Label(left_frame, fg='white', text="ETLU")
+etlu = tk.Label(left_frame,  bg='#323232', fg='white', text="ETLU")
 etlu.pack(side=tk.TOP, padx=5, pady=5)
 
-etlu_warning = tk.Label(left_frame, fg='Green', text="Evironment Is Safe")
+etlu_warning = tk.Label(left_frame,  bg='#323232', fg='Green', text="Evironment Is Safe")
 etlu_warning.pack(side=tk.TOP, padx=5, pady=5)
 #----------------------------------------------------------------
 
@@ -405,45 +405,45 @@ right_frame.pack(side=tk.LEFT)
 right_frame.config(bg='#323232')
 
 
-git_version_label = tk.Label(right_frame, text="Stable Version 2.87.1 (Controller Client)", font=("Helvetica", 12), wraplength=85)
+git_version_label = tk.Label(right_frame, bg='#323232', text="Stable Version 2.87.1 (Controller Client)", font=("Helvetica", 12), wraplength=85)
 git_version_label.pack(padx=20, pady=10)
 
 
-button_overide = tk.Button(right_frame, fg='red',text="OVERIDE", command=lambda: on_button_click("overide"))
+button_overide = tk.Button(right_frame, bg='#323232', fg='red',text="OVERIDE", command=lambda: on_button_click("overide"))
 button_overide.pack(side=tk.TOP, padx=5, pady=5)
 
-close_controller = tk.Button(right_frame, fg='red',text="C-SHUTDOWN", command=confirm_controller_Shutdown)
+close_controller = tk.Button(right_frame ,bg='#323232', fg='red',text="C-SHUTDOWN", command=confirm_controller_Shutdown)
 close_controller.pack(side=tk.TOP, padx=5, pady=5)
 
-divider = tk.Label(right_frame, text="-----------------------", font=("Helvetica", 12), fg='grey', wraplength=85)
+divider = tk.Label(right_frame, bg='#323232', text="-----------------------", font=("Helvetica", 12), fg='grey', wraplength=85)
 divider.pack()
 
 
-button_nav2 = tk.Button(right_frame, fg='blue', text="  NAV-2  ", command=lambda: on_button_click("nav2"))
+button_nav2 = tk.Button(right_frame, bg='#323232', fg='blue', text="  NAV-2  ", command=lambda: on_button_click("nav2"))
 button_nav2.pack(side=tk.TOP, padx=5, pady=0)
 
-button_headlight2 = tk.Button(right_frame, fg='blue', text="HEADLIGHT2", command=lambda: on_button_click("headlight2"))
+button_headlight2 = tk.Button(right_frame, bg='#323232', fg='blue', text="HEADLIGHT2", command=lambda: on_button_click("headlight2"))
 button_headlight2.pack(side=tk.TOP, padx=5, pady=0)
 
-divider = tk.Label(right_frame, text="-----------------------", font=("Helvetica", 12), fg='grey', wraplength=85)
+divider = tk.Label(right_frame, bg='#323232', text="-----------------------", font=("Helvetica", 12), fg='grey', wraplength=85)
 divider.pack()
 
 
-button_motortest = tk.Button(right_frame, fg='green', text="MOTORTEST", command=lambda: on_button_click("motortest"))
+button_motortest = tk.Button(right_frame, bg='#323232', fg='green', text="MOTORTEST", command=lambda: on_button_click("motortest"))
 button_motortest.pack(side=tk.TOP, padx=5, pady=5)
 
-button_auto = tk.Button(right_frame, fg='green', text="AUTO", command=lambda: on_button_click("auto"))
+button_auto = tk.Button(right_frame, bg='#323232', fg='green', text="AUTO", command=lambda: on_button_click("auto"))
 button_auto.pack(side=tk.TOP, padx=5, pady=5)
 
 progress_var_battery = tk.DoubleVar(right_frame)
 vertical_progress = ttk.Progressbar(right_frame, orient='vertical', variable=progress_var_battery, length=200, mode='determinate')
 vertical_progress.pack(pady=10)
 
-battery_level = tk.Label(right_frame, fg='white', text="Battery Level")
+battery_level = tk.Label(right_frame, bg='#323232', fg='white', text="Battery Level")
 battery_level.pack(side=tk.TOP, padx=5, pady=5)
 
 
-battery_value = tk.Label(right_frame, fg='white', text=progress_var_battery)
+battery_value = tk.Label(right_frame,bg='#323232',  fg='white', text=progress_var_battery)
 battery_value.pack(side=tk.TOP)
 #----------------------------------------------------------------
 start_sensor_thread()
