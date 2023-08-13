@@ -19,7 +19,7 @@ command_history = []
 
 #--------------------Connect to the robot--------------------
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address = ('192.168.4.1', 87)  
+server_address = ('169.254.6.74', 87)  
 client_socket.connect(server_address)
 #------------------------------------------------------------
 
@@ -67,7 +67,7 @@ def get_roll_angle():
 def update_sensor_data():
     try:
        sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-       sensor_client_socket.connect(('192.168.4.1', 86))  
+       sensor_client_socket.connect(('169.254.6.74', 86))  
 
        while True:
             rpiTemp = sensor_client_socket.recv(1024).decode()
@@ -81,7 +81,7 @@ def update_sensor_data():
         sensor_client_socket.close()
                 
 def update_label_variable(new_value):
-    rpiTemp.set("RPi Temp:" + new_value)
+    rpiTemp_var.set(new_value)
 #------------------------------------------------------------
  
     
@@ -217,9 +217,6 @@ def update_progress_battery():
 #---------------------------------------------------------------  
 
 
-def close_window():
-    root.destroy()  
-
 def shutdown_controller():
     quit()
 
@@ -236,7 +233,7 @@ def confirm_reboot():
     
     button_reboot_yes = tk.Button(smaller_window_reboot, fg='red', text="Yes", activebackground='tomato', command=lambda: on_button_click("reboot"))
     button_reboot_yes.pack()
-    button_reboot_no = tk.Button(smaller_window_reboot, fg='green', text="No", activebackground='tomato', command=close_window)
+    button_reboot_no = tk.Button(smaller_window_reboot, fg='green', text="No", activebackground='tomato', command=smaller_window_reboot.destroy)
     button_reboot_no.pack()
 #---------------------------------------------------------------  
 
@@ -252,7 +249,7 @@ def confirm_Shutdown():
     
     button_shutdown_yes = tk.Button(smaller_window_shutdown, fg='red', text="Yes", activebackground='tomato', command=lambda: on_button_click("shutdown"))
     button_shutdown_yes.pack()
-    button_shutdown_no = tk.Button(smaller_window_shutdown, fg='green', text="No", activebackground='tomato', command=close_window)
+    button_shutdown_no = tk.Button(smaller_window_shutdown, fg='green', text="No", activebackground='tomato', command=smaller_window_shutdown.destroy)
     button_shutdown_no.pack()
 #--------------------------------------------------------------- 
 
@@ -261,7 +258,7 @@ def confirm_Shutdown():
 def confirm_controller_Shutdown():
     smaller_window_shutdown = tk.Toplevel(root)
     smaller_window_shutdown.title("E.L.A.R.T ")
-    smaller_window_shutdown.geometry("200x100")  # Set the size of the new window
+    smaller_window_shutdown.geometry("250x100")  # Set the size of the new window
 
     # Add widgets to the smaller window
     label = tk.Label(smaller_window_shutdown, text="CONFIRM CONRTOLLER SHUTDOWN")
@@ -269,7 +266,7 @@ def confirm_controller_Shutdown():
     
     button_shutdown_yes = tk.Button(smaller_window_shutdown, fg='red', text="Yes", activebackground='tomato', command=shutdown_controller)
     button_shutdown_yes.pack()
-    button_shutdown_no = tk.Button(smaller_window_shutdown, fg='green', text="No", activebackground='tomato', command=close_window)
+    button_shutdown_no = tk.Button(smaller_window_shutdown, fg='green', text="No", activebackground='tomato', command=smaller_window_shutdown.destroy)
     button_shutdown_no.pack()
 #--------------------------------------------------------------- 
 
@@ -311,11 +308,11 @@ sensor_frame = tk.Frame(root)
 sensor_frame.pack(side=tk.TOP, pady=10)
    
 # ---------------------Temperature Lables------------------------
-sensor_var = tk.StringVar()
-sensor_var.set("test")
+rpiTemp_var = tk.StringVar()
+rpiTemp_var.set("test")
 
-rpiTemp = tk.Label(sensor_frame, fg='red', textvariable=sensor_var)
-rpiTemp.pack()
+rpiTemp_label = tk.Label(sensor_frame, fg='red', textvariable=rpiTemp_var)
+rpiTemp_label.pack()
 
 Temp1_label = tk.Label(sensor_frame, fg='white', text="[Temp2: N/A]")
 Temp1_label.pack(side=tk.LEFT)
@@ -409,7 +406,7 @@ git_version_label.pack(padx=20, pady=10)
 button_overide = tk.Button(right_frame, fg='red',text="OVERIDE", command=lambda: on_button_click("overide"))
 button_overide.pack(side=tk.TOP, padx=5, pady=5)
 
-close_controller = tk.Button(right_frame, fg='red',text="C-SHUTDOWN", command=lambda: on_button_click("overide"))
+close_controller = tk.Button(right_frame, fg='red',text="C-SHUTDOWN", command=confirm_controller_Shutdown)
 close_controller.pack(side=tk.TOP, padx=5, pady=5)
 
 divider = tk.Label(right_frame, text="-----------------------", font=("Helvetica", 12), fg='grey', wraplength=85)
