@@ -302,10 +302,13 @@ def sensor_window():
 root = tk.Tk()
 root.title("E.L.A.R.T - Controller")
 
+root.config(bg='#323232')
 
 #----------------------------------
 sensor_frame = tk.Frame(root)
 sensor_frame.pack(side=tk.TOP, pady=10)
+sensor_frame.config(bg='#323232')
+
    
 # ---------------------Temperature Lables------------------------
 rpiTemp_var = tk.StringVar()
@@ -348,6 +351,7 @@ photo = ImageTk.PhotoImage(image)
 
 left_frame = tk.Frame(root)
 left_frame.pack(side=tk.LEFT)
+left_frame.config(bg='#323232')
 
 image_label = tk.Label(left_frame, image=photo)
 image_label.pack(side=tk.TOP,  padx=5, pady=5)
@@ -398,6 +402,8 @@ canvas.pack(side=tk.LEFT)
 #----------------------Right Row Buttons-------------------------
 right_frame = tk.Frame(root)
 right_frame.pack(side=tk.LEFT)
+right_frame.config(bg='#323232')
+
 
 git_version_label = tk.Label(right_frame, text="Stable Version 2.87.1 (Controller Client)", font=("Helvetica", 12), wraplength=85)
 git_version_label.pack(padx=20, pady=10)
