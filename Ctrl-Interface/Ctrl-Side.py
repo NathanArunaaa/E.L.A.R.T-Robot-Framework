@@ -143,22 +143,6 @@ def update_camera_feed():
 
 
 
-# ---------Function to start the Sensor + camera thread---------
-def start_sensor_thread():
-    update_thread = threading.Thread(target=update_sensor_data)
-    update_thread.daemon = True
-    update_thread.start()
-
-
-def start_camera_thread():
-    camera_thread = threading.Thread(target=update_camera_feed)
-    camera_thread.daemon = True
-    camera_thread.start()
-#---------------------------------------------------------------
-
-
-
-
 # -----------Function to send commands to the server-----------
 def on_button_click(command):
     print(f"Sending command: {command}")
@@ -446,6 +430,23 @@ battery_level.pack(side=tk.TOP, padx=5, pady=5)
 battery_value = tk.Label(right_frame,bg='#323232',  fg='white', text=progress_var_battery)
 battery_value.pack(side=tk.TOP)
 #----------------------------------------------------------------
+
+
+# ---------Function to start the Sensor + camera thread---------
+def start_sensor_thread():
+    update_thread = threading.Thread(target=update_sensor_data)
+    update_thread.daemon = True
+    update_thread.start()
+
+
+def start_camera_thread():
+    camera_thread = threading.Thread(target=update_camera_feed)
+    camera_thread.daemon = True
+    camera_thread.start()
+#---------------------------------------------------------------
+
+
+
 start_sensor_thread()
 update_progress_etlu() 
 update_progress_battery()

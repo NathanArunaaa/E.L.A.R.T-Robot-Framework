@@ -9,22 +9,18 @@ import RPi.GPIO as GPIO
 import time
 import subprocess
 
-# Define the handle_controller_client function
+
+# ---------Controller Client Command Receiver---------
 def handle_controller_client(conn, addr):
     def motor_test():
-    # Set GPIO mode to BCM
         GPIO.setmode(GPIO.BCM)
+        motor1_pwm = 17  
+        motor1_in1 = 18 
+        motor1_in2 = 19  
 
-    # Define motor control pins for Motor 1
-        motor1_pwm = 17  # Example GPIO pin for Motor 1 PWM
-        motor1_in1 = 18  # Example GPIO pin for Motor 1 IN1
-        motor1_in2 = 19  # Example GPIO pin for Motor 1 IN2
-
-    # Define motor control pins for Motor 2
-        motor2_pwm = 27  # Example GPIO pin for Motor 2 PWM
-        motor2_in1 = 20  # Example GPIO pin for Motor 2 IN1
-        motor2_in2 = 12  # Example GPIO pin for Motor 2 IN2
-
+        motor2_pwm = 27 
+        motor2_in1 = 20  
+        motor2_in2 = 12 
     # Set up pins as output for Motor 1
         GPIO.setup(motor1_pwm, GPIO.OUT)
         GPIO.setup(motor1_in1, GPIO.OUT)
@@ -57,11 +53,9 @@ def handle_controller_client(conn, addr):
             set_motor_speed(motor1_pwm_obj, motor1_in1, motor1_in2, speed)
             set_motor_speed(motor2_pwm_obj, motor2_in1, motor2_in2, -speed)
         
-        # Allow motors to run for 5 seconds
             time.sleep(5)
         
         finally:
-        # Stop PWM and cleanup
             motor1_pwm_obj.stop()
             motor2_pwm_obj.stop()
             GPIO.cleanup()
@@ -82,6 +76,8 @@ def handle_controller_client(conn, addr):
         os.system('sudo shutdown -h now')
         print("Client connected:", addr)
     try:
+        
+#-------------Waiting for command from client---------        
         while True:
             data = conn.recv(1024).decode()
             if not data:
@@ -92,7 +88,6 @@ def handle_controller_client(conn, addr):
                     send_frame(conn, frame)
             else:
                 print("Received command:", data)
-                # Checking for commands from the controller
               
                 if data == 'reboot':
                     sysReboot()
@@ -110,28 +105,29 @@ def handle_controller_client(conn, addr):
                     print("Auto Mode On")
                     
                 elif data == 'overide':
-                    #add logic to turn on overide mode
                     print("Overide Mode On")
                     
                 elif data == 'nav2':
                     print("Turning On Navigation Lights 2")
                     
                 elif data == 'headlight1':
-                    #add logic to turn on headlights
                     print("Turning On Headlights 1")
                     
                 elif data == 'headlight2':
-                    #add logic to turn on headlights
                     print("Turning On Headlights 2")
-                
+#-----------------------------------------------------
+               
     except Exception as e:
         print("Error handling client:", e)
     finally:
         conn.close()
         print("Client disconnected:", addr)
+#-----------------------------------------------------
 
 
-# Function to handle sensor data
+
+
+# ---------------Sensor Data Transmitter--------------
 def handle_sensor_connection(conn, addr):
     try:
         while True:
@@ -142,35 +138,41 @@ def handle_sensor_connection(conn, addr):
             try:
                 conn.sendall(temperature_data.encode())
             except (BrokenPipeError, ConnectionResetError):
-                print("Sensor Script: Client disconnected.")
+                print("Sensor: Client disconnected.")
                 break
     except:
         print("Sensor connection error:", addr)
     finally:
         conn.close()
-        
+#-----------------------------------------------------
+     
+
 camera = cv2.VideoCapture(0)  # Use 0 for the first camera device (change the index if needed)
 
-# Set up a socket server for sensor data
+
+#-------Set up a socket server for sesnor data--------
 sensor_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sensor_server_address = ('0.0.0.0', 86)  # Replace with your server's IP and port
 sensor_server_socket.bind(sensor_server_address)
 sensor_server_socket.listen()
+#-----------------------------------------------------
 
-# Set up a socket server for movement control
-movement_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-movement_server_address = ('0.0.0.0', 87)  # Replace with your server's IP and port
-movement_server_socket.bind(movement_server_address)
-movement_server_socket.listen()
+#----Set up a socket server for controller client-----
+controller_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+controller_server_address = ('0.0.0.0', 87)  # Replace with your server's IP and port
+controller_server_socket.bind(controller_server_address)
+controller_server_socket.listen()
+#-----------------------------------------------------
 
-print("Central Controller: Waiting for sensor connection...")
+
+print("Waiting For Controller Client Connection... ")
 while True:
     sensor_conn, sensor_addr = sensor_server_socket.accept()
-    print("Central Controller: Sensor connected:", sensor_addr)
+    print("Port 86: Connected", sensor_addr)
     sensor_thread = threading.Thread(target=handle_sensor_connection, args=(sensor_conn, sensor_addr))
     sensor_thread.start()
 
-    movement_conn, movement_addr = movement_server_socket.accept()
-    print("Central Controller: Movement connected:", movement_addr)
-    movement_thread = threading.Thread(target=handle_controller_client, args=(movement_conn, movement_addr))
-    movement_thread.start()
+    controller_conn, controller_addr = controller_server_socket.accept()
+    print("Port 87: Connected", controller_addr)
+    controller_thread = threading.Thread(target=handle_controller_client, args=(controller_conn, controller_addr))
+    controller_thread.start()
