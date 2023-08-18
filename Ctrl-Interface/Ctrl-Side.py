@@ -25,7 +25,6 @@ client_socket.connect(server_address)
 
 
 
-
 #----------------------Artificial Horizon--------------------
 def calculate_horizon_coords(canvas_width, canvas_height, pitch, roll):
     horizon_length = 100  # You can adjust this length as needed
@@ -70,7 +69,7 @@ def update_sensor_data():
        sensor_client_socket.connect(('169.254.6.74', 86))  
 
        while True:
-            rpiTemp = sensor_client_socket.recv(1024).decode()
+            rpiTemp = sensor_client_socket.recv(240).decode()
             update_label_variable(rpiTemp)
 
             
@@ -207,12 +206,12 @@ def shutdown_controller():
 
 #--------------------------Reboot Window------------------------
 def confirm_reboot():
-    smaller_window_reboot = tk.Toplevel(root)
+    smaller_window_reboot = tk.Toplevel(root, bg='#323232')
     smaller_window_reboot.title("E.L.A.R.T")
     smaller_window_reboot.geometry("200x100")  # Set the size of the new window
 
     # Add widgets to the smaller window
-    label = tk.Label(smaller_window_reboot, text="CONFIRM REBOOT")
+    label = tk.Label(smaller_window_reboot, fg='white', bg='#323232', text="CONFIRM REBOOT")
     label.pack()
     
     button_reboot_yes = tk.Button(smaller_window_reboot, fg='red', text="Yes", activebackground='tomato', command=lambda: on_button_click("reboot"))
@@ -223,12 +222,12 @@ def confirm_reboot():
 
 #--------------------------Shutdow Window-----------------------
 def confirm_Shutdown():
-    smaller_window_shutdown = tk.Toplevel(root)
+    smaller_window_shutdown = tk.Toplevel(root, bg='#323232')
     smaller_window_shutdown.title("E.L.A.R.T ")
     smaller_window_shutdown.geometry("200x100")  # Set the size of the new window
 
     # Add widgets to the smaller window
-    label = tk.Label(smaller_window_shutdown, text="CONFIRM SHUTDOWN")
+    label = tk.Label(smaller_window_shutdown, bg='#323232', fg='white', text="CONFIRM SHUTDOWN")
     label.pack()
     
     button_shutdown_yes = tk.Button(smaller_window_shutdown, fg='red', text="Yes", activebackground='tomato', command=lambda: on_button_click("shutdown"))
@@ -240,12 +239,12 @@ def confirm_Shutdown():
 
 #--------------------------Close Controller-----------------------
 def confirm_controller_Shutdown():
-    smaller_window_shutdown = tk.Toplevel(root)
+    smaller_window_shutdown = tk.Toplevel(root, bg='#323232')
     smaller_window_shutdown.title("E.L.A.R.T ")
     smaller_window_shutdown.geometry("250x100")  # Set the size of the new window
 
     # Add widgets to the smaller window
-    label = tk.Label(smaller_window_shutdown, text="CONFIRM CONRTOLLER SHUTDOWN")
+    label = tk.Label(smaller_window_shutdown,  bg='#323232', fg='white', text="CONFIRM CONRTOLLER SHUTDOWN")
     label.pack()
     
     button_shutdown_yes = tk.Button(smaller_window_shutdown, fg='red', text="Yes", activebackground='tomato', command=shutdown_controller)
@@ -257,11 +256,11 @@ def confirm_controller_Shutdown():
 
 #--------------------------Sensor Window------------------------
 def sensor_window():
-    sensor_readings = tk.Toplevel(root)
+    sensor_readings = tk.Toplevel(root, bg='#323232')
     sensor_readings.title("E.L.A.R.T Sensors")
-    sensor_readings.geometry("200x100")  # Set the size of the new window
+    sensor_readings.geometry("350x250")  # Set the size of the new window
 
-    label = tk.Label(sensor_readings, text="SENSOR READINGS")
+    label = tk.Label(sensor_readings, bg='#323232', fg='white', text="SENSOR READINGS")
     label.pack()
 
     progress_var_etlu = tk.DoubleVar(sensor_readings)
@@ -347,7 +346,7 @@ button_shutdown.pack(side=tk.TOP, padx=5, pady=5)
 button_reboot = tk.Button(left_frame,  bg='#323232', fg='red', text="  REBOOT  ", command=confirm_reboot)
 button_reboot.pack(side=tk.TOP, padx=5, pady=0)
 
-divider = tk.Label(left_frame,  bg='#323232', text="-----------------------", font=("Helvetica", 12), wraplength=85, fg='grey')
+divider = tk.Label(left_frame,  bg='#323232', text="-----------------------", font=("Helvetica", 12),  fg='grey')
 divider.pack()
 
 button_nav1 = tk.Button(left_frame,  bg='#323232',  fg='blue', text="   NAV-1   ", command=lambda: on_button_click("nav1"))
@@ -356,7 +355,7 @@ button_nav1.pack(side=tk.TOP, padx=5, pady=0)
 button_headlight1 = tk.Button(left_frame, bg='#323232',  fg='blue', text="HEADLIGHT1", command=lambda: on_button_click("headlight1"))
 button_headlight1.pack(side=tk.TOP, padx=5, pady=0)
 
-divider = tk.Label(left_frame,  bg='#323232', text="-----------------------", font=("Helvetica", 12), fg='grey', wraplength=85)
+divider = tk.Label(left_frame,  bg='#323232', text="-----------------------", font=("Helvetica", 12), fg='grey', )
 divider.pack()
 
 button_console = tk.Button(left_frame, bg='#323232',  fg='green', text="SENSORS", command=sensor_window)
@@ -389,17 +388,17 @@ right_frame.pack(side=tk.LEFT)
 right_frame.config(bg='#323232')
 
 
-git_version_label = tk.Label(right_frame, bg='#323232', text="Stable Version 2.87.1 (Controller Client)", font=("Helvetica", 12), wraplength=85)
+git_version_label = tk.Label(right_frame, fg='white',  bg='#323232', text="Stable Version 2.87.1 (Controller Client)", font=("Helvetica", 12), wraplength=85)
 git_version_label.pack(padx=20, pady=10)
 
+close_controller = tk.Button(right_frame , bg='#323232', fg='red',text="C-SHUTDOWN", command=confirm_controller_Shutdown)
+close_controller.pack(side=tk.TOP, padx=5, pady=5)
 
 button_overide = tk.Button(right_frame, bg='#323232', fg='red',text="OVERIDE", command=lambda: on_button_click("overide"))
 button_overide.pack(side=tk.TOP, padx=5, pady=5)
 
-close_controller = tk.Button(right_frame ,bg='#323232', fg='red',text="C-SHUTDOWN", command=confirm_controller_Shutdown)
-close_controller.pack(side=tk.TOP, padx=5, pady=5)
 
-divider = tk.Label(right_frame, bg='#323232', text="-----------------------", font=("Helvetica", 12), fg='grey', wraplength=85)
+divider = tk.Label(right_frame, bg='#323232', text="-----------------------", font=("Helvetica", 12), fg='grey')
 divider.pack()
 
 
@@ -409,7 +408,7 @@ button_nav2.pack(side=tk.TOP, padx=5, pady=0)
 button_headlight2 = tk.Button(right_frame, bg='#323232', fg='blue', text="HEADLIGHT2", command=lambda: on_button_click("headlight2"))
 button_headlight2.pack(side=tk.TOP, padx=5, pady=0)
 
-divider = tk.Label(right_frame, bg='#323232', text="-----------------------", font=("Helvetica", 12), fg='grey', wraplength=85)
+divider = tk.Label(right_frame, bg='#323232', text="-----------------------", font=("Helvetica", 12), fg='grey')
 divider.pack()
 
 

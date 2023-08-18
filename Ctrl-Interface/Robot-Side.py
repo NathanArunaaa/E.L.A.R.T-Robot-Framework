@@ -135,6 +135,7 @@ def handle_sensor_connection(conn, addr):
             temperature_str = result.stdout.strip()
             temperature = float(temperature_str.split('=')[1].replace("'C", ""))
             temperature_data = f"[CPU TEMP: {temperature:.2f} °C]"
+            time.sleep(3)
             try:
                 conn.sendall(temperature_data.encode())
             except (BrokenPipeError, ConnectionResetError):
