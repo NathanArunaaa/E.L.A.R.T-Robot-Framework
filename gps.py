@@ -3,7 +3,7 @@ import pynmea2  # Library to parse NMEA sentences
 import datetime
 
 # Define the serial port and baud rate
-ser = serial.Serial('/dev/ttyS0', 9600, timeout=1)
+ser = serial.Serial('/dev/ttyAMA0', 9600, timeout=1)
 
 # Create a file to log GPS data
 log_file = open("gps_log.txt", "a")
