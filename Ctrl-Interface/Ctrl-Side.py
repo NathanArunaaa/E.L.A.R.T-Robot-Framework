@@ -12,10 +12,13 @@ import pickle
 import random
 import os
 import math
+import time
+import queue
 
 #----------------------List for commands---------------------
 command_history = []
 #------------------------------------------------------------
+gui_queue = queue.Queue()
 
 #--------------------Connect to the robot--------------------
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -57,11 +60,6 @@ def draw_artificial_horizon(canvas, pitch, roll):
 
 
 #---------------------Receiving Sensor Data------------------
-def get_pitch_angle():
-    return random.uniform(-30, 30)  
-
-def get_roll_angle():
-    return random.uniform(100, 150)
 
 def update_sensor_data():
     try:
@@ -70,6 +68,7 @@ def update_sensor_data():
 
        while True:
             rpiTemp = sensor_client_socket.recv(240).decode()
+            gui_queue.put(rpiTemp)
             update_label_variable(rpiTemp)
 
             
@@ -83,7 +82,14 @@ def update_label_variable(new_value):
     rpiTemp_var.set(new_value)
 #------------------------------------------------------------
  
-    
+def update_gui():
+    try:
+        while True:
+            rpiTemp = gui_queue.get_nowait()
+            update_label_variable(rpiTemp)
+    except queue.Empty:
+        pass
+    root.after(100, update_gui)   
     
 # -------------------Update Camera Feed----------------------
 def update_camera_feed():
@@ -120,8 +126,8 @@ def update_camera_feed():
                 canvas.image = image
 
                 # Get the pitch and roll angles (replace this with your actual angle calculation)
-                pitch = get_pitch_angle()
-                roll = get_roll_angle()
+                pitch = 30
+                roll = 30
 
                 # Update the canvas with the new pitch and roll angles
                 draw_artificial_horizon(canvas, pitch, roll)
@@ -295,7 +301,7 @@ sensor_frame.config(bg='#323232')
    
 # ---------------------Temperature Lables------------------------
 rpiTemp_var = tk.StringVar()
-rpiTemp_var.set("test")
+rpiTemp_var.set("Loading Data....")
 
 rpiTemp_label = tk.Label(sensor_frame, bg='#323232', fg='red', textvariable=rpiTemp_var)
 rpiTemp_label.pack()
@@ -447,9 +453,8 @@ def start_camera_thread():
 
 
 start_sensor_thread()
-update_progress_etlu() 
-update_progress_battery()
 update_time()
 start_camera_thread()
+update_gui()
 
 root.mainloop()
