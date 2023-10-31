@@ -1,0 +1,10 @@
+[
+    {
+        "max_temp": 85,
+        "//source": "https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwigjduywd-AAxUIm4kEHVzDANwQFnoECBEQAw&url=https%3A%2F%2Fwww.avast.com%2Fc-how-to-check-cpu-temperature%23%3A~%3Atext%3DA%2520safe%2520temperature%2520range%2520for%2Cthe%2520CPU%2520and%2520its%2520silicon.&usg=AOvVaw3QI1gwyHP6PlNglUobc0q6&opi=89978449",
+        "lowest_temp": 0,
+        "/source": "https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwjR87ncwd-AAxW3l4kEHR6gAdkQFnoECBMQAw&url=https%3A%2F%2Fwww.quora.com%2FAt-what-temperature-does-cold-start-to-damage-a-PC%23%3A~%3Atext%3DThe%2520temperature%2520at%2520which%2520cold%2Can%2520extended%2520period%2520of%2520time.&usg=AOvVaw2tz9xcsTCEZsKUer81XqmQ&opi=89978449",
+        "max_radiation": 75000,
+        "source": "https://hps.org/publicinformation/ate/q11162.html#:~:text=Diodes%20and%20computer%20chips%20(electronics,about%2050%20to%20100%20Sv."
+    }
+]
