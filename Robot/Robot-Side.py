@@ -8,11 +8,20 @@ import os
 import RPi.GPIO as GPIO
 import time
 import subprocess
+from picamera import PiCamera
+from io import BytesIO
 
 
-# ---------Controller Client Command Receiver---------
-def handle_controller_client(conn, addr):
-    def motor_test():
+camera = PiCamera()
+
+camera.resolution = (640, 480)
+camera.framerate = 30
+
+camera.exposure_mode = 'off'
+camera.awb_mode = 'off'
+stream = BytesIO()
+
+def motor_test():
         GPIO.setmode(GPIO.BCM)
         motor1_pwm = 17  
         motor1_in1 = 18 
@@ -59,6 +68,17 @@ def handle_controller_client(conn, addr):
             motor1_pwm_obj.stop()
             motor2_pwm_obj.stop()
             GPIO.cleanup()
+            
+            
+            
+# ---------Controller Client Command Receiver---------
+def handle_controller_client(conn, addr):
+    
+            
+    def capture_frame():
+      camera.capture(stream, format='jpeg')
+      stream.seek(0)
+      return stream.getvalue()
         
     def send_frame(conn, frame):
         frame_data = pickle.dumps(frame)
@@ -83,8 +103,8 @@ def handle_controller_client(conn, addr):
             if not data:
                 break
             elif data == 'camera_frame':
-                ret, frame = camera.read()
-                if ret:
+                frame = capture_frame()
+                if frame:
                     send_frame(conn, frame)
             else:
                 print("Received command:", data)
