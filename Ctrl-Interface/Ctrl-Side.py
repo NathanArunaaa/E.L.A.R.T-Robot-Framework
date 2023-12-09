@@ -19,7 +19,7 @@ command_history = []
 
 #--------------------Connect to the robot--------------------
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address = ('169.254.6.74', 87)  
+server_address = ('192.168.1.1', 87)  
 client_socket.connect(server_address)
 #------------------------------------------------------------
 
@@ -67,7 +67,7 @@ def get_roll_angle():
 def update_sensor_data():
     try:
        sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-       sensor_client_socket.connect(('169.254.6.74', 86))  
+       sensor_client_socket.connect(('192.168.1.1', 86))  
 
        while True:
             rpiTemp = sensor_client_socket.recv(1024).decode()
