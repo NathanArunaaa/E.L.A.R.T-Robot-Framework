@@ -18,8 +18,8 @@ def read_sensor():
 # Function to convert sensor reading to ppm (example linear calibration)
 def convert_to_ppm(sensor_reading):
     # Example linear calibration values (replace with actual calibration)
-    slope = 10  # Example slope value
-    intercept = 50  # Example intercept value
+    slope = 2  # Example slope value
+    intercept = 0.5  # Example intercept value
     ppm = slope * sensor_reading + intercept
     return ppm
 
