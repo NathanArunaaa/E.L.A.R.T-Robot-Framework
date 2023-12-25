@@ -12,6 +12,7 @@ import subprocess
 
 # ---------Controller Client Command Receiver---------
 def handle_controller_client(conn, addr):
+    
     def motor_test():
         GPIO.setmode(GPIO.BCM)
         motor1_pwm = 17  
@@ -49,7 +50,6 @@ def handle_controller_client(conn, addr):
 
         try:
             speed = 100  # Set the speed as a percentage (-100 to 100)
-            print("at try stage")
             set_motor_speed(motor1_pwm_obj, motor1_in1, motor1_in2, speed)
             set_motor_speed(motor2_pwm_obj, motor2_in1, motor2_in2, -speed)
         
@@ -59,6 +59,9 @@ def handle_controller_client(conn, addr):
             motor1_pwm_obj.stop()
             motor2_pwm_obj.stop()
             GPIO.cleanup()
+            
+    def motor_test_wrapper():
+        motor_test()
         
     def send_frame(conn, frame):
         frame_data = pickle.dumps(frame)
@@ -75,6 +78,7 @@ def handle_controller_client(conn, addr):
         time.sleep(5)
         os.system('sudo shutdown -h now')
         print("Client connected:", addr)
+        
     try:
         
 #-------------Waiting for command from client---------        
@@ -96,7 +100,8 @@ def handle_controller_client(conn, addr):
                     sysShutdown()
                     
                 elif data == 'motortest':
-                    motor_test()
+                    motor_test_thread = threading.Thread(target=motor_test_wrapper)
+                    motor_test_thread.start()
                 
                 elif data == 'nav1':
                     print("Turning On Navigation Lights 1")
