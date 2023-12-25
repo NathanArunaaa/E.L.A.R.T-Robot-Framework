@@ -8,7 +8,11 @@ import os
 import RPi.GPIO as GPIO
 import time
 import subprocess
+from picamera import PiCamera
+from io import BytesIO
 
+
+camera = PiCamera()
 
 # ---------Controller Client Command Receiver---------
 def handle_controller_client(conn, addr):
@@ -32,13 +36,11 @@ def handle_controller_client(conn, addr):
         GPIO.setup(motor2_in1, GPIO.OUT)
         GPIO.setup(motor2_in2, GPIO.OUT)
 
-    # Set up PWM for both motors
-        motor1_pwm_obj = GPIO.PWM(motor1_pwm, 1000)  # Frequency: 1000 Hz
+        motor1_pwm_obj = GPIO.PWM(motor1_pwm, 1000)  
         motor2_pwm_obj = GPIO.PWM(motor2_pwm, 1000)
-        motor1_pwm_obj.start(0)  # Start PWM with 0% duty cycle
+        motor1_pwm_obj.start(0)  
         motor2_pwm_obj.start(0)
  
-    # Function to set motor speed
         def set_motor_speed(pwm_obj, in1, in2, speed):
             if speed >= 0:
                 GPIO.output(in1, GPIO.HIGH)
@@ -49,16 +51,15 @@ def handle_controller_client(conn, addr):
             pwm_obj.ChangeDutyCycle(abs(speed))
 
         try:
-            speed = 100  # Set the speed as a percentage (-100 to 100)
+            speed = 100  
             set_motor_speed(motor1_pwm_obj, motor1_in1, motor1_in2, speed)
             set_motor_speed(motor2_pwm_obj, motor2_in1, motor2_in2, -speed)
-        
-            time.sleep(5)
-        
+            time.sleep(1)
         finally:
             motor1_pwm_obj.stop()
             motor2_pwm_obj.stop()
             GPIO.cleanup()
+            
             
     def motor_test_wrapper():
         motor_test()
@@ -87,9 +88,12 @@ def handle_controller_client(conn, addr):
             if not data:
                 break
             elif data == 'camera_frame':
-                ret, frame = camera.read()
-                if ret:
-                    send_frame(conn, frame)
+                stream = BytesIO()
+                camera.capture(stream, format='jpeg')  # Capture frame as JPEG
+                
+                frame_data = stream.getvalue()
+                frame_size = struct.pack('!L', len(frame_data))
+                conn.sendall(frame_size + frame_data)
             else:
                 print("Received command:", data)
               
