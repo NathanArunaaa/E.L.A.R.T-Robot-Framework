@@ -7,6 +7,7 @@ import os
 import RPi.GPIO as GPIO
 import time
 import subprocess
+import socket
 
 
 # ---------Controller Client Command Receiver---------
