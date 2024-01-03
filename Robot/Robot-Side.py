@@ -14,7 +14,7 @@ import socket
 GPIO.setmode(GPIO.BCM)
 
 # Set the GPIO pin for output
-speaker_pin = 18
+speaker_pin = 17
 GPIO.setup(speaker_pin, GPIO.OUT)
 
 # Create a PWM instance
