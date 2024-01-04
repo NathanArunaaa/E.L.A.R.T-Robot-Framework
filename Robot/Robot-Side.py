@@ -10,19 +10,13 @@ import subprocess
 import socket
 
 
-# Set the GPIO mode
 GPIO.setmode(GPIO.BCM)
-
-# Set the GPIO pin for output
 speaker_pin = 17
 GPIO.setup(speaker_pin, GPIO.OUT)
+pwm = GPIO.PWM(speaker_pin, 100) 
 
-# Create a PWM instance
-pwm = GPIO.PWM(speaker_pin, 100)  # 100 Hz frequency
-
-# Function to play a tone
 def play_tone(frequency, duration):
-    pwm.start(50)  # Start PWM at 50% duty cycle (can be adjusted)
+    pwm.start(70)  # Start PWM at 50% duty cycle (can be adjusted)
     pwm.ChangeFrequency(frequency)  # Set frequency
     time.sleep(duration)  # Play for a certain duration
     pwm.stop()  # Stop PWM
