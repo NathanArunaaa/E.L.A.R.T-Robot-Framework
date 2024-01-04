@@ -16,7 +16,7 @@ GPIO.setup(speaker_pin, GPIO.OUT)
 pwm = GPIO.PWM(speaker_pin, 100) 
 
 def play_tone(frequency, duration):
-    pwm.start(100)  # Start PWM at 50% duty cycle (can be adjusted)
+    pwm.start(70)  # Start PWM at 50% duty cycle (can be adjusted)
     pwm.ChangeFrequency(frequency)  # Set frequency
     time.sleep(duration)  # Play for a certain duration
     pwm.stop()  # Stop PWM
