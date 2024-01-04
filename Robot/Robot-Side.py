@@ -30,10 +30,10 @@ def play_connection_tone():
     pwm.start(70) 
     pwm.ChangeFrequency(1000)  
     time.sleep(0.5)
-    pwm.stop()
-    pwm.start(70) 
-    pwm.ChangeFrequency(1000)
+    pwm.ChangeFrequency(300)
     time.sleep(0.5)
+    pwm.ChangeFrequency(1000)
+    time.sleep(1)
     pwm.stop()
     GPIO.cleanup()
   
