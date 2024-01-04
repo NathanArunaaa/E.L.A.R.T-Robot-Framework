@@ -18,10 +18,12 @@ pwm = GPIO.PWM(speaker_pin, 100)
 def play_startup_tone():
     pwm.start(70) 
     pwm.ChangeFrequency(1000)  
-    time.sleep(0.2)
+    time.sleep(0.5)
     pwm.ChangeFrequency(200)
-    time.sleep(0.2)
-    pwm.ChangeFrequency(1000)  
+    time.sleep(0.5)
+    pwm.ChangeFrequency(1000)
+    time.sleep(1)
+  
     pwm.stop()  
 
 play_startup_tone()
