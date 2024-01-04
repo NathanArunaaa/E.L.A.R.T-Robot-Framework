@@ -19,7 +19,7 @@ def play_startup_tone():
     pwm.start(70) 
     pwm.ChangeFrequency(1000)  
     time.sleep(0.5)
-    pwm.ChangeFrequency(200)
+    pwm.ChangeFrequency(300)
     time.sleep(0.5)
     pwm.ChangeFrequency(1000)
     time.sleep(1)
