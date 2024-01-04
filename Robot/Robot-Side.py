@@ -23,12 +23,23 @@ def play_startup_tone():
     time.sleep(0.5)
     pwm.ChangeFrequency(1000)
     time.sleep(1)
+    pwm.stop()
+    GPIO.cleanup()
+    
+def play_connection_tone():
+    pwm.start(70) 
+    pwm.ChangeFrequency(1000)  
+    time.sleep(0.5)
+    pwm.stop()
+    pwm.start(70) 
+    pwm.ChangeFrequency(1000)
+    time.sleep(0.5)
+    pwm.stop()
+    GPIO.cleanup()
   
-    pwm.stop()  
 
 play_startup_tone()
 
-GPIO.cleanup()
 
 # ---------Controller Client Command Receiver---------
 def handle_controller_client(conn, addr):
@@ -193,10 +204,12 @@ print("Waiting For Controller Client Connection... ")
 while True:
     sensor_conn, sensor_addr = sensor_server_socket.accept()
     print("Port 86: Connected", sensor_addr)
+    play_connection_tone()
     sensor_thread = threading.Thread(target=handle_sensor_connection, args=(sensor_conn, sensor_addr))
     sensor_thread.start()
 
     controller_conn, controller_addr = controller_server_socket.accept()
     print("Port 87: Connected", controller_addr)
+    play_connection_tone()
     controller_thread = threading.Thread(target=handle_controller_client, args=(controller_conn, controller_addr))
     controller_thread.start()
