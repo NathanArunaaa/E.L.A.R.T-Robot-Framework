@@ -202,14 +202,15 @@ controller_server_socket.listen()
 
 print("Waiting For Controller Client Connection... ")
 while True:
+
     sensor_conn, sensor_addr = sensor_server_socket.accept()
     print("Port 86: Connected", sensor_addr)
-    play_connection_tone()
     sensor_thread = threading.Thread(target=handle_sensor_connection, args=(sensor_conn, sensor_addr))
     sensor_thread.start()
 
+
     controller_conn, controller_addr = controller_server_socket.accept()
     print("Port 87: Connected", controller_addr)
-    play_connection_tone()
     controller_thread = threading.Thread(target=handle_controller_client, args=(controller_conn, controller_addr))
     controller_thread.start()
+    play_startup_tone()
