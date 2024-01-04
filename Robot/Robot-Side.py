@@ -18,7 +18,7 @@ speaker_pin = 17
 GPIO.setup(speaker_pin, GPIO.OUT)
 
 # Create a PWM instance
-pwm = GPIO.PWM(speaker_pin, 1100)  # 100 Hz frequency
+pwm = GPIO.PWM(speaker_pin, 100)  # 100 Hz frequency
 
 # Function to play a tone
 def play_tone(frequency, duration):
@@ -28,7 +28,7 @@ def play_tone(frequency, duration):
     pwm.stop()  # Stop PWM
 
 # Play a 440Hz tone for 1 second
-play_tone(440, 1)
+play_tone(1000, 1)
 
 # Cleanup GPIO settings
 GPIO.cleanup()
