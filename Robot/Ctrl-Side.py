@@ -355,7 +355,7 @@ button_reboot.pack(side=tk.TOP, padx=5, pady=0)
 divider = tk.Label(left_frame,  bg='#323232', text="-----------------------", font=("Helvetica", 12),  fg='grey')
 divider.pack()
 
-button_nav1 = tk.Button(left_frame,  bg='#323232',  fg='blue', text="   NAV-1   ", command=lambda: on_button_click("nav1"))
+button_nav1 = tk.Button(left_frame,  bg='#323232',  fg='blue', text="   NAV-OFF   ", command=lambda: on_button_click("nav-off"))
 button_nav1.pack(side=tk.TOP, padx=5, pady=0)
 
 button_headlight1 = tk.Button(left_frame, bg='#323232',  fg='blue', text="HEADLIGHT1", command=lambda: on_button_click("headlight1"))
@@ -408,7 +408,7 @@ divider = tk.Label(right_frame, bg='#323232', text="-----------------------", fo
 divider.pack()
 
 
-button_nav2 = tk.Button(right_frame, bg='#323232', fg='blue', text="  NAV-2  ", command=lambda: on_button_click("nav2"))
+button_nav2 = tk.Button(right_frame, bg='#323232', fg='blue', text="  NAV-ON  ", command=lambda: on_button_click("nav-on"))
 button_nav2.pack(side=tk.TOP, padx=5, pady=0)
 
 button_headlight2 = tk.Button(right_frame, bg='#323232', fg='blue', text="HEADLIGHT2", command=lambda: on_button_click("headlight2"))
