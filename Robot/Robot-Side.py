@@ -14,7 +14,7 @@ GPIO.setmode(GPIO.BCM)
 speaker_pin = 17
 GPIO.setup(speaker_pin, GPIO.OUT)
 pwm = GPIO.PWM(speaker_pin, 100)
-relayNav = 21
+relayNav = 13
 GPIO.setup(relayNav, GPIO.OUT)
 
 
