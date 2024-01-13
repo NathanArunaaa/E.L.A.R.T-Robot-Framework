@@ -9,21 +9,14 @@ import time
 import subprocess
 import socket
 
+#speaker setup
+GPIO.setmode(GPIO.BCM)
 speaker_pin = 17
-relayNav = 13
-motor1_pwm = 17  
-motor1_in1 = 18 
-motor1_in2 = 19  
-
-motor2_pwm = 27 
-motor2_in1 = 20  
-motor2_in2 = 12 
-
+GPIO.setup(speaker_pin, GPIO.OUT)
+pwm = GPIO.PWM(speaker_pin, 100)
+relayNav = 21
 
 def play_startup_tone():
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(speaker_pin, GPIO.OUT)
-    pwm = GPIO.PWM(speaker_pin, 100) 
     pwm.start(70) 
     pwm.ChangeFrequency(1000)  
     time.sleep(0.5)
@@ -35,9 +28,6 @@ def play_startup_tone():
     GPIO.cleanup()
     
 def play_connection_tone():
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(speaker_pin, GPIO.OUT)
-    pwm = GPIO.PWM(speaker_pin, 100) 
     pwm.start(70) 
     pwm.ChangeFrequency(1000)  
     time.sleep(0.5)
@@ -47,67 +37,61 @@ def play_connection_tone():
     time.sleep(1)
     pwm.stop()
     GPIO.cleanup()
-    
-def motor_test_wrapper():
-        motor_test()
-        
-def send_frame(conn, frame):
-    frame_data = pickle.dumps(frame)
-    frame_size = struct.pack('!L', len(frame_data))
-    conn.sendall(frame_size + frame_data)
+  
 
-def sysReboot():
-    print('System Rebooting....')
-    time.sleep(5) 
-    os.system('sudo reboot')
+play_startup_tone()
 
-def sysShutdown():
-    print('System Shutdown....')
-    time.sleep(5)
-    os.system('sudo shutdown -h now')
+
+# ---------Controller Client Command Receiver---------
+def handle_controller_client(conn, addr):
     
-def navLightsOn():
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(relayNav, GPIO.OUT)
-    GPIO.output(relayNav, True)
-    print("Turning On Navigation Lights")
+    def navLightsOn():
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(relayNav, GPIO.OUT)
+        GPIO.output(relayNav, True)
+        print("Turning On Navigation Lights")
 
     
-def navLightsOff():
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(relayNav, GPIO.OUT)
-    GPIO.output(relayNav, False)
-    print("Turning Off Navigation Lights")
+    def navLightsOff():
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(relayNav, GPIO.OUT)
+        GPIO.output(relayNav, False)
+        print("Turning Off Navigation Lights")
+    
+    def motor_test():
+        GPIO.setmode(GPIO.BCM)
+        motor1_pwm = 17  
+        motor1_in1 = 18 
+        motor1_in2 = 19  
 
-        
-def motor_test():
-    GPIO.setmode(GPIO.BCM)
-        
+        motor2_pwm = 27 
+        motor2_in1 = 20  
+        motor2_in2 = 12 
     # Set up pins as output for Motor 1
-    GPIO.setup(motor1_pwm, GPIO.OUT)
-    GPIO.setup(motor1_in1, GPIO.OUT)
-    GPIO.setup(motor1_in2, GPIO.OUT)
+        GPIO.setup(motor1_pwm, GPIO.OUT)
+        GPIO.setup(motor1_in1, GPIO.OUT)
+        GPIO.setup(motor1_in2, GPIO.OUT)
 
     # Set up pins as output for Motor 2
-    GPIO.setup(motor2_pwm, GPIO.OUT)
-    GPIO.setup(motor2_in1, GPIO.OUT)
-    GPIO.setup(motor2_in2, GPIO.OUT)
+        GPIO.setup(motor2_pwm, GPIO.OUT)
+        GPIO.setup(motor2_in1, GPIO.OUT)
+        GPIO.setup(motor2_in2, GPIO.OUT)
 
     # Set up PWM for both motors
-    motor1_pwm_obj = GPIO.PWM(motor1_pwm, 1000)  # Frequency: 1000 Hz
-    motor2_pwm_obj = GPIO.PWM(motor2_pwm, 1000)
-    motor1_pwm_obj.start(0)  # Start PWM with 0% duty cycle
-    motor2_pwm_obj.start(0)
+        motor1_pwm_obj = GPIO.PWM(motor1_pwm, 1000)  # Frequency: 1000 Hz
+        motor2_pwm_obj = GPIO.PWM(motor2_pwm, 1000)
+        motor1_pwm_obj.start(0)  # Start PWM with 0% duty cycle
+        motor2_pwm_obj.start(0)
  
     # Function to set motor speed
-    def set_motor_speed(pwm_obj, in1, in2, speed):
-        if speed >= 0:
-            GPIO.output(in1, GPIO.HIGH)
-            GPIO.output(in2, GPIO.LOW)
-        else:
-            GPIO.output(in1, GPIO.LOW)
-            GPIO.output(in2, GPIO.HIGH)
-        pwm_obj.ChangeDutyCycle(abs(speed))
+        def set_motor_speed(pwm_obj, in1, in2, speed):
+            if speed >= 0:
+                GPIO.output(in1, GPIO.HIGH)
+                GPIO.output(in2, GPIO.LOW)
+            else:
+                GPIO.output(in1, GPIO.LOW)
+                GPIO.output(in2, GPIO.HIGH)
+            pwm_obj.ChangeDutyCycle(abs(speed))
 
         try:
             speed = 100  # Set the speed as a percentage (-100 to 100)
@@ -119,16 +103,27 @@ def motor_test():
             motor2_pwm_obj.stop()
             GPIO.cleanup()
             
+    def motor_test_wrapper():
+        motor_test()
         
+    def send_frame(conn, frame):
+        frame_data = pickle.dumps(frame)
+        frame_size = struct.pack('!L', len(frame_data))
+        conn.sendall(frame_size + frame_data)
 
-play_startup_tone()
+    def sysReboot():
+        print('System Rebooting....')
+        time.sleep(5) 
+        os.system('sudo reboot')
 
-
-# ---------Controller Client Command Receiver---------
-def handle_controller_client(conn, addr):
-    
-
-    try:  
+    def sysShutdown():
+        print('System Shutdown....')
+        time.sleep(5)
+        os.system('sudo shutdown -h now')
+        print("Client connected:", addr)
+        
+    try:
+        
 #-------------Waiting for command from client---------        
         while True:
             data = conn.recv(1024).decode()
