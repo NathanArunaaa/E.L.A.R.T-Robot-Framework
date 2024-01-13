@@ -10,7 +10,7 @@ import subprocess
 import socket
 
 speaker_pin = 17
-relayNav = 21
+relayNav = 13
 motor1_pwm = 17  
 motor1_in1 = 18 
 motor1_in2 = 19  
