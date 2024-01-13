@@ -1,4 +1,3 @@
-import socket
 import cv2
 import threading
 import struct
@@ -8,75 +7,128 @@ import os
 import RPi.GPIO as GPIO
 import time
 import subprocess
+import socket
+
+speaker_pin = 17
+relayNav = 16
+motor1_pwm = 17  
+motor1_in1 = 18 
+motor1_in2 = 19  
+
+motor2_pwm = 27 
+motor2_in1 = 20  
+motor2_in2 = 12 
 
 
-# ---------Controller Client Command Receiver---------
-def handle_controller_client(conn, addr):
-    def motor_test():
-        GPIO.setmode(GPIO.BCM)
-        motor1_pwm = 17  
-        motor1_in1 = 18 
-        motor1_in2 = 19  
+def play_startup_tone():
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(speaker_pin, GPIO.OUT)
+    pwm = GPIO.PWM(speaker_pin, 100) 
+    pwm.start(70) 
+    pwm.ChangeFrequency(1000)  
+    time.sleep(0.5)
+    pwm.ChangeFrequency(300)
+    time.sleep(0.5)
+    pwm.ChangeFrequency(1000)
+    time.sleep(1)
+    pwm.stop()
+    GPIO.cleanup()
+    
+def play_connection_tone():
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(speaker_pin, GPIO.OUT)
+    pwm = GPIO.PWM(speaker_pin, 100) 
+    pwm.start(70) 
+    pwm.ChangeFrequency(1000)  
+    time.sleep(0.5)
+    pwm.ChangeFrequency(300)
+    time.sleep(0.5)
+    pwm.ChangeFrequency(1000)
+    time.sleep(1)
+    pwm.stop()
+    GPIO.cleanup()
+    
+def motor_test_wrapper():
+        motor_test()
+        
+def send_frame(conn, frame):
+    frame_data = pickle.dumps(frame)
+    frame_size = struct.pack('!L', len(frame_data))
+    conn.sendall(frame_size + frame_data)
 
-        motor2_pwm = 27 
-        motor2_in1 = 20  
-        motor2_in2 = 12 
+def sysReboot():
+    print('System Rebooting....')
+    time.sleep(5) 
+    os.system('sudo reboot')
+
+def sysShutdown():
+    print('System Shutdown....')
+    time.sleep(5)
+    os.system('sudo shutdown -h now')
+    
+def navLightsOn():
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(relayNav, GPIO.OUT)
+    GPIO.output(relayNav, True)
+    print("Turning On Navigation Lights")
+
+    
+def navLightsOff():
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(relayNav, GPIO.OUT)
+    GPIO.output(relayNav, False)
+    print("Turning Off Navigation Lights")
+
+        
+def motor_test():
+    GPIO.setmode(GPIO.BCM)
+        
     # Set up pins as output for Motor 1
-        GPIO.setup(motor1_pwm, GPIO.OUT)
-        GPIO.setup(motor1_in1, GPIO.OUT)
-        GPIO.setup(motor1_in2, GPIO.OUT)
+    GPIO.setup(motor1_pwm, GPIO.OUT)
+    GPIO.setup(motor1_in1, GPIO.OUT)
+    GPIO.setup(motor1_in2, GPIO.OUT)
 
     # Set up pins as output for Motor 2
-        GPIO.setup(motor2_pwm, GPIO.OUT)
-        GPIO.setup(motor2_in1, GPIO.OUT)
-        GPIO.setup(motor2_in2, GPIO.OUT)
+    GPIO.setup(motor2_pwm, GPIO.OUT)
+    GPIO.setup(motor2_in1, GPIO.OUT)
+    GPIO.setup(motor2_in2, GPIO.OUT)
 
     # Set up PWM for both motors
-        motor1_pwm_obj = GPIO.PWM(motor1_pwm, 1000)  # Frequency: 1000 Hz
-        motor2_pwm_obj = GPIO.PWM(motor2_pwm, 1000)
-        motor1_pwm_obj.start(0)  # Start PWM with 0% duty cycle
-        motor2_pwm_obj.start(0)
+    motor1_pwm_obj = GPIO.PWM(motor1_pwm, 1000)  # Frequency: 1000 Hz
+    motor2_pwm_obj = GPIO.PWM(motor2_pwm, 1000)
+    motor1_pwm_obj.start(0)  # Start PWM with 0% duty cycle
+    motor2_pwm_obj.start(0)
  
     # Function to set motor speed
-        def set_motor_speed(pwm_obj, in1, in2, speed):
-            if speed >= 0:
-                GPIO.output(in1, GPIO.HIGH)
-                GPIO.output(in2, GPIO.LOW)
-            else:
-                GPIO.output(in1, GPIO.LOW)
-                GPIO.output(in2, GPIO.HIGH)
-            pwm_obj.ChangeDutyCycle(abs(speed))
+    def set_motor_speed(pwm_obj, in1, in2, speed):
+        if speed >= 0:
+            GPIO.output(in1, GPIO.HIGH)
+            GPIO.output(in2, GPIO.LOW)
+        else:
+            GPIO.output(in1, GPIO.LOW)
+            GPIO.output(in2, GPIO.HIGH)
+        pwm_obj.ChangeDutyCycle(abs(speed))
 
         try:
             speed = 100  # Set the speed as a percentage (-100 to 100)
-            print("at try stage")
             set_motor_speed(motor1_pwm_obj, motor1_in1, motor1_in2, speed)
             set_motor_speed(motor2_pwm_obj, motor2_in1, motor2_in2, -speed)
-        
-            time.sleep(5)
-        
+            time.sleep(1)
         finally:
             motor1_pwm_obj.stop()
             motor2_pwm_obj.stop()
             GPIO.cleanup()
+            
         
-    def send_frame(conn, frame):
-        frame_data = pickle.dumps(frame)
-        frame_size = struct.pack('!L', len(frame_data))
-        conn.sendall(frame_size + frame_data)
 
-    def sysReboot():
-        print('System Rebooting....')
-        time.sleep(5) 
-        os.system('sudo reboot')
+play_startup_tone()
 
-    def sysShutdown():
-        print('System Shutdown....')
-        time.sleep(5)
-        os.system('sudo shutdown -h now')
-        print("Client connected:", addr)
-    try:
-        
+
+# ---------Controller Client Command Receiver---------
+def handle_controller_client(conn, addr):
+    
+
+    try:  
 #-------------Waiting for command from client---------        
         while True:
             data = conn.recv(1024).decode()
@@ -96,10 +148,11 @@ def handle_controller_client(conn, addr):
                     sysShutdown()
                     
                 elif data == 'motortest':
-                    motor_test()
+                    motor_test_thread = threading.Thread(target=motor_test_wrapper)
+                    motor_test_thread.start()
                 
-                elif data == 'nav1':
-                    print("Turning On Navigation Lights 1")
+                elif data == 'nav-on':
+                    navLightsOn()
                     
                 elif data == 'auto':
                     print("Auto Mode On")
@@ -107,8 +160,8 @@ def handle_controller_client(conn, addr):
                 elif data == 'overide':
                     print("Overide Mode On")
                     
-                elif data == 'nav2':
-                    print("Turning On Navigation Lights 2")
+                elif data == 'nav-off':
+                    navLightsOff()
                     
                 elif data == 'headlight1':
                     print("Turning On Headlights 1")
@@ -135,6 +188,7 @@ def handle_sensor_connection(conn, addr):
             temperature_str = result.stdout.strip()
             temperature = float(temperature_str.split('=')[1].replace("'C", ""))
             temperature_data = f"[CPU TEMP: {temperature:.2f} °C]"
+            time.sleep(3)
             try:
                 conn.sendall(temperature_data.encode())
             except (BrokenPipeError, ConnectionResetError):
@@ -167,12 +221,15 @@ controller_server_socket.listen()
 
 print("Waiting For Controller Client Connection... ")
 while True:
+
     sensor_conn, sensor_addr = sensor_server_socket.accept()
     print("Port 86: Connected", sensor_addr)
     sensor_thread = threading.Thread(target=handle_sensor_connection, args=(sensor_conn, sensor_addr))
     sensor_thread.start()
 
+
     controller_conn, controller_addr = controller_server_socket.accept()
     print("Port 87: Connected", controller_addr)
     controller_thread = threading.Thread(target=handle_controller_client, args=(controller_conn, controller_addr))
     controller_thread.start()
+    play_startup_tone()
