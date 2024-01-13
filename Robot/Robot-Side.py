@@ -15,6 +15,8 @@ speaker_pin = 17
 GPIO.setup(speaker_pin, GPIO.OUT)
 pwm = GPIO.PWM(speaker_pin, 100)
 relayNav = 13
+GPIO.setup(relayNav, GPIO.OUT)
+
 
 def play_startup_tone():
     pwm.start(70) 
@@ -46,16 +48,12 @@ play_startup_tone()
 def handle_controller_client(conn, addr):
     
     def navLightsOn():
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(relayNav, GPIO.OUT)
-        GPIO.output(relayNav, True)
+        GPIO.output(relayNav, GPIO.HIGH)
         print("Turning On Navigation Lights")
 
     
     def navLightsOff():
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(relayNav, GPIO.OUT)
-        GPIO.output(relayNav, False)
+        GPIO.output(relayNav, GPIO.LOW)
         print("Turning Off Navigation Lights")
     
     def motor_test():
