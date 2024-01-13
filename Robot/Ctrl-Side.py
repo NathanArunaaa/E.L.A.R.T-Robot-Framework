@@ -17,14 +17,13 @@ import queue
 
 #----------------------List for commands---------------------
 command_history = []
-#------------------------------------------------------------
+
 gui_queue = queue.Queue()
 
 #--------------------Connect to the robot--------------------
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_address = ('192.168.4.1', 87)  
 client_socket.connect(server_address)
-#------------------------------------------------------------
 
 
 
@@ -54,13 +53,11 @@ def draw_artificial_horizon(canvas, pitch, roll):
 
     # Draw the horizon line
     canvas.create_line(x1, y1, x2, y2, fill="white", tags="horizon", width=2, arrow=tk.BOTH)
-#------------------------------------------------------------
 
 
 
 
 #---------------------Receiving Sensor Data------------------
-
 def update_sensor_data():
     try:
        sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -80,7 +77,6 @@ def update_sensor_data():
                 
 def update_label_variable(new_value):
     rpiTemp_var.set(new_value)
-#------------------------------------------------------------
  
 def update_gui():
     try:
@@ -90,6 +86,7 @@ def update_gui():
     except queue.Empty:
         pass
     root.after(100, update_gui)   
+    
     
 # -------------------Update Camera Feed----------------------
 def update_camera_feed():
@@ -109,23 +106,15 @@ def update_camera_feed():
                 frame_data += data
 
             if len(frame_data) == frame_size:
-                # Convert the received bytes to a NumPy array
                 frame = pickle.loads(frame_data)
-
-                # Convert the NumPy array to an ImageTk object
+                
                 image = Image.fromarray(frame)
-
-                # Resize the image to fit the canvas
                 image = image.resize((canvas.winfo_width(), canvas.winfo_height()), Image.ANTIALIAS)
-
-                # Convert the resized image to an ImageTk object
                 image = ImageTk.PhotoImage(image)
-
-                # Update the canvas with the new image
+                
                 canvas.create_image(0, 0, anchor=tk.NW, image=image)
                 canvas.image = image
 
-                # Get the pitch and roll angles (replace this with your actual angle calculation)
                 pitch = 30
                 roll = 30
 
@@ -144,11 +133,10 @@ def update_camera_feed():
 
     except Exception as e:
         print("Error updating camera feed:", e)
-#---------------------------------------------------------------
 
 
 
-# -----------Function to send commands to the server-----------
+# -----------Function to send commands to the robot side-----------
 def on_button_click(command):
     print(f"Sending command: {command}")
     client_socket.sendall(command.encode())
@@ -156,7 +144,6 @@ def on_button_click(command):
     command_history.append(command) 
     if len(command_history) > 10:
         command_history.pop(0)
-#---------------------------------------------------------------
 
 
 
@@ -177,15 +164,13 @@ def update_Temp3_data():
     Temp1_label.config(text=sensor_reading)
     root.after(1000, update_Temp3_data)  
 
-#---------------------------------------------------------------   
 
 
 # ------------Function to update the date and time--------------
 def update_time():
     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     time_label.config(text="Current Time: " + current_time)
-    root.after(1000, update_time)  # Update the time every 1000ms (1 second)
-#---------------------------------------------------------------  
+    root.after(1000, update_time)  
 
 
     
@@ -203,7 +188,6 @@ def update_progress_battery():
         value = 0
     progress_var_battery.set(value)
     root.after(1000, update_progress_battery)
-#---------------------------------------------------------------  
 
 
 def shutdown_controller():
@@ -216,7 +200,6 @@ def confirm_reboot():
     smaller_window_reboot.title("E.L.A.R.T")
     smaller_window_reboot.geometry("200x100")  # Set the size of the new window
 
-    # Add widgets to the smaller window
     label = tk.Label(smaller_window_reboot, fg='white', bg='#323232', text="CONFIRM REBOOT")
     label.pack()
     
@@ -224,7 +207,7 @@ def confirm_reboot():
     button_reboot_yes.pack()
     button_reboot_no = tk.Button(smaller_window_reboot, fg='green', text="No", activebackground='tomato', command=smaller_window_reboot.destroy)
     button_reboot_no.pack()
-#---------------------------------------------------------------  
+
 
 #--------------------------Shutdow Window-----------------------
 def confirm_Shutdown():
@@ -232,7 +215,6 @@ def confirm_Shutdown():
     smaller_window_shutdown.title("E.L.A.R.T ")
     smaller_window_shutdown.geometry("200x100")  # Set the size of the new window
 
-    # Add widgets to the smaller window
     label = tk.Label(smaller_window_shutdown, bg='#323232', fg='white', text="CONFIRM SHUTDOWN")
     label.pack()
     
@@ -240,16 +222,14 @@ def confirm_Shutdown():
     button_shutdown_yes.pack()
     button_shutdown_no = tk.Button(smaller_window_shutdown, fg='green', text="No", activebackground='tomato', command=smaller_window_shutdown.destroy)
     button_shutdown_no.pack()
-#--------------------------------------------------------------- 
 
 
-#--------------------------Close Controller-----------------------
+#--------------------------Shutdown Controller Window-----------------------
 def confirm_controller_Shutdown():
     smaller_window_shutdown = tk.Toplevel(root, bg='#323232')
     smaller_window_shutdown.title("E.L.A.R.T ")
     smaller_window_shutdown.geometry("250x100")  # Set the size of the new window
 
-    # Add widgets to the smaller window
     label = tk.Label(smaller_window_shutdown,  bg='#323232', fg='white', text="CONFIRM CONRTOLLER SHUTDOWN")
     label.pack()
     
@@ -257,14 +237,13 @@ def confirm_controller_Shutdown():
     button_shutdown_yes.pack()
     button_shutdown_no = tk.Button(smaller_window_shutdown, fg='green', text="No", activebackground='tomato', command=smaller_window_shutdown.destroy)
     button_shutdown_no.pack()
-#--------------------------------------------------------------- 
 
 
 #--------------------------Sensor Window------------------------
 def sensor_window():
     sensor_readings = tk.Toplevel(root, bg='#323232')
     sensor_readings.title("E.L.A.R.T Sensors")
-    sensor_readings.geometry("350x250")  # Set the size of the new window
+    sensor_readings.geometry("350x250")  
 
     label = tk.Label(sensor_readings, bg='#323232', fg='white', text="SENSOR READINGS")
     label.pack()
@@ -284,7 +263,6 @@ def sensor_window():
     progress_var_etlu = tk.DoubleVar(sensor_readings)
     vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
     vertical_progress.pack(side=tk.LEFT, padx=30)
-#---------------------------------------------------------------
    
     
     
@@ -314,7 +292,7 @@ Temp2_label.pack(side=tk.LEFT)
 
 Temp3_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp3: N/A]")
 Temp3_label.pack(side=tk.LEFT)
-#---------------------------------------------------------------
+
 
 time_label = tk.Label(sensor_frame,bg='#323232',  fg='gray', text="Current Time: ")
 time_label.pack(side=tk.LEFT, pady=10)
@@ -328,14 +306,13 @@ Temp2_label.pack(side=tk.LEFT)
 
 Temp3_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Sens3: N/A]")
 Temp3_label.pack(side=tk.LEFT)
-#---------------------------------------------------------------
 
 
 #----------------------Left Row Buttons-------------------------
 current_directory = os.path.dirname(os.path.abspath(__file__))
 image_path = os.path.join(current_directory, "assets", "logo-no-background.png")
 image = Image.open(image_path)
-image = image.resize((95, 60))  # Resize the image if needed
+image = image.resize((95, 60))  
 photo = ImageTk.PhotoImage(image)
 
 left_frame = tk.Frame(root)
@@ -377,15 +354,11 @@ etlu.pack(side=tk.TOP, padx=5, pady=5)
 
 etlu_warning = tk.Label(left_frame,  bg='#323232', fg='Green', text="Evironment Is Safe")
 etlu_warning.pack(side=tk.TOP, padx=5, pady=5)
-#----------------------------------------------------------------
 
 
 #----------------------------Camera------------------------------
-
 canvas = tk.Canvas(root, width=1180, height=790)
 canvas.pack(side=tk.LEFT)
-
-#---------------------------------------------------------------
 
 
 #----------------------Right Row Buttons-------------------------
@@ -434,7 +407,6 @@ battery_level.pack(side=tk.TOP, padx=5, pady=5)
 
 battery_value = tk.Label(right_frame,bg='#323232',  fg='white', text=progress_var_battery)
 battery_value.pack(side=tk.TOP)
-#----------------------------------------------------------------
 
 
 # ---------Function to start the Sensor + camera thread---------
@@ -448,7 +420,6 @@ def start_camera_thread():
     camera_thread = threading.Thread(target=update_camera_feed)
     camera_thread.daemon = True
     camera_thread.start()
-#---------------------------------------------------------------
 
 
 

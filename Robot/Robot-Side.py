@@ -1,3 +1,5 @@
+#E.L.A.R.T Framework By: Nathan Aruna & Christos Velmachos
+
 import cv2
 import threading
 import struct
@@ -9,57 +11,40 @@ import time
 import subprocess
 import socket
 
-#speaker setup
-GPIO.setmode(GPIO.BCM)
-speaker_pin = 17
-GPIO.setup(speaker_pin, GPIO.OUT)
-pwm = GPIO.PWM(speaker_pin, 100)
 
 
-def play_startup_tone():
-    pwm.start(70) 
-    pwm.ChangeFrequency(1000)  
-    time.sleep(0.5)
-    pwm.ChangeFrequency(300)
-    time.sleep(0.5)
-    pwm.ChangeFrequency(1000)
-    time.sleep(1)
-    pwm.stop()
-    GPIO.cleanup()
-    
-def play_connection_tone():
-    pwm.start(70) 
-    pwm.ChangeFrequency(1000)  
-    time.sleep(0.5)
-    pwm.ChangeFrequency(300)
-    time.sleep(0.5)
-    pwm.ChangeFrequency(1000)
-    time.sleep(1)
-    pwm.stop()
-    GPIO.cleanup()
-  
-
-play_startup_tone()
-
-
-# ---------Controller Client Command Receiver---------
+# ---------Contreller command handler ---------
 def handle_controller_client(conn, addr):
     
-    def navLightsOn():
-        GPIO.setmode(GPIO.BCM)
-        relayNav = 13
-        GPIO.setup(relayNav, GPIO.OUT)
-        GPIO.output(relayNav, GPIO.HIGH)
-        print("Turning On Navigation Lights")
-
+    #speaker setup
+    speaker_pin = 17
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(speaker_pin, GPIO.OUT)
+    pwm = GPIO.PWM(speaker_pin, 100)
     
-    def navLightsOff():
-        GPIO.setmode(GPIO.BCM)
-        relayNav = 13
-        GPIO.setup(relayNav, GPIO.OUT)
-        GPIO.output(relayNav, GPIO.LOW)
-        print("Turning Off Navigation Lights")
+    def play_startup_tone():
+        pwm.start(70) 
+        pwm.ChangeFrequency(1000)  
+        time.sleep(0.5)
+        pwm.ChangeFrequency(300)
+        time.sleep(0.5)
+        pwm.ChangeFrequency(1000)
+        time.sleep(1)
+        pwm.stop()
+        GPIO.cleanup()
     
+    def play_connection_tone():
+        pwm.start(70) 
+        pwm.ChangeFrequency(1000)  
+        time.sleep(0.5)
+        pwm.ChangeFrequency(300)
+        time.sleep(0.5)
+        pwm.ChangeFrequency(1000)
+        time.sleep(1)
+        pwm.stop()
+        GPIO.cleanup()
+  
+    # Function to test the motors
     def motor_test():
         GPIO.setmode(GPIO.BCM)
         motor1_pwm = 17  
@@ -80,9 +65,9 @@ def handle_controller_client(conn, addr):
         GPIO.setup(motor2_in2, GPIO.OUT)
 
     # Set up PWM for both motors
-        motor1_pwm_obj = GPIO.PWM(motor1_pwm, 1000)  # Frequency: 1000 Hz
+        motor1_pwm_obj = GPIO.PWM(motor1_pwm, 1000)  
         motor2_pwm_obj = GPIO.PWM(motor2_pwm, 1000)
-        motor1_pwm_obj.start(0)  # Start PWM with 0% duty cycle
+        motor1_pwm_obj.start(0) 
         motor2_pwm_obj.start(0)
  
     # Function to set motor speed
@@ -105,28 +90,48 @@ def handle_controller_client(conn, addr):
             motor2_pwm_obj.stop()
             GPIO.cleanup()
             
-    def motor_test_wrapper():
-        motor_test()
-        
-    def send_frame(conn, frame):
-        frame_data = pickle.dumps(frame)
-        frame_size = struct.pack('!L', len(frame_data))
-        conn.sendall(frame_size + frame_data)
+    
+    # Function to turn on navigation lights
+    def navLightsOn():
+        GPIO.setmode(GPIO.BCM)
+        relayNav = 13
+        GPIO.setup(relayNav, GPIO.OUT)
+        GPIO.output(relayNav, GPIO.HIGH)
+        print("Turning On Navigation Lights")
 
+    # Function to turn off navigation lights
+    def navLightsOff():
+        GPIO.setmode(GPIO.BCM)
+        relayNav = 13
+        GPIO.setup(relayNav, GPIO.OUT)
+        GPIO.output(relayNav, GPIO.LOW)
+        print("Turning Off Navigation Lights")
+        
+    # Function to reboot the system
     def sysReboot():
         print('System Rebooting....')
         time.sleep(5) 
         os.system('sudo reboot')
 
+    # Function to shutdown the system(robot side)
     def sysShutdown():
         print('System Shutdown....')
         time.sleep(5)
         os.system('sudo shutdown -h now')
         print("Client connected:", addr)
         
-    try:
+    # Function to send video frames to the controller client   
+    def send_frame(conn, frame):
+        frame_data = pickle.dumps(frame)
+        frame_size = struct.pack('!L', len(frame_data))
+        conn.sendall(frame_size + frame_data)
+
+    
+       
+ #------------- looking for commands from controller client ---------        
+    try: 
+        play_startup_tone()
         
-#-------------Waiting for command from client---------        
         while True:
             data = conn.recv(1024).decode()
             if not data:
@@ -145,12 +150,13 @@ def handle_controller_client(conn, addr):
                     sysShutdown()
                     
                 elif data == 'motortest':
-                    motor_test_thread = threading.Thread(target=motor_test_wrapper)
+                    motor_test_thread = threading.Thread(target=motor_test)
                     motor_test_thread.start()
                 
                 elif data == 'nav-on':
-                    navLightsOn()
-                    
+                    navLightsOn_thread = threading.Thread(target= navLightsOn)
+                    navLightsOn_thread.start()
+                  
                 elif data == 'auto':
                     print("Auto Mode On")
                     
@@ -158,21 +164,21 @@ def handle_controller_client(conn, addr):
                     print("Overide Mode On")
                     
                 elif data == 'nav-off':
-                    navLightsOff()
+                    navLightsOff_thread = threading.Thread(target= navLightsOff)
+                    navLightsOff_thread.start()
                     
                 elif data == 'headlight1':
                     print("Turning On Headlights 1")
                     
                 elif data == 'headlight2':
                     print("Turning On Headlights 2")
-#-----------------------------------------------------
                
     except Exception as e:
         print("Error handling client:", e)
     finally:
         conn.close()
         print("Client disconnected:", addr)
-#-----------------------------------------------------
+
 
 
 
@@ -191,32 +197,32 @@ def handle_sensor_connection(conn, addr):
             except (BrokenPipeError, ConnectionResetError):
                 print("Sensor: Client disconnected.")
                 break
-    except:
+    except:  # noqa: E722
         print("Sensor connection error:", addr)
     finally:
         conn.close()
-#-----------------------------------------------------
      
 
 camera = cv2.VideoCapture(0)  # Use 0 for the first camera device (change the index if needed)
 
-
 #-------Set up a socket server for sesnor data--------
 sensor_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sensor_server_address = ('0.0.0.0', 86)  # Replace with your server's IP and port
+sensor_server_address = ('0.0.0.0', 86)  
 sensor_server_socket.bind(sensor_server_address)
 sensor_server_socket.listen()
-#-----------------------------------------------------
+
+
 
 #----Set up a socket server for controller client-----
 controller_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-controller_server_address = ('0.0.0.0', 87)  # Replace with your server's IP and port
+controller_server_address = ('0.0.0.0', 87) 
 controller_server_socket.bind(controller_server_address)
 controller_server_socket.listen()
-#-----------------------------------------------------
 
 
 print("Waiting For Controller Client Connection... ")
+
+#---------connect both sides to transmit data and start threads-------
 while True:
 
     sensor_conn, sensor_addr = sensor_server_socket.accept()
@@ -229,4 +235,4 @@ while True:
     print("Port 87: Connected", controller_addr)
     controller_thread = threading.Thread(target=handle_controller_client, args=(controller_conn, controller_addr))
     controller_thread.start()
-    play_startup_tone()
+    
