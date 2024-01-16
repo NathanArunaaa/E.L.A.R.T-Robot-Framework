@@ -139,11 +139,16 @@ def update_camera_feed():
 # -----------Function to send commands to the robot side-----------
 def on_button_click(command):
     print(f"Sending command: {command}")
-    client_socket.sendall(command.encode())
 
-    command_history.append(command) 
-    if len(command_history) > 10:
-        command_history.pop(0)
+    def send_command():
+        client_socket.sendall(command.encode())
+        command_history.append(command)
+        if len(command_history) > 10:
+            command_history.pop(0)
+
+    # Create a new thread for sending the command
+    command_thread = threading.Thread(target=send_command)
+    command_thread.start()
 
 
 
