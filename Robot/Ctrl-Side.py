@@ -14,7 +14,7 @@ import os
 import math
 import time
 import queue
-import pyautogui
+import keyboard
 
 #----------------------List for commands---------------------
 command_history = []
@@ -153,14 +153,17 @@ def button_click_thread(command):
 
 def handle_key_press():
     while True:
-        if pyautogui.keyDown('w'):
+        if keyboard.is_pressed('w'):
             button_click_thread("front")
             print("w")
-        elif pyautogui.keyDown('a'):
+            
+        elif keyboard.is_pressed('a'):
             button_click_thread("left")  
-        elif pyautogui.keyDown('s'):
-            button_click_thread("back")  
-        elif pyautogui.keyDown('d'):
+            
+        elif keyboard.is_pressed('s'):
+            button_click_thread("back") 
+             
+        elif keyboard.is_pressed('d'):
             button_click_thread("right")  
 
         
