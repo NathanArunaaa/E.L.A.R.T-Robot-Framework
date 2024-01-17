@@ -387,7 +387,7 @@ divider = tk.Label(right_frame, bg='#323232', text="-----------------------", fo
 divider.pack()
 
 
-button_nav2 = tk.Button(right_frame, bg='#323232', fg='blue', text="  NAV-ON  ", command=lambda:  button_click_thread("nav-on"))
+button_nav2 = tk.Button(right_frame, bg='#323232', fg='blue', text="  NAV-OFF  ", command=lambda:  button_click_thread("nav-on"))
 button_nav2.pack(side=tk.TOP, padx=5, pady=0)
 
 button_headlight2 = tk.Button(right_frame, bg='#323232', fg='blue', text="HEADLIGHT2", command=lambda:  button_click_thread("headlight2"))
