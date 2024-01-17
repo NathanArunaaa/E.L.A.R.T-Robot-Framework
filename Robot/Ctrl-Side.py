@@ -153,13 +153,17 @@ def button_click_thread(command):
 def handle_key_press():
     while True:
         if keyboard.is_pressed('w'):
-            button_click_thread("front")  
+            button_click_thread("front")
+            print("w") 
         elif keyboard.is_pressed('a'):
-            button_click_thread("left")  
+            button_click_thread("left")
+            print("a")  
         elif keyboard.is_pressed('s'):
-            button_click_thread("back")  
+            button_click_thread("back")
+            print("s") 
         elif keyboard.is_pressed('d'):
-            button_click_thread("right")  
+            button_click_thread("right")
+            print("d")  
 
         
 
