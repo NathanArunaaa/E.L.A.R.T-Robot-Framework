@@ -154,15 +154,19 @@ def button_click_thread(command):
 
 def handle_key_press():
     while True:
+        # Detect key presses using the keyboard library
         if keyboard.is_pressed('w'):
-            button_click_thread("front")
-            print("w")
+            button_click_thread("move_forward_command")  # Replace with your actual forward command
         elif keyboard.is_pressed('a'):
             button_click_thread("left")  
+            
         elif keyboard.is_pressed('s'):
-            button_click_thread("back")  
+            button_click_thread("back") 
+             
         elif keyboard.is_pressed('d'):
-            button_click_thread("right")  
+            button_click_thread("turn_right_command")  # Replace with your actual turn right command
+
+        time.sleep(0.1)  # Adjust the sleep time based on your requirements
 
 
 # ---------Function to update the temp sensor data----------------
