@@ -1,5 +1,5 @@
 #E.L.A.R.T Framework By: Nathan Aruna & Christos Velmachos
-
+#Robot Side
 import cv2
 import threading
 import struct
@@ -17,32 +17,7 @@ import socket
 def handle_controller_client(conn, addr):
     
     #speaker setup
-    speaker_pin = 17
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(speaker_pin, GPIO.OUT)
-    pwm = GPIO.PWM(speaker_pin, 100)
     
-    def play_startup_tone():
-        pwm.start(70) 
-        pwm.ChangeFrequency(1000)  
-        time.sleep(0.5)
-        pwm.ChangeFrequency(300)
-        time.sleep(0.5)
-        pwm.ChangeFrequency(1000)
-        time.sleep(1)
-        pwm.stop()
-        GPIO.cleanup()
-    
-    def play_connection_tone():
-        pwm.start(70) 
-        pwm.ChangeFrequency(1000)  
-        time.sleep(0.5)
-        pwm.ChangeFrequency(300)
-        time.sleep(0.5)
-        pwm.ChangeFrequency(1000)
-        time.sleep(1)
-        pwm.stop()
-        GPIO.cleanup()
   
     # Function to test the motors
     def motor_test():
@@ -84,7 +59,7 @@ def handle_controller_client(conn, addr):
             speed = 100  # Set the speed as a percentage (-100 to 100)
             set_motor_speed(motor1_pwm_obj, motor1_in1, motor1_in2, speed)
             set_motor_speed(motor2_pwm_obj, motor2_in1, motor2_in2, -speed)
-            time.sleep(1)
+            
         finally:
             motor1_pwm_obj.stop()
             motor2_pwm_obj.stop()
@@ -97,7 +72,6 @@ def handle_controller_client(conn, addr):
         relayNav = 13
         GPIO.setup(relayNav, GPIO.OUT)
         GPIO.output(relayNav, GPIO.HIGH)
-        print("Turning On Navigation Lights")
 
     # Function to turn off navigation lights
     def navLightsOff():
@@ -105,7 +79,6 @@ def handle_controller_client(conn, addr):
         relayNav = 13
         GPIO.setup(relayNav, GPIO.OUT)
         GPIO.output(relayNav, GPIO.LOW)
-        print("Turning Off Navigation Lights")
         
     # Function to reboot the system
     def sysReboot():
@@ -126,11 +99,9 @@ def handle_controller_client(conn, addr):
         frame_size = struct.pack('!L', len(frame_data))
         conn.sendall(frame_size + frame_data)
 
-    
        
  #------------- looking for commands from controller client ---------        
     try: 
-        play_startup_tone()
         
         while True:
             data = conn.recv(1024).decode()
@@ -147,7 +118,24 @@ def handle_controller_client(conn, addr):
                     sysReboot()
                     
                 elif data == 'shutdown':
-                    sysShutdown()
+                    motor_test_thread = threading.Thread(target=motor_test)
+                    motor_test_thread.start()
+                
+                elif data == 'front':
+                    motor_test_thread = threading.Thread(target=motor_test)
+                    motor_test_thread.start()
+                    
+                elif data == 'back':
+                    motor_test_thread = threading.Thread(target=motor_test)
+                    motor_test_thread.start()
+                    
+                elif data == 'left':
+                    motor_test_thread = threading.Thread(target=motor_test)
+                    motor_test_thread.start()
+                
+                elif data == 'right':
+                    motor_test_thread = threading.Thread(target=motor_test)
+                    motor_test_thread.start()
                     
                 elif data == 'motortest':
                     motor_test_thread = threading.Thread(target=motor_test)

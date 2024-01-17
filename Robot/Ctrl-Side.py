@@ -14,7 +14,7 @@ import os
 import math
 import time
 import queue
-
+import keyboard 
 #----------------------List for commands---------------------
 command_history = []
 
@@ -55,8 +55,6 @@ def draw_artificial_horizon(canvas, pitch, roll):
     canvas.create_line(x1, y1, x2, y2, fill="white", tags="horizon", width=2, arrow=tk.BOTH)
 
 
-
-
 #---------------------Receiving Sensor Data------------------
 def update_sensor_data():
     try:
@@ -88,6 +86,7 @@ def update_gui():
     except queue.Empty:
         pass
     root.after(100, update_gui)
+    
     
 # -------------------Update Camera Feed----------------------
 def update_camera_feed():
@@ -151,6 +150,18 @@ def button_click_thread(command):
     thread = threading.Thread(target=on_button_click, args=(command,))
     thread.start()
 
+def handle_key_press():
+    while True:
+        if keyboard.is_pressed('w'):
+            button_click_thread("front")  
+        elif keyboard.is_pressed('a'):
+            button_click_thread("left")  
+        elif keyboard.is_pressed('s'):
+            button_click_thread("back")  
+        elif keyboard.is_pressed('d'):
+            button_click_thread("right")  
+
+        
 
 
 # ---------Function to update the temp sensor data----------------
