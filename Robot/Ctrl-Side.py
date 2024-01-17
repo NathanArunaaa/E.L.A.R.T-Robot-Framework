@@ -14,7 +14,8 @@ import os
 import math
 import time
 import queue
-import keyboard 
+import pyautogui
+
 #----------------------List for commands---------------------
 command_history = []
 
@@ -152,18 +153,14 @@ def button_click_thread(command):
 
 def handle_key_press():
     while True:
-        if keyboard.is_pressed('w'):
-            button_click_thread("front")
-            print("w") 
-        elif keyboard.is_pressed('a'):
-            button_click_thread("left")
-            print("a")  
-        elif keyboard.is_pressed('s'):
-            button_click_thread("back")
-            print("s") 
-        elif keyboard.is_pressed('d'):
-            button_click_thread("right")
-            print("d")  
+        if pyautogui.keyIsDown('w'):
+            button_click_thread("front") 
+        elif pyautogui.keyIsDown('a'):
+            button_click_thread("left")  
+        elif pyautogui.keyIsDown('s'):
+            button_click_thread("back")  
+        elif pyautogui.keyIsDown('d'):
+            button_click_thread("right")  
 
         
 
@@ -443,6 +440,9 @@ def start_camera_thread():
     camera_thread.start()
 
 
+key_press_thread = threading.Thread(target=handle_key_press)
+key_press_thread.daemon = True
+key_press_thread.start()
 
 start_sensor_thread()
 update_time()
