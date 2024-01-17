@@ -153,13 +153,14 @@ def button_click_thread(command):
 
 def handle_key_press():
     while True:
-        if pyautogui.keyIsDown('w'):
-            button_click_thread("front") 
-        elif pyautogui.keyIsDown('a'):
+        if pyautogui.keyDown('w'):
+            button_click_thread("front")
+            print("w")
+        elif pyautogui.keyDown('a'):
             button_click_thread("left")  
-        elif pyautogui.keyIsDown('s'):
+        elif pyautogui.keyDown('s'):
             button_click_thread("back")  
-        elif pyautogui.keyIsDown('d'):
+        elif pyautogui.keyDown('d'):
             button_click_thread("right")  
 
         
