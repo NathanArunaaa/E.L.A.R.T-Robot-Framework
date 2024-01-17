@@ -77,6 +77,8 @@ def update_sensor_data():
                 
 def update_label_variable(new_value):
     rpiTemp_var.set(new_value)
+    
+gui_queue = queue.Queue()
  
 def update_gui():
     try:
@@ -85,8 +87,7 @@ def update_gui():
             update_label_variable(rpiTemp)
     except queue.Empty:
         pass
-    root.after(100, update_gui)   
-    
+    root.after(100, update_gui)
     
 # -------------------Update Camera Feed----------------------
 def update_camera_feed():
@@ -144,6 +145,7 @@ def on_button_click(command):
     command_history.append(command) 
     if len(command_history) > 10:
         command_history.pop(0)
+
 
 def button_click_thread(command):
     thread = threading.Thread(target=on_button_click, args=(command,))
