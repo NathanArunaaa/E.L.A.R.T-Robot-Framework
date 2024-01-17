@@ -16,6 +16,7 @@ import time
 import queue
 import keyboard
 
+
 #----------------------List for commands---------------------
 command_history = []
 
@@ -156,13 +157,10 @@ def handle_key_press():
         if keyboard.is_pressed('w'):
             button_click_thread("front")
             print("w")
-            
         elif keyboard.is_pressed('a'):
             button_click_thread("left")  
-            
         elif keyboard.is_pressed('s'):
-            button_click_thread("back") 
-             
+            button_click_thread("back")  
         elif keyboard.is_pressed('d'):
             button_click_thread("right")  
 
