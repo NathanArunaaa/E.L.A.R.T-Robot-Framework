@@ -166,8 +166,6 @@ def handle_key_press():
         elif keyboard.is_pressed('d'):
             button_click_thread("right")  
 
-        
-
 
 # ---------Function to update the temp sensor data----------------
 def update_Temp1_data():
