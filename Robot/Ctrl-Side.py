@@ -155,8 +155,9 @@ def button_click_thread(command):
 def handle_key_press():
     while True:
         # Detect key presses using the keyboard library
-        if keyboard.is_pressed('w'):
-            button_click_thread("move_forward_command")  # Replace with your actual forward command
+        if keyboard.read_key() == "w":
+            button_click_thread("move_forward_command")
+            print("w")
         elif keyboard.is_pressed('a'):
             button_click_thread("left")  
             
