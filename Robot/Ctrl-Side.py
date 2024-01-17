@@ -145,8 +145,9 @@ def on_button_click(command):
     if len(command_history) > 10:
         command_history.pop(0)
 
-    # Create a new thread for sending the command
-    
+def button_click_thread(command):
+    thread = threading.Thread(target=on_button_click, args=(command,))
+    thread.start()
 
 
 
@@ -206,7 +207,7 @@ def confirm_reboot():
     label = tk.Label(smaller_window_reboot, fg='white', bg='#323232', text="CONFIRM REBOOT")
     label.pack()
     
-    button_reboot_yes = tk.Button(smaller_window_reboot, fg='red', text="Yes", activebackground='tomato', command=lambda: on_button_click("reboot"))
+    button_reboot_yes = tk.Button(smaller_window_reboot, fg='red', text="Yes", activebackground='tomato', command=lambda:  button_click_thread("reboot"))
     button_reboot_yes.pack()
     button_reboot_no = tk.Button(smaller_window_reboot, fg='green', text="No", activebackground='tomato', command=smaller_window_reboot.destroy)
     button_reboot_no.pack()
@@ -221,7 +222,7 @@ def confirm_Shutdown():
     label = tk.Label(smaller_window_shutdown, bg='#323232', fg='white', text="CONFIRM SHUTDOWN")
     label.pack()
     
-    button_shutdown_yes = tk.Button(smaller_window_shutdown, fg='red', text="Yes", activebackground='tomato', command=lambda: on_button_click("shutdown"))
+    button_shutdown_yes = tk.Button(smaller_window_shutdown, fg='red', text="Yes", activebackground='tomato', command=lambda:  button_click_thread("shutdown"))
     button_shutdown_yes.pack()
     button_shutdown_no = tk.Button(smaller_window_shutdown, fg='green', text="No", activebackground='tomato', command=smaller_window_shutdown.destroy)
     button_shutdown_no.pack()
@@ -335,10 +336,10 @@ button_reboot.pack(side=tk.TOP, padx=5, pady=0)
 divider = tk.Label(left_frame,  bg='#323232', text="-----------------------", font=("Helvetica", 12),  fg='grey')
 divider.pack()
 
-button_nav1 = tk.Button(left_frame,  bg='#323232',  fg='blue', text="   NAV-OFF   ", command=lambda: on_button_click("nav-off"))
+button_nav1 = tk.Button(left_frame,  bg='#323232',  fg='blue', text="   NAV-ON   ", command=lambda:  button_click_thread("nav-off"))
 button_nav1.pack(side=tk.TOP, padx=5, pady=0)
 
-button_headlight1 = tk.Button(left_frame, bg='#323232',  fg='blue', text="HEADLIGHT1", command=lambda: on_button_click("headlight1"))
+button_headlight1 = tk.Button(left_frame, bg='#323232',  fg='blue', text="HEADLIGHT1", command=lambda:  button_click_thread("headlight1"))
 button_headlight1.pack(side=tk.TOP, padx=5, pady=0)
 
 divider = tk.Label(left_frame,  bg='#323232', text="-----------------------", font=("Helvetica", 12), fg='grey', )
@@ -376,7 +377,7 @@ git_version_label.pack(padx=20, pady=10)
 close_controller = tk.Button(right_frame , bg='#323232', fg='red',text="C-SHUTDOWN", command=confirm_controller_Shutdown)
 close_controller.pack(side=tk.TOP, padx=5, pady=5)
 
-button_overide = tk.Button(right_frame, bg='#323232', fg='red',text="OVERIDE", command=lambda: on_button_click("overide"))
+button_overide = tk.Button(right_frame, bg='#323232', fg='red',text="OVERIDE", command=lambda: button_click_thread("overide"))
 button_overide.pack(side=tk.TOP, padx=5, pady=5)
 
 
@@ -384,20 +385,20 @@ divider = tk.Label(right_frame, bg='#323232', text="-----------------------", fo
 divider.pack()
 
 
-button_nav2 = tk.Button(right_frame, bg='#323232', fg='blue', text="  NAV-ON  ", command=lambda: on_button_click("nav-on"))
+button_nav2 = tk.Button(right_frame, bg='#323232', fg='blue', text="  NAV-ON  ", command=lambda:  button_click_thread("nav-on"))
 button_nav2.pack(side=tk.TOP, padx=5, pady=0)
 
-button_headlight2 = tk.Button(right_frame, bg='#323232', fg='blue', text="HEADLIGHT2", command=lambda: on_button_click("headlight2"))
+button_headlight2 = tk.Button(right_frame, bg='#323232', fg='blue', text="HEADLIGHT2", command=lambda:  button_click_thread("headlight2"))
 button_headlight2.pack(side=tk.TOP, padx=5, pady=0)
 
 divider = tk.Label(right_frame, bg='#323232', text="-----------------------", font=("Helvetica", 12), fg='grey')
 divider.pack()
 
 
-button_motortest = tk.Button(right_frame, bg='#323232', fg='green', text="MOTORTEST", command=lambda: on_button_click("motortest"))
+button_motortest = tk.Button(right_frame, bg='#323232', fg='green', text="MOTORTEST", command=lambda:  button_click_thread("motortest"))
 button_motortest.pack(side=tk.TOP, padx=5, pady=5)
 
-button_auto = tk.Button(right_frame, bg='#323232', fg='green', text="AUTO", command=lambda: on_button_click("auto"))
+button_auto = tk.Button(right_frame, bg='#323232', fg='green', text="AUTO", command=lambda: button_click_thread("auto"))
 button_auto.pack(side=tk.TOP, padx=5, pady=5)
 
 progress_var_battery = tk.DoubleVar(right_frame)
