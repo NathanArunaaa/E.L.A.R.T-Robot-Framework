@@ -64,9 +64,14 @@ def update_sensor_data():
        sensor_client_socket.connect(('192.168.4.1', 86))  
 
        while True:
+            externalTempsensor = sensor_client_socket.recv(240).decode()
+            gui_queue.put(externalTempsensor)
+            update_temperature_labels(externalTempsensor)
+            
             rpiTemp = sensor_client_socket.recv(240).decode()
             gui_queue.put(rpiTemp)
-            update_label_variable(rpiTemp)
+            update_temperature_labels(rpiTemp)
+
 
             
     except Exception as e:
@@ -74,20 +79,47 @@ def update_sensor_data():
 
     finally:
         sensor_client_socket.close()
+        
+def extract_cpu_temperature(sensor_data):
+    try:
+        cpu_temp_start = sensor_data.find("CPU TEMP:") + len("CPU TEMP: ")
+        cpu_temp_end = sensor_data.find(" °C", cpu_temp_start)
+        cpu_temperature = float(sensor_data[cpu_temp_start:cpu_temp_end])
+        return cpu_temperature
+    except ValueError:
+        return None
+
+
+# Updated extract_ds18b20_temperature function
+def extract_ds18b20_temperature(sensor_data):
+    try:
+        ds18b20_temp_start = sensor_data.find("DS18B20 TEMP:") + len("DS18B20 TEMP: ")
+        ds18b20_temp_end = sensor_data.find(" °C", ds18b20_temp_start)
+        ds18b20_temperature = float(sensor_data[ds18b20_temp_start:ds18b20_temp_end])
+        return ds18b20_temperature
+    except ValueError:
+        return None
                 
-def update_label_variable(new_value):
-    rpiTemp_var.set(new_value)
-    
+def update_temperature_labels(sensor_data):
+    cpu_temperature = extract_cpu_temperature(sensor_data)
+    ds18b20_temperature = extract_ds18b20_temperature(sensor_data)
+
+    if cpu_temperature is not None:
+        cpu_temp_label.config(text=f"CPU Temperature: {cpu_temperature:.2f} °C")
+
+    if ds18b20_temperature is not None:
+        external_temp_label.config(text=f"External Temperature: {ds18b20_temperature:.2f} °C")
 gui_queue = queue.Queue()
  
 def update_gui():
     try:
         while True:
             rpiTemp = gui_queue.get_nowait()
-            update_label_variable(rpiTemp)
+            update_temperature_labels(rpiTemp)
     except queue.Empty:
         pass
     root.after(100, update_gui)
+
     
     
 # -------------------Update Camera Feed----------------------
@@ -301,14 +333,14 @@ sensor_frame.config(bg='#323232')
 
    
 # ---------------------Temperature Lables------------------------
-rpiTemp_var = tk.StringVar()
-rpiTemp_var.set("Loading Data....")
+cpu_temp_label = tk.StringVar()
+cpu_temp_label.set("Loading Data....")
 
-rpiTemp_label = tk.Label(sensor_frame, bg='#323232', fg='red', textvariable=rpiTemp_var)
-rpiTemp_label.pack()
+cpu_temp_label = tk.Label(sensor_frame, bg='#323232', fg='red', textvariable=cpu_temp_label)
+cpu_temp_label.pack()
 
-Temp1_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp2: N/A]")
-Temp1_label.pack(side=tk.LEFT)
+external_temp_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp2: N/A]")
+external_temp_label.pack(side=tk.LEFT)
 
 Temp2_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp2: N/A]")
 Temp2_label.pack(side=tk.LEFT)

@@ -10,15 +10,16 @@ import RPi.GPIO as GPIO
 import time
 import subprocess
 import socket
+import glob
+
 
 
 
 # ---------Contreller command handler ---------
 def handle_controller_client(conn, addr):
+      
+      
     
-    #speaker setup
-    
-  
     # Function to test the motors
     def motor_test():
         GPIO.setmode(GPIO.BCM)
@@ -65,7 +66,7 @@ def handle_controller_client(conn, addr):
             motor1_pwm_obj.stop()
             motor2_pwm_obj.stop()
             GPIO.cleanup()
-            
+        
     
     # Function to turn on navigation lights
     def navLightsOn():
@@ -171,26 +172,70 @@ def handle_controller_client(conn, addr):
 
 
 
+def find_sensor_id():
+    # Search for the DS18B20 sensor in the /sys/bus/w1/devices/ directory
+    try:
+        sensor_folder = glob.glob('/sys/bus/w1/devices/28*')[0]
+        sensor_id = os.path.basename(sensor_folder)
+        return sensor_id
+    except IndexError:
+        print("DS18B20 sensor not found.")
+        return None
+
+def read_temperature(sensor_id):
+    try:
+        # Path to the temperature file
+        temperature_file = f'/sys/bus/w1/devices/{sensor_id}/w1_slave'
+        
+        # Read the raw temperature data
+        with open(temperature_file, 'r') as file:
+            lines = file.readlines()
+
+        # Check if the CRC is valid
+        if lines[0].strip()[-3:] == 'YES':
+            # Extract the temperature from the second line
+            temperature_str = lines[1].split('=')[1]
+            temperature_celsius = float(temperature_str) / 1000.0
+
+            return temperature_celsius
+        else:
+            return None
+
+    except Exception as e:
+        print(f"Error reading temperature: {str(e)}")
+        return None
 
 # ---------------Sensor Data Transmitter--------------
 def handle_sensor_connection(conn, addr):
     try:
         while True:
+            # Get CPU temperature
             result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
-            temperature_str = result.stdout.strip()
-            temperature = float(temperature_str.split('=')[1].replace("'C", ""))
-            temperature_data = f"[CPU TEMP: {temperature:.2f} °C]"
-            time.sleep(3)
+            cpu_temperature_str = result.stdout.strip()
+            cpu_temperature = float(cpu_temperature_str.split('=')[1].replace("'C", ""))
+            
+            # Read DS18B20 temperature
+            ds18b20_sensor_id = find_sensor_id()
+            if ds18b20_sensor_id:
+                ds18b20_temperature = read_temperature(ds18b20_sensor_id)
+            else:
+                ds18b20_temperature = None
+
+            # Format temperature data
+            temperature_data = f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C]" if ds18b20_temperature is not None else f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND]"
+
+            # Send data to controller
             try:
                 conn.sendall(temperature_data.encode())
             except (BrokenPipeError, ConnectionResetError):
                 print("Sensor: Client disconnected.")
                 break
-    except:  # noqa: E722
-        print("Sensor connection error:", addr)
+            
+            time.sleep(3)  # Adjust delay as needed
+    except Exception as e:
+        print("Sensor connection error:", addr, e)
     finally:
         conn.close()
-     
 
 camera = cv2.VideoCapture(0)  # Use 0 for the first camera device (change the index if needed)
 
