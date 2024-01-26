@@ -333,10 +333,8 @@ sensor_frame.config(bg='#323232')
 
    
 # ---------------------Temperature Lables------------------------
-cpu_temp_label = tk.StringVar()
-cpu_temp_label.set("Loading Data....")
 
-cpu_temp_label = tk.Label(sensor_frame, bg='#323232', fg='red', textvariable=cpu_temp_label)
+cpu_temp_label = tk.Label(sensor_frame, bg='#323232', fg='red', text="[Temp2: N/A]")
 cpu_temp_label.pack()
 
 external_temp_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp2: N/A]")
