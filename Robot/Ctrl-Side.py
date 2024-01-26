@@ -15,6 +15,8 @@ import math
 import time
 import queue
 import keyboard
+import serial  # Add serial library for GPS communication
+import pynmea2  # Add library for parsing NMEA sentences
 
 
 #----------------------List for commands---------------------
