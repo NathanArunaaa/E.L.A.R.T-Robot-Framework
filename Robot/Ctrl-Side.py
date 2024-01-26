@@ -60,20 +60,39 @@ def draw_artificial_horizon(canvas, pitch, roll):
 #---------------------Receiving Sensor Data------------------
 def update_sensor_data():
     try:
-       sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-       sensor_client_socket.connect(('192.168.4.1', 86))  
+        sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sensor_client_socket.connect(('192.168.4.1', 86))
 
-       while True:
-            externalTempsensor = sensor_client_socket.recv(240).decode()
+        while True:
+            # Receive sensor data from the server
+            sensor_data = sensor_client_socket.recv(1024).decode()
+
+            # Extract GPS data
+            if "[GPS:" in sensor_data:
+                gps_start = sensor_data.find("[GPS:")
+                gps_end = sensor_data.find("]", gps_start)
+                gps_data = sensor_data[gps_start:gps_end + 1]
+
+                # Update the label with the extracted location information
+                location_info = f"Location: {gps_data}"
+                location_label.config(text=location_info)
+            else:
+                gps_data = "[GPS: N/A]"
+
+            # Extract other sensor data
+            externalTempsensor = sensor_data[sensor_data.find("[Temp1:"):sensor_data.find("]", sensor_data.find("[Temp1:")) + 1]
+            rpiTemp = sensor_data[sensor_data.find("[Temp2:"):sensor_data.find("]", sensor_data.find("[Temp2:")) + 1]
+
+            # Update temperature labels with extracted data
             gui_queue.put(externalTempsensor)
             update_temperature_labels(externalTempsensor)
-            
-            rpiTemp = sensor_client_socket.recv(240).decode()
+
             gui_queue.put(rpiTemp)
             update_temperature_labels(rpiTemp)
 
+            # Extract and print GPS data
+            print("Received GPS data:", gps_data)
 
-            
     except Exception as e:
         print("Error updating sensor data:", e)
 
@@ -203,23 +222,6 @@ def handle_key_press():
 
 
 # ---------Function to update the temp sensor data----------------
-def update_Temp1_data():
-    # Replace this with actual sensor data retrieval logic
-    sensor_reading = "Sensor Data: 123.45"
-    Temp1_label.config(text=sensor_reading)
-    root.after(1000, update_Temp1_data)  # Update the data every 1000ms (1 second)
-
-def update_Temp2_data():
-    sensor_reading = "Sensor Data: 123.45"
-    Temp1_label.config(text=sensor_reading)
-    root.after(1000, update_Temp2_data)  
-    
-def update_Temp3_data():
-    sensor_reading = "Sensor Data: 123.45"
-    Temp1_label.config(text=sensor_reading)
-    root.after(1000, update_Temp3_data)  
-
-
 
 # ------------Function to update the date and time--------------
 def update_time():
@@ -351,8 +353,8 @@ time_label = tk.Label(sensor_frame,bg='#323232',  fg='gray', text="Current Time:
 time_label.pack(side=tk.LEFT, pady=10)
 
 #------------------------Sensor Lables--------------------------
-Temp1_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Sens1: N/A]")
-Temp1_label.pack(side=tk.LEFT)
+location_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Sens1: N/A]")
+location_label.pack(side=tk.LEFT)
 
 Temp2_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Sens2: N/A]")
 Temp2_label.pack(side=tk.LEFT)

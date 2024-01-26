@@ -11,15 +11,11 @@ import time
 import subprocess
 import socket
 import glob
-
-
-
+import pynmea2
+import serial
 
 # ---------Contreller command handler ---------
 def handle_controller_client(conn, addr):
-      
-      
-    
     # Function to test the motors
     def motor_test():
         GPIO.setmode(GPIO.BCM)
@@ -173,7 +169,6 @@ def handle_controller_client(conn, addr):
 
 
 def find_sensor_id():
-    # Search for the DS18B20 sensor in the /sys/bus/w1/devices/ directory
     try:
         sensor_folder = glob.glob('/sys/bus/w1/devices/28*')[0]
         sensor_id = os.path.basename(sensor_folder)
@@ -207,13 +202,31 @@ def read_temperature(sensor_id):
 
 # ---------------Sensor Data Transmitter--------------
 def handle_sensor_connection(conn, addr):
+    # Open the serial port for the GPS module
+    gps_serial = serial.Serial("/dev/ttyS0", 9600, timeout=5.0)
+
     try:
         while True:
+            # Read GPS data
+            gps_data = gps_serial.readline().decode('utf-8')
+
+            # Parse GPS data
+            if gps_data.startswith('$GPGGA'):
+                try:
+                    gps_msg = pynmea2.parse(gps_data)
+                    latitude = gps_msg.latitude
+                    longitude = gps_msg.longitude
+                    gps_location = f"[GPS: Lat {latitude}, Lon {longitude}]"
+                except pynmea2.ParseError as e:
+                    gps_location = "[GPS: Parsing Error]"
+            else:
+                gps_location = "[GPS: No Fix]"
+
             # Get CPU temperature
             result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
             cpu_temperature_str = result.stdout.strip()
             cpu_temperature = float(cpu_temperature_str.split('=')[1].replace("'C", ""))
-            
+
             # Read DS18B20 temperature
             ds18b20_sensor_id = find_sensor_id()
             if ds18b20_sensor_id:
@@ -221,20 +234,22 @@ def handle_sensor_connection(conn, addr):
             else:
                 ds18b20_temperature = None
 
-            # Format temperature data
-            temperature_data = f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C]" if ds18b20_temperature is not None else f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND]"
+            # Format all sensor data
+            sensor_data = f"{gps_location} [CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C]" if ds18b20_temperature is not None else f"{gps_location} [CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND]"
 
             # Send data to controller
             try:
-                conn.sendall(temperature_data.encode())
+                conn.sendall(sensor_data.encode())
             except (BrokenPipeError, ConnectionResetError):
                 print("Sensor: Client disconnected.")
                 break
-            
+
             time.sleep(3)  # Adjust delay as needed
+
     except Exception as e:
         print("Sensor connection error:", addr, e)
     finally:
+        gps_serial.close()
         conn.close()
 
 camera = cv2.VideoCapture(0)  # Use 0 for the first camera device (change the index if needed)
