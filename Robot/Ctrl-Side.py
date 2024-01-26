@@ -15,8 +15,6 @@ import math
 import time
 import queue
 import keyboard
-import serial  # Add serial library for GPS communication
-import pynmea2  # Add library for parsing NMEA sentences
 
 
 #----------------------List for commands---------------------
@@ -62,39 +60,24 @@ def draw_artificial_horizon(canvas, pitch, roll):
 #---------------------Receiving Sensor Data------------------
 def update_sensor_data():
     try:
-        sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sensor_client_socket.connect(('192.168.4.1', 86))
+       sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+       sensor_client_socket.connect(('192.168.4.1', 86))  
 
-        while True:
-            # Receive sensor data from the server
-            sensor_data = sensor_client_socket.recv(1024).decode()
-
-            # Extract GPS data
-            if "[GPS:" in sensor_data:
-                gps_start = sensor_data.find("[GPS:")
-                gps_end = sensor_data.find("]", gps_start)
-                gps_data = sensor_data[gps_start:gps_end + 1]
-
-                # Update the label with the extracted location information
-                location_info = f"Location: {gps_data}"
-                location_label.config(text=location_info)
-            else:
-                gps_data = "[GPS: N/A]"
-
-            # Extract other sensor data
-            externalTempsensor = sensor_data[sensor_data.find("[Temp1:"):sensor_data.find("]", sensor_data.find("[Temp1:")) + 1]
-            rpiTemp = sensor_data[sensor_data.find("[Temp2:"):sensor_data.find("]", sensor_data.find("[Temp2:")) + 1]
-
-            # Update temperature labels with extracted data
+       while True:
+            externalTempsensor = sensor_client_socket.recv(240).decode()
             gui_queue.put(externalTempsensor)
             update_temperature_labels(externalTempsensor)
-
+            
+            rpiTemp = sensor_client_socket.recv(240).decode()
+            gui_queue.put(rpiTemp)
+            update_temperature_labels(rpiTemp)
+            
+            rpiTemp = sensor_client_socket.recv(240).decode()
             gui_queue.put(rpiTemp)
             update_temperature_labels(rpiTemp)
 
-            # Extract and print GPS data
-            print("Received GPS data:", gps_data)
 
+            
     except Exception as e:
         print("Error updating sensor data:", e)
 
@@ -107,6 +90,24 @@ def extract_cpu_temperature(sensor_data):
         cpu_temp_end = sensor_data.find(" °C", cpu_temp_start)
         cpu_temperature = float(sensor_data[cpu_temp_start:cpu_temp_end])
         return cpu_temperature
+    except ValueError:
+        return None
+    
+def extract_latitude(sensor_data):
+    try:
+        latitude_start = sensor_data.find("LATITUDE:") + len("LATITUDE: ")
+        latitude_end = sensor_data.find(",", latitude_start)
+        latitude = float(sensor_data[latitude_start:latitude_end])
+        return latitude
+    except ValueError:
+        return None
+
+def extract_longitude(sensor_data):
+    try:
+        longitude_start = sensor_data.find("LONGITUDE:") + len("LONGITUDE: ")
+        longitude_end = sensor_data.find(" ", longitude_start)
+        longitude = float(sensor_data[longitude_start:longitude_end])
+        return longitude
     except ValueError:
         return None
 
@@ -124,12 +125,18 @@ def extract_ds18b20_temperature(sensor_data):
 def update_temperature_labels(sensor_data):
     cpu_temperature = extract_cpu_temperature(sensor_data)
     ds18b20_temperature = extract_ds18b20_temperature(sensor_data)
+    latitude = extract_latitude(sensor_data)
+    longitude = extract_longitude(sensor_data)
 
     if cpu_temperature is not None:
         cpu_temp_label.config(text=f"CPU Temperature: {cpu_temperature:.2f} °C")
 
     if ds18b20_temperature is not None:
         external_temp_label.config(text=f"External Temperature: {ds18b20_temperature:.2f} °C")
+
+    if latitude is not None and longitude is not None:
+        gps_label.config(text=f"GPS: Lat {latitude:.6f}, Lon {longitude:.6f}")
+        
 gui_queue = queue.Queue()
  
 def update_gui():
@@ -224,6 +231,23 @@ def handle_key_press():
 
 
 # ---------Function to update the temp sensor data----------------
+def update_Temp1_data():
+    # Replace this with actual sensor data retrieval logic
+    sensor_reading = "Sensor Data: 123.45"
+    Temp1_label.config(text=sensor_reading)
+    root.after(1000, update_Temp1_data)  # Update the data every 1000ms (1 second)
+
+def update_Temp2_data():
+    sensor_reading = "Sensor Data: 123.45"
+    Temp1_label.config(text=sensor_reading)
+    root.after(1000, update_Temp2_data)  
+    
+def update_Temp3_data():
+    sensor_reading = "Sensor Data: 123.45"
+    Temp1_label.config(text=sensor_reading)
+    root.after(1000, update_Temp3_data)  
+
+
 
 # ------------Function to update the date and time--------------
 def update_time():
@@ -338,14 +362,14 @@ sensor_frame.config(bg='#323232')
    
 # ---------------------Temperature Lables------------------------
 
-cpu_temp_label = tk.Label(sensor_frame, bg='#323232', fg='red', text="[Temp2: N/A]")
+cpu_temp_label = tk.Label(sensor_frame, bg='#323232', fg='red', text="[CPU Temp: N/A]")
 cpu_temp_label.pack()
 
 external_temp_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp2: N/A]")
 external_temp_label.pack(side=tk.LEFT)
 
-Temp2_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp2: N/A]")
-Temp2_label.pack(side=tk.LEFT)
+gps_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[GPS: N/A]")
+gps_label.pack(side=tk.LEFT)
 
 Temp3_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp3: N/A]")
 Temp3_label.pack(side=tk.LEFT)
@@ -355,8 +379,8 @@ time_label = tk.Label(sensor_frame,bg='#323232',  fg='gray', text="Current Time:
 time_label.pack(side=tk.LEFT, pady=10)
 
 #------------------------Sensor Lables--------------------------
-location_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Sens1: N/A]")
-location_label.pack(side=tk.LEFT)
+Temp1_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Sens1: N/A]")
+Temp1_label.pack(side=tk.LEFT)
 
 Temp2_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Sens2: N/A]")
 Temp2_label.pack(side=tk.LEFT)
