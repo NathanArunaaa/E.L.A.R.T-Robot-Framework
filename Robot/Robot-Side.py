@@ -12,14 +12,8 @@ import subprocess
 import socket
 import glob
 
-
-
-
 # ---------Contreller command handler ---------
 def handle_controller_client(conn, addr):
-      
-      
-    
     # Function to test the motors
     def motor_test():
         GPIO.setmode(GPIO.BCM)
@@ -30,22 +24,20 @@ def handle_controller_client(conn, addr):
         motor2_pwm = 27 
         motor2_in1 = 20  
         motor2_in2 = 12 
-    # Set up pins as output for Motor 1
+        
+    # Motor 1
         GPIO.setup(motor1_pwm, GPIO.OUT)
         GPIO.setup(motor1_in1, GPIO.OUT)
         GPIO.setup(motor1_in2, GPIO.OUT)
-
-    # Set up pins as output for Motor 2
+    # Motor 2
         GPIO.setup(motor2_pwm, GPIO.OUT)
         GPIO.setup(motor2_in1, GPIO.OUT)
         GPIO.setup(motor2_in2, GPIO.OUT)
-
-    # Set up PWM for both motors
+    
         motor1_pwm_obj = GPIO.PWM(motor1_pwm, 1000)  
         motor2_pwm_obj = GPIO.PWM(motor2_pwm, 1000)
         motor1_pwm_obj.start(0) 
         motor2_pwm_obj.start(0)
- 
     # Function to set motor speed
         def set_motor_speed(pwm_obj, in1, in2, speed):
             if speed >= 0:
@@ -68,17 +60,27 @@ def handle_controller_client(conn, addr):
             GPIO.cleanup()
         
     
-    # Function to turn on navigation lights
+    # Function to turn on/off navigation lights
     def navLightsOn():
         GPIO.setmode(GPIO.BCM)
         relayNav = 13
         GPIO.setup(relayNav, GPIO.OUT)
         GPIO.output(relayNav, GPIO.HIGH)
-
-    # Function to turn off navigation lights
     def navLightsOff():
         GPIO.setmode(GPIO.BCM)
         relayNav = 13
+        GPIO.setup(relayNav, GPIO.OUT)
+        GPIO.output(relayNav, GPIO.LOW)
+        
+    # Function to turn on/off headlights
+    def headlightsOff():
+        GPIO.setmode(GPIO.BCM)
+        relayNav = 21
+        GPIO.setup(relayNav, GPIO.OUT)
+        GPIO.output(relayNav, GPIO.HIGH)
+    def headlightsOn():
+        GPIO.setmode(GPIO.BCM)
+        relayNav = 21
         GPIO.setup(relayNav, GPIO.OUT)
         GPIO.output(relayNav, GPIO.LOW)
         
@@ -88,7 +90,7 @@ def handle_controller_client(conn, addr):
         time.sleep(5) 
         os.system('sudo reboot')
 
-    # Function to shutdown the system(robot side)
+    # Function to shutdown the system (robot side)
     def sysShutdown():
         print('System Shutdown....')
         time.sleep(5)
@@ -101,10 +103,8 @@ def handle_controller_client(conn, addr):
         frame_size = struct.pack('!L', len(frame_data))
         conn.sendall(frame_size + frame_data)
 
-       
  #------------- looking for commands from controller client ---------        
     try: 
-        
         while True:
             data = conn.recv(1024).decode()
             if not data:
@@ -147,21 +147,23 @@ def handle_controller_client(conn, addr):
                     navLightsOn_thread = threading.Thread(target= navLightsOn)
                     navLightsOn_thread.start()
                   
+                elif data == 'nav-off':
+                    navLightsOff_thread = threading.Thread(target= navLightsOff)
+                    navLightsOff_thread.start()
+                    
+                elif data == 'headlight-on':
+                    headlightsOn_thread = threading.Thread(target= headlightsOn)
+                    headlightsOn_thread.start()
+                    
+                elif data == 'headlight-off':
+                    headlightsOff_thread = threading.Thread(target= headlightsOff)
+                    headlightsOff_thread.start()
+                    
                 elif data == 'auto':
                     print("Auto Mode On")
                     
                 elif data == 'overide':
                     print("Overide Mode On")
-                    
-                elif data == 'nav-off':
-                    navLightsOff_thread = threading.Thread(target= navLightsOff)
-                    navLightsOff_thread.start()
-                    
-                elif data == 'headlight1':
-                    print("Turning On Headlights 1")
-                    
-                elif data == 'headlight2':
-                    print("Turning On Headlights 2")
                
     except Exception as e:
         print("Error handling client:", e)
@@ -170,10 +172,8 @@ def handle_controller_client(conn, addr):
         print("Client disconnected:", addr)
 
 
-
-
+ #------------- getting the temp from the 1 wire file ---------        
 def find_sensor_id():
-    # Search for the DS18B20 sensor in the /sys/bus/w1/devices/ directory
     try:
         sensor_folder = glob.glob('/sys/bus/w1/devices/28*')[0]
         sensor_id = os.path.basename(sensor_folder)
@@ -184,19 +184,14 @@ def find_sensor_id():
 
 def read_temperature(sensor_id):
     try:
-        # Path to the temperature file
-        temperature_file = f'/sys/bus/w1/devices/{sensor_id}/w1_slave'
-        
-        # Read the raw temperature data
+        temperature_file = f'/sys/bus/w1/devices/{sensor_id}/w1_slave' 
+               
         with open(temperature_file, 'r') as file:
             lines = file.readlines()
 
-        # Check if the CRC is valid
         if lines[0].strip()[-3:] == 'YES':
-            # Extract the temperature from the second line
             temperature_str = lines[1].split('=')[1]
             temperature_celsius = float(temperature_str) / 1000.0
-
             return temperature_celsius
         else:
             return None
@@ -221,7 +216,7 @@ def handle_sensor_connection(conn, addr):
             else:
                 ds18b20_temperature = None
 
-            # Format temperature data
+          
             temperature_data = f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C]" if ds18b20_temperature is not None else f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND]"
 
             # Send data to controller
@@ -231,13 +226,14 @@ def handle_sensor_connection(conn, addr):
                 print("Sensor: Client disconnected.")
                 break
             
-            time.sleep(3)  # Adjust delay as needed
+            time.sleep(3)
+            
     except Exception as e:
         print("Sensor connection error:", addr, e)
     finally:
         conn.close()
 
-camera = cv2.VideoCapture(0)  # Use 0 for the first camera device (change the index if needed)
+camera = cv2.VideoCapture(0) 
 
 #-------Set up a socket server for sesnor data--------
 sensor_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

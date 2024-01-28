@@ -202,24 +202,6 @@ def handle_key_press():
         time.sleep(0.1)  # Adjust the sleep time based on your requirements
 
 
-# ---------Function to update the temp sensor data----------------
-def update_Temp1_data():
-    # Replace this with actual sensor data retrieval logic
-    sensor_reading = "Sensor Data: 123.45"
-    Temp1_label.config(text=sensor_reading)
-    root.after(1000, update_Temp1_data)  # Update the data every 1000ms (1 second)
-
-def update_Temp2_data():
-    sensor_reading = "Sensor Data: 123.45"
-    Temp1_label.config(text=sensor_reading)
-    root.after(1000, update_Temp2_data)  
-    
-def update_Temp3_data():
-    sensor_reading = "Sensor Data: 123.45"
-    Temp1_label.config(text=sensor_reading)
-    root.after(1000, update_Temp3_data)  
-
-
 
 # ------------Function to update the date and time--------------
 def update_time():
@@ -388,7 +370,7 @@ divider.pack()
 button_nav1 = tk.Button(left_frame,  bg='#323232',  fg='blue', text="   NAV-ON   ", command=lambda:  button_click_thread("nav-off"))
 button_nav1.pack(side=tk.TOP, padx=5, pady=0)
 
-button_headlight1 = tk.Button(left_frame, bg='#323232',  fg='blue', text="HEADLIGHT1", command=lambda:  button_click_thread("headlight1"))
+button_headlight1 = tk.Button(left_frame, bg='#323232',  fg='blue', text="HEADLIGHT-ON", command=lambda:  button_click_thread("headlight-on"))
 button_headlight1.pack(side=tk.TOP, padx=5, pady=0)
 
 divider = tk.Label(left_frame,  bg='#323232', text="-----------------------", font=("Helvetica", 12), fg='grey', )
@@ -437,7 +419,7 @@ divider.pack()
 button_nav2 = tk.Button(right_frame, bg='#323232', fg='blue', text="  NAV-OFF  ", command=lambda:  button_click_thread("nav-on"))
 button_nav2.pack(side=tk.TOP, padx=5, pady=0)
 
-button_headlight2 = tk.Button(right_frame, bg='#323232', fg='blue', text="HEADLIGHT2", command=lambda:  button_click_thread("headlight2"))
+button_headlight2 = tk.Button(right_frame, bg='#323232', fg='blue', text="HEADLIGHT-OFF", command=lambda:  button_click_thread("headlight-off"))
 button_headlight2.pack(side=tk.TOP, padx=5, pady=0)
 
 divider = tk.Label(right_frame, bg='#323232', text="-----------------------", font=("Helvetica", 12), fg='grey')
