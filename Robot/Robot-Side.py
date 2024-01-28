@@ -202,13 +202,31 @@ def read_temperature(sensor_id):
 
 # ---------------Sensor Data Transmitter--------------
 def handle_sensor_connection(conn, addr):
+    # Open the serial port for the GPS module
+    gps_serial = serial.Serial("/dev/ttyS0", 9600, timeout=5.0)
+
     try:
         while True:
+            # Read GPS data
+            gps_data = gps_serial.readline().decode('utf-8')
+
+            # Parse GPS data
+            if gps_data.startswith('$GPGGA'):
+                try:
+                    gps_msg = pynmea2.parse(gps_data)
+                    latitude = gps_msg.latitude
+                    longitude = gps_msg.longitude
+                    gps_location = f"[GPS: Lat {latitude}, Lon {longitude}]"
+                except pynmea2.ParseError as e:
+                    gps_location = "[GPS: Parsing Error]"
+            else:
+                gps_location = "[GPS: No Fix]"
+
             # Get CPU temperature
             result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
             cpu_temperature_str = result.stdout.strip()
             cpu_temperature = float(cpu_temperature_str.split('=')[1].replace("'C", ""))
-            
+
             # Read DS18B20 temperature
             ds18b20_sensor_id = find_sensor_id()
             if ds18b20_sensor_id:
@@ -221,7 +239,7 @@ def handle_sensor_connection(conn, addr):
 
             # Send data to controller
             try:
-                conn.sendall(temperature_data.encode())
+                conn.sendall(sensor_data.encode())
             except (BrokenPipeError, ConnectionResetError):
                 print("Sensor: Client disconnected.")
                 break
@@ -231,6 +249,7 @@ def handle_sensor_connection(conn, addr):
     except Exception as e:
         print("Sensor connection error:", addr, e)
     finally:
+        gps_serial.close()
         conn.close()
 
 camera = cv2.VideoCapture(0) 

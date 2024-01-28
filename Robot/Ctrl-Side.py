@@ -71,6 +71,10 @@ def update_sensor_data():
             rpiTemp = sensor_client_socket.recv(240).decode()
             gui_queue.put(rpiTemp)
             update_temperature_labels(rpiTemp)
+            
+            rpiTemp = sensor_client_socket.recv(240).decode()
+            gui_queue.put(rpiTemp)
+            update_temperature_labels(rpiTemp)
 
 
             
@@ -88,6 +92,24 @@ def extract_cpu_temperature(sensor_data):
         return cpu_temperature
     except ValueError:
         return None
+    
+def extract_latitude(sensor_data):
+    try:
+        latitude_start = sensor_data.find("LATITUDE:") + len("LATITUDE: ")
+        latitude_end = sensor_data.find(",", latitude_start)
+        latitude = float(sensor_data[latitude_start:latitude_end])
+        return latitude
+    except ValueError:
+        return None
+
+def extract_longitude(sensor_data):
+    try:
+        longitude_start = sensor_data.find("LONGITUDE:") + len("LONGITUDE: ")
+        longitude_end = sensor_data.find(" ", longitude_start)
+        longitude = float(sensor_data[longitude_start:longitude_end])
+        return longitude
+    except ValueError:
+        return None
 
 
 # Updated extract_ds18b20_temperature function
@@ -103,12 +125,18 @@ def extract_ds18b20_temperature(sensor_data):
 def update_temperature_labels(sensor_data):
     cpu_temperature = extract_cpu_temperature(sensor_data)
     ds18b20_temperature = extract_ds18b20_temperature(sensor_data)
+    latitude = extract_latitude(sensor_data)
+    longitude = extract_longitude(sensor_data)
 
     if cpu_temperature is not None:
         cpu_temp_label.config(text=f"CPU Temperature: {cpu_temperature:.2f} °C")
 
     if ds18b20_temperature is not None:
         external_temp_label.config(text=f"External Temperature: {ds18b20_temperature:.2f} °C")
+
+    if latitude is not None and longitude is not None:
+        gps_label.config(text=f"GPS: Lat {latitude:.6f}, Lon {longitude:.6f}")
+        
 gui_queue = queue.Queue()
  
 def update_gui():
@@ -316,14 +344,14 @@ sensor_frame.config(bg='#323232')
    
 # ---------------------Temperature Lables------------------------
 
-cpu_temp_label = tk.Label(sensor_frame, bg='#323232', fg='red', text="[Temp2: N/A]")
+cpu_temp_label = tk.Label(sensor_frame, bg='#323232', fg='red', text="[CPU Temp: N/A]")
 cpu_temp_label.pack()
 
 external_temp_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp2: N/A]")
 external_temp_label.pack(side=tk.LEFT)
 
-Temp2_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp2: N/A]")
-Temp2_label.pack(side=tk.LEFT)
+gps_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[GPS: N/A]")
+gps_label.pack(side=tk.LEFT)
 
 Temp3_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp3: N/A]")
 Temp3_label.pack(side=tk.LEFT)
