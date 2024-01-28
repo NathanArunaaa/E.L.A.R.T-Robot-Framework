@@ -1,4 +1,5 @@
-#E.L.A.R.T Robot Controller Interface By: Nathan Aruna
+#E.L.A.R.T Framework By: Nathan Aruna & Christos Velmachos
+#Controller side
 
 import socket
 import tkinter as tk

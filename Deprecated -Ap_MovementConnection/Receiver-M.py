@@ -4,6 +4,7 @@ import time
 
 # Set up GPIO pins for robot movement
 GPIO.setmode(GPIO.BCM)
+
 # Replace the following pin numbers with the actual GPIO pins connected to the robot's motors
 motor_a_forward_pin = 17
 motor_a_backward_pin = 18
