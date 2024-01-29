@@ -348,7 +348,7 @@ sensor_frame.config(bg='#323232')
 cpu_temp_label = tk.Label(sensor_frame, bg='#323232', fg='red', text="[CPU Temp: N/A]")
 cpu_temp_label.pack()
 
-external_temp_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp2: N/A]")
+external_temp_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp: N/A]")
 external_temp_label.pack(side=tk.LEFT)
 
 gps_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[GPS: N/A]")
@@ -432,7 +432,7 @@ right_frame.config(bg='#323232')
 
 
 git_version_label = tk.Label(right_frame, fg='white',  bg='#323232', text="Stable Version 2.87.1 (Controller Client)", font=("Helvetica", 12), wraplength=85)
-git_version_label.pack(padx=20, pady=10)
+git_version_label.pack(padx=30, pady=10)
 
 close_controller = tk.Button(right_frame , bg='#323232', fg='red',text="C-SHUTDOWN", command=confirm_controller_Shutdown)
 close_controller.pack(side=tk.TOP, padx=5, pady=5)
@@ -448,7 +448,7 @@ divider.pack()
 button_nav2 = tk.Button(right_frame, bg='#323232', fg='blue', text="  NAV-OFF  ", command=lambda:  button_click_thread("nav-on"))
 button_nav2.pack(side=tk.TOP, padx=5, pady=0)
 
-button_headlight2 = tk.Button(right_frame, bg='#323232', fg='blue', text="HEADLIGHT-OFF", command=lambda:  button_click_thread("headlight-off"))
+button_headlight2 = tk.Button(right_frame, bg='#323232', fg='blue', text="  HEADLIGHT-OFF  ", command=lambda:  button_click_thread("headlight-off"))
 button_headlight2.pack(side=tk.TOP, padx=5, pady=0)
 
 divider = tk.Label(right_frame, bg='#323232', text="-----------------------", font=("Helvetica", 12), fg='grey')
