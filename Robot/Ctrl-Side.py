@@ -16,6 +16,8 @@ import math
 import time
 import queue
 import keyboard
+from pynput import keyboard
+
 
 
 #----------------------List for commands---------------------
@@ -213,23 +215,28 @@ def button_click_thread(command):
     thread = threading.Thread(target=on_button_click, args=(command,))
     thread.start()
 
-def handle_key_press():
-    while True:
-        # Detect key presses using the keyboard library
-        if keyboard.read_key() == "w":
-            button_click_thread("move_forward_command")
-            print("w")
-        elif keyboard.is_pressed('a'):
-            button_click_thread("left")  
-            
-        elif keyboard.is_pressed('s'):
-            button_click_thread("back") 
-             
-        elif keyboard.is_pressed('d'):
-            button_click_thread("turn_right_command")  # Replace with your actual turn right command
+def on_key_press(key):
+    try:
+        if key.char == 'w':
+            button_click_thread('front')
+            print("Moving Forward")
+        if key.char == 's':
+            button_click_thread('back')
+            print("Moving Backwards")
+        if key.char == 'a':
+            button_click_thread('left')
+            print("Moving Left")
+        if key.char == 'd':
+            button_click_thread('right')
+            print("Moving Right")
+    except AttributeError:
+        # Handle special keys
+        if key == keyboard.Key.esc:
+            print("Escape key is pressed")
 
-        time.sleep(0.1)  # Adjust the sleep time based on your requirements
-
+def listen_for_keys():
+    with keyboard.Listener(on_press=on_key_press) as listener:
+        listener.join()
 
 
 # ------------Function to update the date and time--------------
@@ -485,11 +492,17 @@ def start_camera_thread():
     camera_thread.daemon = True
     camera_thread.start()
 
+def start_input_thread():
+    key_listener_thread = threading.Thread(target=listen_for_keys)
+    key_listener_thread.daemon = True
+    key_listener_thread.start()
 
-key_press_thread = threading.Thread(target=handle_key_press)
-key_press_thread.daemon = True
-key_press_thread.start()
+    # Your main application code goes here
 
+
+
+
+start_input_thread()
 start_sensor_thread()
 update_time()
 start_camera_thread()
