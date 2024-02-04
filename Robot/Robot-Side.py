@@ -109,6 +109,7 @@ def handle_controller_client(conn, addr):
         
 # ------------------------------------                  
     def motor_right():
+        GPIO.setmode(GPIO.BCM)
         motor1_pwm = 17  
         motor1_in1 = 18 
         motor1_in2 = 19  
