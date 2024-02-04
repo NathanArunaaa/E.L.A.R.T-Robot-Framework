@@ -62,6 +62,53 @@ def handle_controller_client(conn, addr):
             
 # ------------------------------------       
     def motor_left():
+        GPIO.setmode(GPIO.BCM)
+        motor1_pwm = 17  
+        motor1_in1 = 18 
+        motor1_in2 = 19  
+
+        motor2_pwm = 27 
+        motor2_in1 = 20  
+        motor2_in2 = 12 
+        
+    # Motor 1
+        GPIO.setup(motor1_pwm, GPIO.OUT)
+        GPIO.setup(motor1_in1, GPIO.OUT)
+        GPIO.setup(motor1_in2, GPIO.OUT)
+    # Motor 2
+        GPIO.setup(motor2_pwm, GPIO.OUT)
+        GPIO.setup(motor2_in1, GPIO.OUT)
+        GPIO.setup(motor2_in2, GPIO.OUT)
+    
+        motor1_pwm_obj = GPIO.PWM(motor1_pwm, 1000)  
+        motor2_pwm_obj = GPIO.PWM(motor2_pwm, 1000)
+        motor1_pwm_obj.start(0) 
+        motor2_pwm_obj.start(0)
+    # Function to set motor speed
+        def set_motor_speed(pwm_obj, in1, in2, speed):
+            if speed >= 0:
+                GPIO.output(in1, GPIO.HIGH)
+                GPIO.output(in2, GPIO.LOW)
+            else:
+                GPIO.output(in1, GPIO.LOW)
+                GPIO.output(in2, GPIO.HIGH)
+            pwm_obj.ChangeDutyCycle(abs(speed))
+
+        try:
+            speed = 100  # Set the speed as a percentage (-100 to 100)
+            set_motor_speed(motor1_pwm_obj, motor1_in1, motor1_in2, speed)
+            set_motor_speed(motor2_pwm_obj, motor2_in1, motor2_in2, speed)
+            time.sleep(0.3)
+            
+        finally:
+            motor2_pwm_obj.stop()
+            GPIO.cleanup()
+            
+       
+        
+        
+# ------------------------------------                  
+    def motor_right():
         motor1_pwm = 17  
         motor1_in1 = 18 
         motor1_in2 = 19  
@@ -104,51 +151,6 @@ def handle_controller_client(conn, addr):
             motor1_pwm_obj.stop()
             GPIO.cleanup()
         
-        
-        
-# ------------------------------------                  
-    def motor_right():
-        GPIO.setmode(GPIO.BCM)
-        motor1_pwm = 17  
-        motor1_in1 = 18 
-        motor1_in2 = 19  
-
-        motor2_pwm = 27 
-        motor2_in1 = 20  
-        motor2_in2 = 12 
-        
-    # Motor 1
-        GPIO.setup(motor1_pwm, GPIO.OUT)
-        GPIO.setup(motor1_in1, GPIO.OUT)
-        GPIO.setup(motor1_in2, GPIO.OUT)
-    # Motor 2
-        GPIO.setup(motor2_pwm, GPIO.OUT)
-        GPIO.setup(motor2_in1, GPIO.OUT)
-        GPIO.setup(motor2_in2, GPIO.OUT)
-    
-        motor1_pwm_obj = GPIO.PWM(motor1_pwm, 1000)  
-        motor2_pwm_obj = GPIO.PWM(motor2_pwm, 1000)
-        motor1_pwm_obj.start(0) 
-        motor2_pwm_obj.start(0)
-    # Function to set motor speed
-        def set_motor_speed(pwm_obj, in1, in2, speed):
-            if speed >= 0:
-                GPIO.output(in1, GPIO.HIGH)
-                GPIO.output(in2, GPIO.LOW)
-            else:
-                GPIO.output(in1, GPIO.LOW)
-                GPIO.output(in2, GPIO.HIGH)
-            pwm_obj.ChangeDutyCycle(abs(speed))
-
-        try:
-            speed = 100  # Set the speed as a percentage (-100 to 100)
-            set_motor_speed(motor1_pwm_obj, motor1_in1, motor1_in2, speed)
-            set_motor_speed(motor2_pwm_obj, motor2_in1, motor2_in2, speed)
-            time.sleep(0.3)
-            
-        finally:
-            motor2_pwm_obj.stop()
-            GPIO.cleanup()
             
             
             
