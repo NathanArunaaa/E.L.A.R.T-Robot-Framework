@@ -243,7 +243,9 @@ def handle_controller_client(conn, addr):
         conn.sendall(frame_size + frame_data)
 
  #------------- looking for commands from controller client ---------        
-    try: 
+    try:
+        camera = cv2.VideoCapture(0)  # Use 0 for the first camera device (change the index if needed)
+
         while True:
             data = conn.recv(1024).decode()
             if not data:
