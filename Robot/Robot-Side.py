@@ -244,7 +244,7 @@ def handle_controller_client(conn, addr):
 
  #------------- looking for commands from controller client ---------        
     try:
-        camera = cv2.VideoCapture(1)  # Use 0 for the first camera device (change the index if needed)
+        camera = cv2.VideoCapture(31)  # Use 0 for the first camera device (change the index if needed)
 
         while True:
             data = conn.recv(1024).decode()
