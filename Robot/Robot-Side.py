@@ -10,8 +10,6 @@ import RPi.GPIO as GPIO
 import subprocess
 import socket
 import glob
-from picamera import PiCamera
-import io
 
 # ---------Contreller command handler ---------
 def handle_controller_client(conn, addr):
@@ -152,7 +150,9 @@ def handle_controller_client(conn, addr):
         finally:
             motor1_pwm_obj.stop()
             GPIO.cleanup()
-                
+        
+            
+            
             
 # ------------------------------------              
     def motor_back():
@@ -236,15 +236,9 @@ def handle_controller_client(conn, addr):
         os.system('sudo shutdown -h now')
         print("Client connected:", addr)
         
-        
-    camera = PiCamera()
-
-        
     # Function to send video frames to the controller client   
-    def send_frame(conn, camera):
-        stream = io.BytesIO()
-        camera.capture(stream, format='jpeg')
-        frame_data = stream.getvalue()
+    def send_frame(conn, frame):
+        frame_data = pickle.dumps(frame)
         frame_size = struct.pack('!L', len(frame_data))
         conn.sendall(frame_size + frame_data)
 
@@ -255,7 +249,9 @@ def handle_controller_client(conn, addr):
             if not data:
                 break
             elif data == 'camera_frame':
-                send_frame(conn, camera)
+                ret, frame = camera.read()
+                if ret:
+                    send_frame(conn, frame)
             else:
                 print("Received command:", data)
               
