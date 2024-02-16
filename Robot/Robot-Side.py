@@ -56,7 +56,7 @@ def handle_controller_client(conn, addr):
         finally:
             motor1_pwm_obj.stop()
             motor2_pwm_obj.stop()
-            
+            GPIO.cleanup()
             
             
 # ------------------------------------       
@@ -101,7 +101,7 @@ def handle_controller_client(conn, addr):
             
         finally:
             motor2_pwm_obj.stop()
-            
+            GPIO.cleanup()
             
        
         
@@ -149,7 +149,7 @@ def handle_controller_client(conn, addr):
             
         finally:
             motor1_pwm_obj.stop()
-            
+            GPIO.cleanup()
         
             
             
@@ -197,7 +197,7 @@ def handle_controller_client(conn, addr):
         finally:
             motor1_pwm_obj.stop()
             motor2_pwm_obj.stop()
-            
+            GPIO.cleanup()
     
     # Function to turn on/off navigation lights
     def navLightsOn():
