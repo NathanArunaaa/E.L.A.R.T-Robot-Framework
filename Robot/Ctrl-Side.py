@@ -317,14 +317,14 @@ def sensor_window():
     sensor_readings.geometry(f"{1000}x{700}")
 
     script_directory = os.path.dirname(os.path.abspath(__file__))
-    database_path = os.path.join(script_directory, "elart.sqlitedb")
+    database_path = os.path.join(script_directory, "elart.db")
 
     # Create map widget and use the tiles from the database
     map_widget = tkintermapview.TkinterMapView(sensor_readings, width=1000, height=700, corner_radius=0, use_database_only=True, max_zoom=17, database_path=database_path)
     map_widget.pack(fill="both", expand=True)
 
     # Set the tile server to the local database
-    map_widget.set_tile_server("file://{}".format(database_path))
+    map_widget.set_tile_server("file://{}/elart.db".format(script_directory))
 
     # Set the address or location
     map_widget.set_address("nyc")
