@@ -13,10 +13,10 @@ import glob
 
 # ---------Contreller command handler ---------
 def handle_controller_client(conn, addr):
-    # Function to test the motors
-    def motor_test():
-        pins_to_cleanup = [17, 18, 19, 27, 20, 12]
-
+    
+    def motor_front():
+        motor_pin_cleanup = [17, 18, 19, 27, 20, 12]
+        
         GPIO.setmode(GPIO.BCM)
         motor1_pwm = 17  
         motor1_in1 = 18 
@@ -25,7 +25,6 @@ def handle_controller_client(conn, addr):
         motor2_pwm = 27 
         motor2_in1 = 20  
         motor2_in2 = 12 
-        
     # Motor 1
         GPIO.setup(motor1_pwm, GPIO.OUT)
         GPIO.setup(motor1_in1, GPIO.OUT)
@@ -34,7 +33,6 @@ def handle_controller_client(conn, addr):
         GPIO.setup(motor2_pwm, GPIO.OUT)
         GPIO.setup(motor2_in1, GPIO.OUT)
         GPIO.setup(motor2_in2, GPIO.OUT)
-    
         motor1_pwm_obj = GPIO.PWM(motor1_pwm, 1000)  
         motor2_pwm_obj = GPIO.PWM(motor2_pwm, 1000)
         motor1_pwm_obj.start(0) 
@@ -58,12 +56,10 @@ def handle_controller_client(conn, addr):
         finally:
             motor1_pwm_obj.stop()
             motor2_pwm_obj.stop()
-            GPIO.cleanup(pins_to_cleanup)
+            GPIO.cleanup(motor_pin_cleanup)   
             
-            
-# ------------------------------------       
     def motor_left():
-        pins_to_cleanup = [17, 18, 19, 27, 20, 12]
+        motor_pin_cleanup = [17, 18, 19, 27, 20, 12]
         
         GPIO.setmode(GPIO.BCM)
         motor1_pwm = 17  
@@ -105,14 +101,10 @@ def handle_controller_client(conn, addr):
             
         finally:
             motor2_pwm_obj.stop()
-            GPIO.cleanup(pins_to_cleanup)
+            GPIO.cleanup(motor_pin_cleanup)
             
-       
-        
-        
-# ------------------------------------                  
     def motor_right():
-        pins_to_cleanup = [17, 18, 19, 27, 20, 12]
+        motor_pin_cleanup = [17, 18, 19, 27, 20, 12]
 
         GPIO.setmode(GPIO.BCM)
         motor1_pwm = 17  
@@ -155,14 +147,10 @@ def handle_controller_client(conn, addr):
             
         finally:
             motor1_pwm_obj.stop()
-            GPIO.cleanup(pins_to_cleanup)
+            GPIO.cleanup(motor_pin_cleanup)
         
-            
-            
-            
-# ------------------------------------              
     def motor_back():
-        pins_to_cleanup = [17, 18, 19, 27, 20, 12]
+        motor_pin_cleanup = [17, 18, 19, 27, 20, 12]
 
         GPIO.setmode(GPIO.BCM)
 
@@ -206,7 +194,7 @@ def handle_controller_client(conn, addr):
         finally:
             motor1_pwm_obj.stop()
             motor2_pwm_obj.stop()
-            GPIO.cleanup(pins_to_cleanup)
+            GPIO.cleanup(motor_pin_cleanup)
 
     
     # Function to turn on/off navigation lights
@@ -228,11 +216,13 @@ def handle_controller_client(conn, addr):
         relayNav = 21
         GPIO.setup(relayNav, GPIO.OUT)
         GPIO.output(relayNav, GPIO.HIGH)
+        
     def headlightsOn():
         GPIO.setmode(GPIO.BCM)
         relayNav = 21
         GPIO.setup(relayNav, GPIO.OUT)
         GPIO.output(relayNav, GPIO.LOW)
+        
         
     # Function to reboot the system
     def sysReboot():
@@ -275,8 +265,8 @@ def handle_controller_client(conn, addr):
                     sysShutdown()
                 
                 elif data == 'front':
-                    motor_test_thread = threading.Thread(target=motor_test)
-                    motor_test_thread.start()
+                    motor_front_thread = threading.Thread(target=motor_front)
+                    motor_front_thread.start()
                     
                 elif data == 'back':
                     motor_back_thread = threading.Thread(target=motor_back)
@@ -291,7 +281,7 @@ def handle_controller_client(conn, addr):
                     motor_right_thread.start()
                     
                 elif data == 'motortest':
-                    motor_test_thread = threading.Thread(target=motor_test)
+                    motor_test_thread = threading.Thread(target=motor_front)
                     motor_test_thread.start()
                 
                 elif data == 'nav-on':

@@ -16,7 +16,7 @@ import math
 import queue
 import keyboard
 from pynput import keyboard
-
+import tkintermapview
 
 
 #----------------------List for commands---------------------
@@ -319,7 +319,8 @@ def sensor_window():
 
     label = tk.Label(sensor_readings, bg='#323232', fg='white', text="SENSOR READINGS")
     label.pack()
-
+    map_widget = tkintermapview.TkinterMapView( width=800, height=600, corner_radius=0)
+    map_widget.place(relx=0.5, rely=0.5)
     progress_var_etlu = tk.DoubleVar(sensor_readings)
     vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
     vertical_progress.pack(side=tk.LEFT, padx=30)
