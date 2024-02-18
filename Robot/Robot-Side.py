@@ -15,6 +15,8 @@ import glob
 def handle_controller_client(conn, addr):
     # Function to test the motors
     def motor_test():
+        pins_to_cleanup = [17, 18, 19, 27, 20, 12]
+
         GPIO.setmode(GPIO.BCM)
         motor1_pwm = 17  
         motor1_in1 = 18 
@@ -56,11 +58,13 @@ def handle_controller_client(conn, addr):
         finally:
             motor1_pwm_obj.stop()
             motor2_pwm_obj.stop()
-            GPIO.cleanup()
+            GPIO.cleanup(pins_to_cleanup)
             
             
 # ------------------------------------       
     def motor_left():
+        pins_to_cleanup = [17, 18, 19, 27, 20, 12]
+        
         GPIO.setmode(GPIO.BCM)
         motor1_pwm = 17  
         motor1_in1 = 18 
@@ -101,13 +105,15 @@ def handle_controller_client(conn, addr):
             
         finally:
             motor2_pwm_obj.stop()
-            GPIO.cleanup()
+            GPIO.cleanup(pins_to_cleanup)
             
        
         
         
 # ------------------------------------                  
     def motor_right():
+        pins_to_cleanup = [17, 18, 19, 27, 20, 12]
+
         GPIO.setmode(GPIO.BCM)
         motor1_pwm = 17  
         motor1_in1 = 18 
@@ -149,14 +155,17 @@ def handle_controller_client(conn, addr):
             
         finally:
             motor1_pwm_obj.stop()
-            GPIO.cleanup()
+            GPIO.cleanup(pins_to_cleanup)
         
             
             
             
 # ------------------------------------              
     def motor_back():
+        pins_to_cleanup = [17, 18, 19, 27, 20, 12]
+
         GPIO.setmode(GPIO.BCM)
+
         motor1_pwm = 17  
         motor1_in1 = 18 
         motor1_in2 = 19  
@@ -197,7 +206,8 @@ def handle_controller_client(conn, addr):
         finally:
             motor1_pwm_obj.stop()
             motor2_pwm_obj.stop()
-            GPIO.cleanup()
+            GPIO.cleanup(pins_to_cleanup)
+
     
     # Function to turn on/off navigation lights
     def navLightsOn():
@@ -205,6 +215,7 @@ def handle_controller_client(conn, addr):
         relayNav = 13
         GPIO.setup(relayNav, GPIO.OUT)
         GPIO.output(relayNav, GPIO.HIGH)
+        
     def navLightsOff():
         GPIO.setmode(GPIO.BCM)
         relayNav = 13
