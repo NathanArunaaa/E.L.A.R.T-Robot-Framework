@@ -17,7 +17,6 @@ import queue
 import keyboard
 from pynput import keyboard
 import tkintermapview
-import sqlite3
 
 #----------------------List for commands---------------------
 command_history = []
@@ -318,31 +317,16 @@ def sensor_window():
     sensor_readings.geometry(f"{1000}x{700}")
 
     script_directory = os.path.dirname(os.path.abspath(__file__))
-    database_path = os.path.join(script_directory, "elart.mbtiles")
+    database_path = os.path.join(script_directory, "elart.sqlitedb")
 
-# Connect to the MBTiles database using sqlite3
-    conn = sqlite3.connect(database_path)
-
-# Extract the metadata from the MBTiles database
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM metadata;")
-    metadata = cursor.fetchall()
-    conn.close()
-
-# Get the minimum and maximum zoom levels from the metadata
-    min_zoom = max_zoom = None
-    for name, value in metadata:
-      if name == "minzoom":
-         min_zoom = int(value)
-      elif name == "maxzoom":
-         max_zoom = int(value)
-
-# Create map widget and use the tiles from the MBTiles database
-    map_widget = tkintermapview.TkinterMapView(sensor_readings, width=1000, height=700, corner_radius=0, use_database_only=True,
-                            min_zoom=min_zoom, max_zoom=max_zoom, database_path=database_path)
+    # Create map widget and use the tiles from the database
+    map_widget = tkintermapview.TkinterMapView(sensor_readings, width=1000, height=700, corner_radius=0, use_database_only=True, max_zoom=17, database_path=database_path)
     map_widget.pack(fill="both", expand=True)
 
-# Set the address or location
+    # Set the tile server to the local database
+    map_widget.set_tile_server("file://{}".format(database_path))
+
+    # Set the address or location
     map_widget.set_address("nyc")
   
     
