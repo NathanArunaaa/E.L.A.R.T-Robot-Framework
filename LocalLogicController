@@ -1,0 +1,105 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// Define LED pin numbers
+const int leftLED1 = 5;   
+const int leftLED2 = 6;  
+
+const int rightLED1 = 11;   
+const int rightLED2 = 12;  
+
+const int analogInputPin = A0; 
+const float vRef = 5.0;
+float batteryVoltageFull = 12.0;
+float batteryVoltageEmpty = 0; 
+
+void setup()
+{
+  lcd.begin();
+  lcd.setBacklight((uint8_t)1);
+
+  lcd.print("E.L.A.R.T");
+
+  // Second row
+  lcd.setCursor(0, 1);
+  lcd.print("Battery: ");
+
+  // Set LED pins as OUTPUT
+  pinMode(leftLED1, OUTPUT);
+  pinMode(leftLED2, OUTPUT);
+  pinMode(rightLED1, OUTPUT);
+  pinMode(rightLED2, OUTPUT);
+}
+void displayProgressBar(int percentage)
+{
+  int progressLength = 16; // Length of the progress bar
+  int numOfBlocks = map(percentage, 0, 100, 0, progressLength);
+
+  lcd.clear();
+
+
+  lcd.setCursor(0, 0);
+  lcd.print("E.L.A.R.T | ");  
+  lcd.print(percentage);
+  lcd.print("%");
+
+  // Display the progress bar on the third row
+  lcd.setCursor(0, 1);
+  for (int i = 0; i < numOfBlocks; ++i)
+    lcd.write(219);
+  for (int i = numOfBlocks; i < progressLength; ++i)
+    lcd.print(" ");
+  lcd.print(" ");
+}
+
+void loop()
+{
+
+  int sensorValue = analogRead(analogInputPin);
+  
+  // Calculate voltage from ADC value
+  float voltage = sensorValue * (vRef / 1023.0);
+  
+  // Assuming LiPo battery voltage ranges from 3.7V to 4.2V
+  float batteryVoltage = map(voltage, 0.0, vRef, 3.7, 4.2);
+  
+  // Map battery voltage to percentage (adjust these values based on your battery)
+  int batteryPercentage = map(batteryVoltage, batteryVoltageEmpty, batteryVoltageFull, 0, 100);
+  batteryPercentage = constrain(batteryPercentage, 0, 100); // Ensure it's within 0-100%
+
+  // Display the battery percentage on the LCD
+  lcd.clear();
+  displayProgressBar(batteryPercentage);
+
+
+  digitalWrite(leftLED1, HIGH);
+  digitalWrite(leftLED2, HIGH); 
+  digitalWrite(rightLED1, HIGH);
+  digitalWrite(rightLED2, HIGH); 
+
+  delay(100);                   
+  digitalWrite(leftLED1, LOW);
+  digitalWrite(leftLED2, LOW);
+  digitalWrite(rightLED1, LOW);
+  digitalWrite(rightLED2, LOW); 
+
+  delay(100);                   
+  digitalWrite(leftLED1, HIGH);
+  digitalWrite(leftLED2, HIGH); 
+  digitalWrite(rightLED1, HIGH);
+  digitalWrite(rightLED2, HIGH); 
+  delay(100); 
+
+  digitalWrite(leftLED1, LOW);
+  digitalWrite(leftLED2, LOW);
+  digitalWrite(rightLED1, LOW);
+  digitalWrite(rightLED2, LOW); 
+
+
+   
+  delay(1000);                   
+
+              
+}
