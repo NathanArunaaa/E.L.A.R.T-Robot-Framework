@@ -18,7 +18,6 @@ import keyboard
 from pynput import keyboard
 import tkintermapview
 
-
 #----------------------List for commands---------------------
 command_history = []
 
@@ -315,43 +314,21 @@ def confirm_controller_Shutdown():
 def sensor_window():
     sensor_readings = tk.Toplevel(root, bg='#323232')
     sensor_readings.title("E.L.A.R.T Sensors")
-    sensor_readings.geometry("350x250") 
-    
-    script_directory = os.path.dirname(os.path.abspath(__file__))
-    database_path = os.path.join(script_directory, "DB", "E.L.A.R.T.sqlitedb")
+    sensor_readings.geometry(f"{1000}x{700}")
 
-# Create map widget and use the tiles from the database
-    map_widget = tkintermapview(sensor_readings, width=1000, height=700, corner_radius=0, use_database_only=True, max_zoom=17, database_path=database_path)
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+    database_path = os.path.join(script_directory, "elart.sqlitedb")
+
+    # Create map widget and use the tiles from the database
+    map_widget = tkintermapview.TkinterMapView(sensor_readings, width=1000, height=700, corner_radius=0, use_database_only=True, max_zoom=17, database_path=database_path)
     map_widget.pack(fill="both", expand=True)
 
-# Set the tile server to the local database
+    # Set the tile server to the local database
     map_widget.set_tile_server("file://{}".format(database_path))
 
-# Set the address or location
+    # Set the address or location
     map_widget.set_address("nyc")
-
-    label = tk.Label(sensor_readings, bg='#323232', fg='white', text="SENSOR READINGS")
-    label.pack()
-    
-    
-    
-    progress_var_etlu = tk.DoubleVar(sensor_readings)
-    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
-    vertical_progress.pack(side=tk.LEFT, padx=30)
-
-    progress_var_etlu = tk.DoubleVar(sensor_readings)
-    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
-    vertical_progress.pack(side=tk.LEFT, padx=30)
-
-    progress_var_etlu = tk.DoubleVar(sensor_readings)
-    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
-    vertical_progress.pack(side=tk.LEFT, padx=30)
-    
-    progress_var_etlu = tk.DoubleVar(sensor_readings)
-    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
-    vertical_progress.pack(side=tk.LEFT, padx=30)
-   
-    
+  
     
 root = tk.Tk()
 root.title("E.L.A.R.T - Controller")
