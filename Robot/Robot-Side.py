@@ -245,7 +245,6 @@ def handle_controller_client(conn, addr):
 
  #------------- looking for commands from controller client ---------        
     try:
-        camera = cv2.VideoCapture(0)  # Use 0 for the first camera device (change the index if needed)
 
         while True:
             data = conn.recv(1024).decode()
@@ -373,7 +372,7 @@ def handle_sensor_connection(conn, addr):
     finally:
         conn.close()
 
-camera = cv2.VideoCapture(0)  # Use 0 for the first camera device (change the index if needed)
+camera = cv2.VideoCapture(0)  
 
 #-------Set up a socket server for sesnor data--------
 sensor_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
