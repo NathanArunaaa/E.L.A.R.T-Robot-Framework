@@ -170,29 +170,36 @@ def update_camera_feed():
 
             if len(frame_data) == frame_size:
                 frame = pickle.loads(frame_data)
-                
+
                 image = Image.fromarray(frame)
                 image = image.resize((canvas.winfo_width(), canvas.winfo_height()), Image.ANTIALIAS)
-                image = ImageTk.PhotoImage(image)
-                
-                canvas.create_image(0, 0, anchor=tk.NW, image=image)
-                canvas.image = image
+                photo_image = ImageTk.PhotoImage(image)
+
+    # Create or update the canvas image
+                if hasattr(canvas, 'canvas_image'):
+                  canvas.itemconfig(canvas.canvas_image, image=photo_image)
+                else:
+                  canvas.canvas_image = canvas.create_image(0, 0, anchor=tk.NW, image=photo_image)
+
+    # Store the PhotoImage object in a custom attribute
+                canvas.photo_image = photo_image
 
                 pitch = 30
                 roll = 30
 
-                # Update the canvas with the new pitch and roll angles
+    # Update the canvas with the new pitch and roll angles
                 draw_artificial_horizon(canvas, pitch, roll)
 
                 canvas_width = canvas.winfo_width()
                 angle_text = f"Pitch: {pitch:.2f}°\nRoll: {roll:.2f}°"
                 canvas.create_text(10, 10, anchor=tk.NW, text=angle_text, fill="white", font=("Arial", 14))
-                
-                x_offset = 10  
-                y_offset = 10  
+
+                x_offset = 10
+                y_offset = 10
 
                 command_text = "\n".join(command_history[-5:])  # Show the last 5 commands
                 canvas.create_text(canvas_width - x_offset, y_offset, anchor=tk.NE, text=command_text, fill="white", font=("Arial", 12))
+
 
     except Exception as e:
         print("Error updating camera feed:", e)
