@@ -1,7 +1,7 @@
 import serial
 import time
 
-ser = serial.Serial('/dev/ttyUSB0', 9600)  # Adjust port name as needed
+ser = serial.Serial('/dev/ttyACM0', 9600)  # Use the correct USB port address
 
 try:
     while True:
