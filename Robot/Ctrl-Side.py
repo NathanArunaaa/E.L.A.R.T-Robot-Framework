@@ -352,7 +352,7 @@ time_label.pack(side=tk.LEFT, pady=10)
 
 #------------------------Sensor Lables--------------------------
 arduino_data_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Arduino Data: N/A]")
-arduino_data_label.pack()
+arduino_data_label.pack(side=tk.LEFT)
 
 Temp2_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Sens2: N/A]")
 Temp2_label.pack(side=tk.LEFT)
