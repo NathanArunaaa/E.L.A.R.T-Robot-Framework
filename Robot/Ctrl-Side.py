@@ -188,11 +188,11 @@ def update_camera_feed():
                 roll = 30
 
     # Update the canvas with the new pitch and roll angles
-                draw_artificial_horizon(canvas, pitch, roll)
+                
 
                 canvas_width = canvas.winfo_width()
-                angle_text = f"Pitch: {pitch:.2f}°\nRoll: {roll:.2f}°"
-                canvas.create_text(10, 10, anchor=tk.NW, text=angle_text, fill="white", font=("Arial", 14))
+                
+                canvas.create_text(10, 10, anchor=tk.NW, fill="white", font=("Arial", 14))
 
                 x_offset = 10
                 y_offset = 10
@@ -426,7 +426,7 @@ etlu_warning.pack(side=tk.TOP, padx=5, pady=5)
 
 
 #----------------------------Camera------------------------------
-canvas = tk.Canvas(root, width=1180, height=790)
+canvas = tk.Canvas(root, width=1160, height=790)
 canvas.pack(side=tk.LEFT)
 
 
