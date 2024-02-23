@@ -100,53 +100,8 @@ def update_gui_labels(sensor_data):
     arduino_data_label.config(text=f"Arduino Data: {arduino_data}")
     time_label.config(text=f"Current Time: {timestamp}")
          
-def extract_cpu_temperature(sensor_data):
-    try:
-        cpu_temp_start = sensor_data.find("CPU TEMP:") + len("CPU TEMP: ")
-        cpu_temp_end = sensor_data.find(" °C", cpu_temp_start)
-        cpu_temperature = float(sensor_data[cpu_temp_start:cpu_temp_end])
-        return cpu_temperature
-    except ValueError:
-        return None
-    
-def extract_arduino_data(sensor_data):
-    try:
-        # Assuming Arduino data is present in the sensor data
-        arduino_data_start = sensor_data.find("[Arduino Data:") + len("[Arduino Data: ")
-        arduino_data_end = sensor_data.find("]", arduino_data_start)
-        arduino_data = sensor_data[arduino_data_start:arduino_data_end]
-        return arduino_data
-    except ValueError:
-        return None
 
     
-
-
-# Updated extract_ds18b20_temperature function
-def extract_ds18b20_temperature(sensor_data):
-    try:
-        ds18b20_temp_start = sensor_data.find("DS18B20 TEMP:") + len("DS18B20 TEMP: ")
-        ds18b20_temp_end = sensor_data.find(" °C", ds18b20_temp_start)
-        ds18b20_temperature = float(sensor_data[ds18b20_temp_start:ds18b20_temp_end])
-        return ds18b20_temperature
-    except ValueError:
-        return None
-                
-def update_temperature_labels(sensor_data):
-    cpu_temperature = extract_cpu_temperature(sensor_data)
-    ds18b20_temperature = extract_ds18b20_temperature(sensor_data)
-    arduino_data = extract_arduino_data(sensor_data)
-    
-    if cpu_temperature is not None:
-        cpu_temp_label.config(text=f"CPU Temperature: {cpu_temperature:.2f} °C")
-
-    if ds18b20_temperature is not None:
-        external_temp_label.config(text=f"External Temperature: {ds18b20_temperature:.2f} °C")
-        
-    if arduino_data is not None:
-        arduino_data_label.config(text=f"Arduino Data: {arduino_data}")
-
-   
         
 gui_queue = queue.Queue()
  
@@ -184,20 +139,13 @@ def update_camera_feed():
                 image = image.resize((canvas.winfo_width(), canvas.winfo_height()), Image.ANTIALIAS)
                 photo_image = ImageTk.PhotoImage(image)
 
-    # Create or update the canvas image
                 if hasattr(canvas, 'canvas_image'):
                   canvas.itemconfig(canvas.canvas_image, image=photo_image)
                 else:
                   canvas.canvas_image = canvas.create_image(0, 0, anchor=tk.NW, image=photo_image)
+                  
 
-    # Store the PhotoImage object in a custom attribute
                 canvas.photo_image = photo_image
-
-                pitch = 30
-                roll = 30
-
-    # Update the canvas with the new pitch and roll angles
-                
 
                 canvas_width = canvas.winfo_width()
                 
@@ -300,7 +248,7 @@ def confirm_reboot():
 def confirm_Shutdown():
     smaller_window_shutdown = tk.Toplevel(root, bg='#323232')
     smaller_window_shutdown.title("E.L.A.R.T ")
-    smaller_window_shutdown.geometry("200x100")  # Set the size of the new window
+    smaller_window_shutdown.geometry("200x100")  
 
     label = tk.Label(smaller_window_shutdown, bg='#323232', fg='white', text="CONFIRM SHUTDOWN")
     label.pack()
@@ -315,7 +263,7 @@ def confirm_Shutdown():
 def confirm_controller_Shutdown():
     smaller_window_shutdown = tk.Toplevel(root, bg='#323232')
     smaller_window_shutdown.title("E.L.A.R.T ")
-    smaller_window_shutdown.geometry("250x100")  # Set the size of the new window
+    smaller_window_shutdown.geometry("250x100") 
 
     label = tk.Label(smaller_window_shutdown,  bg='#323232', fg='white', text="CONFIRM CONRTOLLER SHUTDOWN")
     label.pack()
@@ -328,7 +276,7 @@ def confirm_controller_Shutdown():
 
 #--------------------------Sensor Window------------------------
 def sensor_window():
-    global arduino_data_label  # Reference the global variable
+    global arduino_data_label  
 
     sensor_readings = tk.Toplevel(root, bg='#323232')
     sensor_readings.title("E.L.A.R.T Sensors")
@@ -336,6 +284,8 @@ def sensor_window():
 
     arduino_data_label = tk.Label(sensor_readings, bg='#323232', fg='white', text="[Arduino Data: N/A]")
     arduino_data_label.pack()
+    
+    
     
 root = tk.Tk()
 root.title("E.L.A.R.T - Controller")
@@ -356,11 +306,8 @@ cpu_temp_label.pack()
 external_temp_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp: N/A]")
 external_temp_label.pack(side=tk.LEFT)
 
-gps_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[GPS: N/A]")
-gps_label.pack(side=tk.LEFT)
 
-Temp3_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Temp3: N/A]")
-Temp3_label.pack(side=tk.LEFT)
+
 
 
 time_label = tk.Label(sensor_frame,bg='#323232',  fg='gray', text="Current Time: ")
@@ -370,11 +317,7 @@ time_label.pack(side=tk.LEFT, pady=10)
 arduino_data_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Arduino Data: N/A]")
 arduino_data_label.pack(side=tk.LEFT)
 
-Temp2_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Sens2: N/A]")
-Temp2_label.pack(side=tk.LEFT)
 
-Temp3_label = tk.Label(sensor_frame, bg='#323232', fg='white', text="[Sens3: N/A]")
-Temp3_label.pack(side=tk.LEFT)
 
 
 #----------------------Left Row Buttons-------------------------
@@ -495,11 +438,10 @@ def start_input_thread():
     key_listener_thread.daemon = True
     key_listener_thread.start()
 
-    # Your main application code goes here
 
 
 
-
+# ---------Starting all the funcitons ---------
 start_input_thread()
 start_sensor_thread()
 update_time()
