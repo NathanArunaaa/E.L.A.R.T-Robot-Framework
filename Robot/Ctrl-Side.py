@@ -290,6 +290,18 @@ def sensor_window():
     sensor_readings = tk.Toplevel(root, bg='#323232')
     sensor_readings.title("E.L.A.R.T Sensors")
     sensor_readings.geometry(f"{1000}x{700}")
+    progress_var_etlu = tk.DoubleVar(sensor_readings)
+    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
+    vertical_progress.pack(side=tk.LEFT, padx=30)
+    
+    
+
+    
+    
+def map_window():
+    sensor_readings = tk.Toplevel(root, bg='#323232')
+    sensor_readings.title("E.L.A.R.T Sensors")
+    sensor_readings.geometry(f"{1000}x{700}")
 
     script_directory = os.path.dirname(os.path.abspath(__file__))
     database_path = os.path.join(script_directory, "elart.db")
