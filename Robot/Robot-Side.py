@@ -10,6 +10,7 @@ import RPi.GPIO as GPIO
 import subprocess
 import socket
 import glob
+import serial
 
 # ---------Contreller command handler ---------
 def handle_controller_client(conn, addr):
@@ -339,8 +340,19 @@ def read_temperature(sensor_id):
     except Exception as e:
         print(f"Error reading temperature: {str(e)}")
         return None
+    
+def read_gps_data(serial_port):
+    while True:
+        line = serial_port.readline().decode('utf-8').strip()
+        if line.startswith('$GPGGA'):  # Look for GGA sentences (contains latitude and longitude)
+            data = line.split(',')
+            if len(data) >= 10 and data[2] and data[4]:
+                latitude = float(data[2][:2]) + float(data[2][2:]) / 60
+                longitude = float(data[4][:3]) + float(data[4][3:]) / 60
+                return latitude, longitude
 
 # ---------------Sensor Data Transmitter--------------
+ser = serial.Serial('/dev/ttyACM0', 9600)  # Adjust port name and baud rate as needed
 def handle_sensor_connection(conn, addr):
     try:
         while True:
@@ -356,8 +368,10 @@ def handle_sensor_connection(conn, addr):
             else:
                 ds18b20_temperature = None
 
+            # Read GPS data
+            gps_latitude, gps_longitude = read_gps_data(ser)
           
-            temperature_data = f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C]" if ds18b20_temperature is not None else f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND]"
+            temperature_data = f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C] [GPS LATITUDE: {gps_latitude:.6f}] [GPS LONGITUDE: {gps_longitude:.6f}]" if ds18b20_temperature is not None else f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND] [GPS LATITUDE: {gps_latitude:.6f}] [GPS LONGITUDE: {gps_longitude:.6f}]"
 
             # Send data to controller
             try:

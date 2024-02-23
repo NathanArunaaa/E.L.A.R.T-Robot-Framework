@@ -30,32 +30,7 @@ client_socket.connect(server_address)
 
 
 
-#----------------------Artificial Horizon--------------------
-def calculate_horizon_coords(canvas_width, canvas_height, pitch, roll):
-    horizon_length = 100  # You can adjust this length as needed
-    pitch_radians = math.radians(pitch)
-    roll_radians = math.radians(roll)
 
-    # Calculate the coordinates of the two ends of the horizon line
-    x1 = canvas_width / 2 - horizon_length * math.sin(roll_radians)
-    y1 = canvas_height / 2 - horizon_length * math.cos(roll_radians) * math.sin(pitch_radians)
-    x2 = canvas_width / 2 + horizon_length * math.sin(roll_radians)
-    y2 = canvas_height / 2 + horizon_length * math.cos(roll_radians) * math.sin(pitch_radians)
-
-    return x1, y1, x2, y2
-
-def draw_artificial_horizon(canvas, pitch, roll):
-    canvas.delete("horizon")
-
-    # Get the canvas size
-    canvas_width = canvas.winfo_width()
-    canvas_height = canvas.winfo_height()
-
-    # Calculate the coordinates of the horizon line
-    x1, y1, x2, y2 = calculate_horizon_coords(canvas_width, canvas_height, pitch, roll)
-
-    # Draw the horizon line
-    canvas.create_line(x1, y1, x2, y2, fill="white", tags="horizon", width=2, arrow=tk.BOTH)
 
 
 #---------------------Receiving Sensor Data------------------
@@ -129,6 +104,7 @@ def update_temperature_labels(sensor_data):
     latitude = extract_latitude(sensor_data)
     longitude = extract_longitude(sensor_data)
 
+
     if cpu_temperature is not None:
         cpu_temp_label.config(text=f"CPU Temperature: {cpu_temperature:.2f} °C")
 
@@ -184,21 +160,11 @@ def update_camera_feed():
     # Store the PhotoImage object in a custom attribute
                 canvas.photo_image = photo_image
 
-                pitch = 30
-                roll = 30
 
-    # Update the canvas with the new pitch and roll angles
-                draw_artificial_horizon(canvas, pitch, roll)
-
-                canvas_width = canvas.winfo_width()
-                angle_text = f"Pitch: {pitch:.2f}°\nRoll: {roll:.2f}°"
-                canvas.create_text(10, 10, anchor=tk.NW, text=angle_text, fill="white", font=("Arial", 14))
-
-                x_offset = 10
-                y_offset = 10
+               
 
                 command_text = "\n".join(command_history[-5:])  # Show the last 5 commands
-                canvas.create_text(canvas_width - x_offset, y_offset, anchor=tk.NE, text=command_text, fill="white", font=("Arial", 12))
+                canvas.create_text(anchor=tk.NE, text=command_text, fill="white", font=("Arial", 12))
 
 
     except Exception as e:
@@ -323,18 +289,36 @@ def sensor_window():
     sensor_readings.title("E.L.A.R.T Sensors")
     sensor_readings.geometry(f"{1000}x{700}")
 
-    script_directory = os.path.dirname(os.path.abspath(__file__))
-    database_path = os.path.join(script_directory, "elart.db")
+    gps_label = tk.Label(sensor_readings, bg='#323232', fg='white', text="SENSOR READINGS")
+    gps_label.pack()
 
-    # Create map widget and use the tiles from the database
-    map_widget = tkintermapview.TkinterMapView(sensor_readings, width=1000, height=700, corner_radius=0, use_database_only=True, max_zoom=17, database_path=database_path)
-    map_widget.pack(fill="both", expand=True)
 
-    # Set the tile server to the local database
-    map_widget.set_tile_server("file://{}/elart.db".format(script_directory))
+    progress_var_etlu = tk.DoubleVar(sensor_readings)
+    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
+    vertical_progress.pack(side=tk.LEFT, padx=30)
 
-    # Set the address or location
-    map_widget.set_address("nyc")
+    progress_var_etlu = tk.DoubleVar(sensor_readings)
+    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
+    vertical_progress.pack(side=tk.LEFT, padx=30)
+
+    progress_var_etlu = tk.DoubleVar(sensor_readings)
+    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
+    vertical_progress.pack(side=tk.LEFT, padx=30)
+
+    progress_var_etlu = tk.DoubleVar(sensor_readings)
+    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
+    vertical_progress.pack(side=tk.LEFT, padx=30)
+    
+def map_window():
+    sensor_readings = tk.Toplevel(root, bg='#323232')
+    sensor_readings.title("E.L.A.R.T Location")
+    sensor_readings.geometry(f"{1000}x{700}")
+
+    label = tk.Label(sensor_readings, bg='#323232', fg='white', text="SENSOR READINGS")
+    label.pack()
+
+
+   
   
     
 root = tk.Tk()
