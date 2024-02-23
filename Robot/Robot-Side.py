@@ -367,8 +367,15 @@ def handle_sensor_connection(conn, addr):
             line = ser.readline().decode('latin-1').strip()
             print(f"Sensor Value: {line}")
 
-            # Extract sensor data
-            sensor_values = extract_temperature_data(line)
+            values = line.split("Sensor Value: ")[1]
+
+# Splitting values into a list of key-value pairs
+            pairs = values.split(",")
+
+# Creating a dictionary from key-value pairs
+            sensor_data = {pair.split(":")[0].strip(): int(pair.split(":")[1]) for pair in pairs}
+
+            print(sensor_data) 
             
             # Get CPU temperature
             result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
@@ -387,9 +394,7 @@ def handle_sensor_connection(conn, addr):
             temperature_data = f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C]" if ds18b20_temperature is not None else f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND]"
 
             # Combine with sensor values
-            if sensor_values:
-                for key, value in sensor_values.items():
-                    temperature_data += f" [{key}: {value}]"
+           
 
             # Send data to controller
             try:
