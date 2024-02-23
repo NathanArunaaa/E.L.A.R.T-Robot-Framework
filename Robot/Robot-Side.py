@@ -345,19 +345,20 @@ def read_temperature(sensor_id):
 def handle_sensor_connection(conn, addr):
     try:
         while True:
-            
             ser = serial.Serial('/dev/ttyACM0', 9600)  # Adjust port name and baud rate as needed
-
             line = ser.readline().decode('latin-1').strip()
             values = line.split(",")[1]
 
-# Splitting values into a list of key-value pairs
-            pairs = values.split(",")
+            # Splitting values into a list of key-value pairs using "|" as separator
+            pairs = values.split("|")
 
-# Creating a dictionary from key-value pairs
-            sensor_data = {pair.split(":")[0].strip(): int(pair.split(":")[1]) for pair in pairs}
-
-            print(sensor_data)
+            # Checking if there are at least two elements in the pairs list
+            if len(pairs) >= 2:
+                # Creating a dictionary from key-value pairs
+                sensor_data = {pair.split(":")[0].strip(): int(pair.split(":")[1]) for pair in pairs}
+                print(sensor_data)
+            else:
+                print("Invalid data format:", values)
             
             # Get CPU temperature
             result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
