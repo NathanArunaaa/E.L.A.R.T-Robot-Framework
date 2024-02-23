@@ -31,6 +31,7 @@ client_socket.connect(server_address)
 
 
 
+
 #---------------------Receiving Sensor Data------------------
 def update_sensor_data():
     try:
@@ -158,14 +159,14 @@ def update_camera_feed():
                 canvas.photo_image = photo_image
 
                 
-    # Update the canvas with the new pitch and roll angles
 
-               
-                canvas.create_text(10, 10, anchor=tk.NW,  fill="white", font=("Arial", 14))
+                canvas_width = canvas.winfo_width()
 
-                
+                x_offset = 10
+                y_offset = 10
+
                 command_text = "\n".join(command_history[-5:])  # Show the last 5 commands
-                canvas.create_text( anchor=tk.NE, text=command_text, fill="white", font=("Arial", 12))
+                canvas.create_text(canvas_width - x_offset, y_offset, anchor=tk.NE, text=command_text, fill="white", font=("Arial", 12))
 
 
     except Exception as e:
