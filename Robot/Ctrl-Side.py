@@ -157,7 +157,7 @@ def update_camera_feed():
         while True:
             # Request camera frame from the server
             client_socket.sendall("camera_frame".encode())
-            frame_size_data = client_socket.recv(1024)
+            frame_size_data = client_socket.recv(4)
             if not frame_size_data:
                 break
             frame_size = struct.unpack('!L', frame_size_data)[0]
