@@ -59,6 +59,23 @@ def update_sensor_data():
     finally:
         sensor_client_socket.close()
         
+def extract_temperature_data(sensor_data):
+    try:
+        start_index = sensor_data.find("Value:") + len("Value: ")
+        data_str = sensor_data[start_index:]
+        sensor_values = data_str.split(", ")
+
+        extracted_values = {}
+        for value in sensor_values:
+            if ':' in value:
+                key, val = value.split(":")
+                extracted_values[key] = int(val)
+
+        return extracted_values
+    except ValueError:
+        return None
+
+# Updated extract_cpu_temperature function
 def extract_cpu_temperature(sensor_data):
     try:
         cpu_temp_start = sensor_data.find("CPU TEMP:") + len("CPU TEMP: ")
@@ -67,25 +84,6 @@ def extract_cpu_temperature(sensor_data):
         return cpu_temperature
     except ValueError:
         return None
-    
-def extract_latitude(sensor_data):
-    try:
-        latitude_start = sensor_data.find("LATITUDE:") + len("LATITUDE: ")
-        latitude_end = sensor_data.find(",", latitude_start)
-        latitude = float(sensor_data[latitude_start:latitude_end])
-        return latitude
-    except ValueError:
-        return None
-
-def extract_longitude(sensor_data):
-    try:
-        longitude_start = sensor_data.find("LONGITUDE:") + len("LONGITUDE: ")
-        longitude_end = sensor_data.find(" ", longitude_start)
-        longitude = float(sensor_data[longitude_start:longitude_end])
-        return longitude
-    except ValueError:
-        return None
-
 
 # Updated extract_ds18b20_temperature function
 def extract_ds18b20_temperature(sensor_data):
@@ -96,12 +94,13 @@ def extract_ds18b20_temperature(sensor_data):
         return ds18b20_temperature
     except ValueError:
         return None
-                
+
 def update_temperature_labels(sensor_data):
+    temperature_data = extract_temperature_data(sensor_data)
     cpu_temperature = extract_cpu_temperature(sensor_data)
     ds18b20_temperature = extract_ds18b20_temperature(sensor_data)
-    latitude = extract_latitude(sensor_data)
-    longitude = extract_longitude(sensor_data)
+    latitude = temperature_data.get("LATITUDE", None)
+    longitude = temperature_data.get("LONGITUDE", None)
 
     if cpu_temperature is not None:
         cpu_temp_label.config(text=f"CPU Temperature: {cpu_temperature:.2f} °C")
@@ -111,7 +110,7 @@ def update_temperature_labels(sensor_data):
 
     if latitude is not None and longitude is not None:
         gps_label.config(text=f"GPS: Lat {latitude:.6f}, Lon {longitude:.6f}")
-        
+
 gui_queue = queue.Queue()
  
 def update_gui():
