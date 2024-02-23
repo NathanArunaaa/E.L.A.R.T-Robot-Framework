@@ -31,8 +31,6 @@ client_socket.connect(server_address)
 
 
 
-
-
 #---------------------Receiving Sensor Data------------------
 def update_sensor_data():
     try:
@@ -104,7 +102,6 @@ def update_temperature_labels(sensor_data):
     latitude = extract_latitude(sensor_data)
     longitude = extract_longitude(sensor_data)
 
-
     if cpu_temperature is not None:
         cpu_temp_label.config(text=f"CPU Temperature: {cpu_temperature:.2f} °C")
 
@@ -160,11 +157,18 @@ def update_camera_feed():
     # Store the PhotoImage object in a custom attribute
                 canvas.photo_image = photo_image
 
+                pitch = 30
+                roll = 30
 
+    # Update the canvas with the new pitch and roll angles
+
+                canvas_width = canvas.winfo_width()
                
+                canvas.create_text(10, 10, anchor=tk.NW,  fill="white", font=("Arial", 14))
 
+                
                 command_text = "\n".join(command_history[-5:])  # Show the last 5 commands
-                canvas.create_text(anchor=tk.NE, text=command_text, fill="white", font=("Arial", 12))
+                canvas.create_text(canvas_width - x_offset, y_offset, anchor=tk.NE, text=command_text, fill="white", font=("Arial", 12))
 
 
     except Exception as e:
@@ -289,36 +293,18 @@ def sensor_window():
     sensor_readings.title("E.L.A.R.T Sensors")
     sensor_readings.geometry(f"{1000}x{700}")
 
-    gps_label = tk.Label(sensor_readings, bg='#323232', fg='white', text="SENSOR READINGS")
-    gps_label.pack()
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+    database_path = os.path.join(script_directory, "elart.db")
 
+    # Create map widget and use the tiles from the database
+    map_widget = tkintermapview.TkinterMapView(sensor_readings, width=1000, height=700, corner_radius=0, use_database_only=True, max_zoom=17, database_path=database_path)
+    map_widget.pack(fill="both", expand=True)
 
-    progress_var_etlu = tk.DoubleVar(sensor_readings)
-    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
-    vertical_progress.pack(side=tk.LEFT, padx=30)
+    # Set the tile server to the local database
+    map_widget.set_tile_server("file://{}/elart.db".format(script_directory))
 
-    progress_var_etlu = tk.DoubleVar(sensor_readings)
-    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
-    vertical_progress.pack(side=tk.LEFT, padx=30)
-
-    progress_var_etlu = tk.DoubleVar(sensor_readings)
-    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
-    vertical_progress.pack(side=tk.LEFT, padx=30)
-
-    progress_var_etlu = tk.DoubleVar(sensor_readings)
-    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
-    vertical_progress.pack(side=tk.LEFT, padx=30)
-    
-def map_window():
-    sensor_readings = tk.Toplevel(root, bg='#323232')
-    sensor_readings.title("E.L.A.R.T Location")
-    sensor_readings.geometry(f"{1000}x{700}")
-
-    label = tk.Label(sensor_readings, bg='#323232', fg='white', text="SENSOR READINGS")
-    label.pack()
-
-
-   
+    # Set the address or location
+    map_widget.set_address("nyc")
   
     
 root = tk.Tk()
