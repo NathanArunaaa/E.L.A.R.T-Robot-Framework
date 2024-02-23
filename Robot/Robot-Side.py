@@ -246,6 +246,7 @@ def handle_controller_client(conn, addr):
 
  #------------- looking for commands from controller client ---------        
     try:
+
         while True:
             data = conn.recv(1024).decode()
             if not data:
@@ -339,20 +340,16 @@ def read_temperature(sensor_id):
     except Exception as e:
         print(f"Error reading temperature: {str(e)}")
         return None
-
+    
 def read_gps_data(serial_port):
     while True:
-        try:
-            line = serial_port.readline().decode('utf-8').strip()
-            print("Raw GPS data:", line)  # Add this line
+        line = serial_port.readline().decode('utf-8').strip()
+        if line.startswith('$GPGGA'):  # Look for GGA sentences (contains latitude and longitude)
             data = line.split(',')
             if len(data) >= 10 and data[2] and data[4]:
                 latitude = float(data[2][:2]) + float(data[2][2:]) / 60
                 longitude = float(data[4][:3]) + float(data[4][3:]) / 60
                 return latitude, longitude
-        except Exception as e:
-            print("Error reading GPS data:", e)    
-
 
 # ---------------Sensor Data Transmitter--------------
 ser = serial.Serial('/dev/ttyACM0', 9600)  # Adjust port name and baud rate as needed
