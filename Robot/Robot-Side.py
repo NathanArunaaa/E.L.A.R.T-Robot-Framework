@@ -340,7 +340,6 @@ def read_temperature(sensor_id):
     except Exception as e:
         print(f"Error reading temperature: {str(e)}")
         return None
-
     
 def read_gps_data(serial_port):
     while True:
@@ -352,9 +351,8 @@ def read_gps_data(serial_port):
                 longitude = float(data[4][:3]) + float(data[4][3:]) / 60
                 return latitude, longitude
 
-ser = serial.Serial('/dev/ttyACM0', 9600)  # Use the correct USB port address
-
 # ---------------Sensor Data Transmitter--------------
+ser = serial.Serial('/dev/ttyACM0', 9600)  # Adjust port name and baud rate as needed
 def handle_sensor_connection(conn, addr):
     try:
         while True:
