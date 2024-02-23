@@ -380,10 +380,15 @@ def handle_sensor_connection(conn, addr):
             except (BrokenPipeError, ConnectionResetError):
                 print("Sensor: Client disconnected.")
                 break
-            
+            except Exception as send_error:
+                print("Error sending data to controller:", send_error)
+                break
+
             time.sleep(3)
     except Exception as e:
         print("Sensor connection error:", addr, e)
+        import traceback
+        traceback.print_exc()
     finally:
         conn.close()
 
