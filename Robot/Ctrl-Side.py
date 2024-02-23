@@ -17,6 +17,7 @@ import queue
 import keyboard
 from pynput import keyboard
 import tkintermapview
+import json
 
 #----------------------List for commands---------------------
 command_history = []
@@ -62,27 +63,43 @@ def draw_artificial_horizon(canvas, pitch, roll):
 def update_sensor_data():
     try:
         sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sensor_client_socket.connect(('192.168.4.1', 86))  
+        sensor_client_socket.connect(('192.168.4.1', 86))
 
         while True:
-            externalTempsensor = sensor_client_socket.recv(240).decode()
-            gui_queue.put(externalTempsensor)
-            update_temperature_labels(externalTempsensor)
-            
-            rpiTemp = sensor_client_socket.recv(240).decode()
-            gui_queue.put(rpiTemp)
-            update_temperature_labels(rpiTemp)
-            
-            arduinoData = sensor_client_socket.recv(240).decode()
-            gui_queue.put(arduinoData)
-            update_temperature_labels(arduinoData)
+            sensor_data_json = sensor_client_socket.recv(1024).decode()
+
+            try:
+                sensor_data = json.loads(sensor_data_json)
+
+                # Display the timestamp in the GUI
+                timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                sensor_data['timestamp'] = timestamp
+
+                gui_queue.put(sensor_data)
+                update_gui_labels(sensor_data)
+
+            except json.JSONDecodeError as json_error:
+                print(f"Error decoding JSON: {json_error}")
 
     except Exception as e:
         print("Error updating sensor data:", e)
 
     finally:
         sensor_client_socket.close()
-        
+
+def update_gui_labels(sensor_data):
+    # Extract values from the sensor data dictionary
+    cpu_temperature = sensor_data.get("CPU_TEMP", "N/A")
+    ds18b20_temperature = sensor_data.get("DS18B20_TEMP", "N/A")
+    arduino_data = sensor_data.get("ARDUINO_DATA", "N/A")
+    timestamp = sensor_data.get("timestamp", "N/A")
+
+    # Update labels
+    cpu_temp_label.config(text=f"CPU Temperature: {cpu_temperature:.2f} °C")
+    external_temp_label.config(text=f"External Temperature: {ds18b20_temperature:.2f} °C")
+    arduino_data_label.config(text=f"Arduino Data: {arduino_data}")
+    time_label.config(text=f"Current Time: {timestamp}")
+         
 def extract_cpu_temperature(sensor_data):
     try:
         cpu_temp_start = sensor_data.find("CPU TEMP:") + len("CPU TEMP: ")
@@ -136,12 +153,11 @@ gui_queue = queue.Queue()
 def update_gui():
     try:
         while True:
-            rpiTemp = gui_queue.get_nowait()
-            update_temperature_labels(rpiTemp)
+            sensor_data = gui_queue.get_nowait()
+            update_gui_labels(sensor_data)
     except queue.Empty:
         pass
     root.after(100, update_gui)
-
     
     
 # -------------------Update Camera Feed----------------------

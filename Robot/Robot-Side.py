@@ -11,6 +11,7 @@ import subprocess
 import socket
 import glob
 import serial
+import json 
 
 # ---------Contreller command handler ---------
 def handle_controller_client(conn, addr):
@@ -388,12 +389,19 @@ def handle_sensor_connection(conn, addr):
             else:
                 ds18b20_temperature = None
 
-          
-            sensor_data = f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C] [ARDUINO: {arduino_data:.2f} °C]" if ds18b20_temperature is not None else f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND]"
+            # Construct a dictionary with all sensor data
+            sensor_data_dict = {
+                "CPU_TEMP": cpu_temperature,
+                "DS18B20_TEMP": ds18b20_temperature,
+                "ARDUINO_DATA": arduino_data
+            }
+
+            # Convert the dictionary to a JSON string
+            sensor_data_json = json.dumps(sensor_data_dict)
 
             # Send data to controller
             try:
-                conn.sendall(sensor_data.encode())
+                conn.sendall(sensor_data_json.encode())
             except (BrokenPipeError, ConnectionResetError):
                 print("Sensor: Client disconnected.")
                 break
