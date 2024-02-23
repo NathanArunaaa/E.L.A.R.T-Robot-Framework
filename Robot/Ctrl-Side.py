@@ -394,7 +394,7 @@ etlu_warning.pack(side=tk.TOP, padx=5, pady=5)
 
 
 #----------------------------Camera------------------------------
-canvas = tk.Canvas(root, width=1180, height=790)
+canvas = tk.Canvas(root, width=1160, height=790)
 canvas.pack(side=tk.LEFT)
 
 
