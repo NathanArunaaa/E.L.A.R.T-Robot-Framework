@@ -343,7 +343,7 @@ def read_temperature(sensor_id):
 
 # ---------------Sensor Data Transmitter--------------
 def handle_sensor_connection(conn, addr):
-   try:
+    try:
         while True:
             ser = serial.Serial('/dev/ttyACM0', 9600)  # Adjust port name and baud rate as needed
             line = ser.readline().decode('latin-1').strip()
