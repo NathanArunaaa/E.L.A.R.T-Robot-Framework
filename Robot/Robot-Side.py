@@ -342,6 +342,20 @@ def read_temperature(sensor_id):
         return None
     
 
+def extract_temperature_data(sensor_data):
+    try:
+        start_index = sensor_data.find("Sensor Value:") + len("Sensor Value: ")
+        data_str = sensor_data[start_index:]
+        sensor_values = data_str.split(", ")
+
+        extracted_values = {}
+        for value in sensor_values:
+            key, val = value.split(":")
+            extracted_values[key] = int(val)
+
+        return extracted_values
+    except ValueError:
+        return None
 
 
 # ---------------Sensor Data Transmitter--------------
@@ -352,6 +366,10 @@ def handle_sensor_connection(conn, addr):
 
             line = ser.readline().decode('utf-8').strip()
             print(f"Sensor Value: {line}")
+
+            # Extract sensor data
+            sensor_values = extract_temperature_data(line)
+            
             # Get CPU temperature
             result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
             cpu_temperature_str = result.stdout.strip()
@@ -367,6 +385,11 @@ def handle_sensor_connection(conn, addr):
             # Read GPS data
           
             temperature_data = f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C]" if ds18b20_temperature is not None else f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND]"
+
+            # Combine with sensor values
+            if sensor_values:
+                for key, value in sensor_values.items():
+                    temperature_data += f" [{key}: {value}]"
 
             # Send data to controller
             try:
