@@ -348,7 +348,7 @@ def handle_sensor_connection(conn, addr):
             
             ser = serial.Serial('/dev/ttyACM0', 9600)  # Adjust port name and baud rate as needed
 
-            line = ser.readline().decode('utf-8').strip()
+            line = ser.readline().decode('latin-1').strip()
             print(line)
             # Get CPU temperature
             result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
