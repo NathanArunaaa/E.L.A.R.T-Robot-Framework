@@ -129,6 +129,7 @@ def update_temperature_labels(sensor_data):
     latitude = extract_latitude(sensor_data)
     longitude = extract_longitude(sensor_data)
 
+
     if cpu_temperature is not None:
         cpu_temp_label.config(text=f"CPU Temperature: {cpu_temperature:.2f} °C")
 
@@ -323,18 +324,36 @@ def sensor_window():
     sensor_readings.title("E.L.A.R.T Sensors")
     sensor_readings.geometry(f"{1000}x{700}")
 
-    script_directory = os.path.dirname(os.path.abspath(__file__))
-    database_path = os.path.join(script_directory, "elart.db")
+    gps_label = tk.Label(sensor_readings, bg='#323232', fg='white', text="SENSOR READINGS")
+    gps_label.pack()
 
-    # Create map widget and use the tiles from the database
-    map_widget = tkintermapview.TkinterMapView(sensor_readings, width=1000, height=700, corner_radius=0, use_database_only=True, max_zoom=17, database_path=database_path)
-    map_widget.pack(fill="both", expand=True)
 
-    # Set the tile server to the local database
-    map_widget.set_tile_server("file://{}/elart.db".format(script_directory))
+    progress_var_etlu = tk.DoubleVar(sensor_readings)
+    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
+    vertical_progress.pack(side=tk.LEFT, padx=30)
 
-    # Set the address or location
-    map_widget.set_address("nyc")
+    progress_var_etlu = tk.DoubleVar(sensor_readings)
+    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
+    vertical_progress.pack(side=tk.LEFT, padx=30)
+
+    progress_var_etlu = tk.DoubleVar(sensor_readings)
+    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
+    vertical_progress.pack(side=tk.LEFT, padx=30)
+
+    progress_var_etlu = tk.DoubleVar(sensor_readings)
+    vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
+    vertical_progress.pack(side=tk.LEFT, padx=30)
+    
+def map_window():
+    sensor_readings = tk.Toplevel(root, bg='#323232')
+    sensor_readings.title("E.L.A.R.T Location")
+    sensor_readings.geometry(f"{1000}x{700}")
+
+    label = tk.Label(sensor_readings, bg='#323232', fg='white', text="SENSOR READINGS")
+    label.pack()
+
+
+   
   
     
 root = tk.Tk()
