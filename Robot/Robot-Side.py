@@ -341,20 +341,7 @@ def read_temperature(sensor_id):
         print(f"Error reading temperature: {str(e)}")
         return None
     
-def read_gps_data(serial_port):
-    while True:
-        line = serial_port.readline().decode('utf-8').strip()
-        if line.startswith('$GPGGA'):  # Look for GGA sentences (contains latitude and longitude)
-            data = line.split(',')
-            try:
-                if len(data) >= 10 and data[2] and data[4]:
-                    latitude = float(data[2][:2]) + float(data[2][2:]) / 60
-                    longitude = float(data[4][:3]) + float(data[4][3:]) / 60
-                    return latitude, longitude
-            except (ValueError, IndexError):
-                # Handle errors (e.g., if conversion to float fails or index is out of range)
-                print("Error processing GPS data. Ignoring...")
-                return None
+
 
 
 # ---------------Sensor Data Transmitter--------------
@@ -375,9 +362,8 @@ def handle_sensor_connection(conn, addr):
                 ds18b20_temperature = None
 
             # Read GPS data
-            gps_latitude, gps_longitude = read_gps_data(ser)
           
-            temperature_data = f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C] [GPS LATITUDE: {gps_latitude:.6f}] [GPS LONGITUDE: {gps_longitude:.6f}]" if ds18b20_temperature is not None else f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND] [GPS LATITUDE: {gps_latitude:.6f}] [GPS LONGITUDE: {gps_longitude:.6f}]"
+            temperature_data = f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C]" if ds18b20_temperature is not None else f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND]"
 
             # Send data to controller
             try:
