@@ -291,6 +291,13 @@ def sensor_window():
     sensor_readings.title("E.L.A.R.T Sensors")
     sensor_readings.geometry(f"{1000}x{700}")
     progress_var_etlu = tk.DoubleVar(sensor_readings)
+    
+    label = tk.Label(sensor_readings,  bg='#323232', fg='white', text="CONFIRM CONRTOLLER SHUTDOWN")
+    label.pack()
+    label = tk.Label(sensor_readings,  bg='#323232', fg='white', text="CONFIRM CONRTOLLER SHUTDOWN")
+    label.pack()
+    label = tk.Label(sensor_readings,  bg='#323232', fg='white', text="CONFIRM CONRTOLLER SHUTDOWN")
+    label.pack()
     vertical_progress = ttk.Progressbar(sensor_readings, orient='vertical', variable=progress_var_etlu, length=200, mode='determinate')
     vertical_progress.pack(side=tk.LEFT, padx=30)
     
