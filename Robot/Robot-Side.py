@@ -348,7 +348,16 @@ def handle_sensor_connection(conn, addr):
             ser = serial.Serial('/dev/ttyACM0', 9600)  # Adjust port name and baud rate as needed
             line = ser.readline().decode('latin-1').strip()
 
-            print(line)
+            # Check if the line is not empty
+            if line:
+                # Splitting values into a list of key-value pairs using "|" as separator
+                pairs = line.split("|")
+
+                # Creating a dictionary from key-value pairs
+                sensor_data = {pair.split(":")[0].strip(): int(pair.split(":")[1]) for pair in pairs}
+                print(sensor_data)
+            else:
+                print("Empty line received.")
 
             
             # Get CPU temperature
