@@ -346,10 +346,16 @@ def read_gps_data(serial_port):
         line = serial_port.readline().decode('utf-8').strip()
         if line.startswith('$GPGGA'):  # Look for GGA sentences (contains latitude and longitude)
             data = line.split(',')
-            if len(data) >= 10 and data[2] and data[4]:
-                latitude = float(data[2][:2]) + float(data[2][2:]) / 60
-                longitude = float(data[4][:3]) + float(data[4][3:]) / 60
-                return latitude, longitude
+            try:
+                if len(data) >= 10 and data[2] and data[4]:
+                    latitude = float(data[2][:2]) + float(data[2][2:]) / 60
+                    longitude = float(data[4][:3]) + float(data[4][3:]) / 60
+                    return latitude, longitude
+            except (ValueError, IndexError):
+                # Handle errors (e.g., if conversion to float fails or index is out of range)
+                print("Error processing GPS data. Ignoring...")
+                return None
+
 
 # ---------------Sensor Data Transmitter--------------
 ser = serial.Serial('/dev/ttyACM0', 9600)  # Adjust port name and baud rate as needed
