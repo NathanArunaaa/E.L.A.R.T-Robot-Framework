@@ -10,6 +10,7 @@ import RPi.GPIO as GPIO
 import subprocess
 import socket
 import glob
+import serial
 
 # ---------Contreller command handler ---------
 def handle_controller_client(conn, addr):
@@ -344,6 +345,37 @@ def read_temperature(sensor_id):
 def handle_sensor_connection(conn, addr):
     try:
         while True:
+            ser = serial.Serial('/dev/ttyACM0', 9600)  # Adjust port name and baud rate as needed
+            line = ser.readline().decode('latin-1').strip()
+
+            # Check if the line is not empty
+            if line:
+                # Splitting values into a list of key-value pairs using "|" as separator
+                pairs = line.split("|")
+
+                # Creating a dictionary from key-value pairs with special handling for GPS field
+                arduino_data = {}
+                for pair in pairs:
+                    key_value = pair.split(":")
+                    if len(key_value) == 2:
+                        key, value = key_value
+                        key, value = key.strip(), value.strip()
+                        # Special handling for GPS field, don't convert to int
+                        if key.lower() == 'gps':
+                            arduino_data[key] = value
+                        else:
+                            try:
+                                arduino_data[key] = int(value)
+                            except ValueError:
+                                print(f"Invalid value for key {key}: {value}")
+                    else:
+                        print(f"Invalid key-value pair: {pair}")
+
+                print(arduino_data)
+            else:
+                print("Empty line received.")
+
+            
             # Get CPU temperature
             result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
             cpu_temperature_str = result.stdout.strip()
@@ -357,18 +389,23 @@ def handle_sensor_connection(conn, addr):
                 ds18b20_temperature = None
 
           
-            temperature_data = f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C]" if ds18b20_temperature is not None else f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND]"
+            sensor_data = f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C] [ARDUINO: {arduino_data:.2f} °C]" if ds18b20_temperature is not None else f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND]"
 
             # Send data to controller
             try:
-                conn.sendall(temperature_data.encode())
+                conn.sendall(sensor_data.encode())
             except (BrokenPipeError, ConnectionResetError):
                 print("Sensor: Client disconnected.")
                 break
-            
+            except Exception as send_error:
+                print("Error sending data to controller:", send_error)
+                break
+
             time.sleep(3)
     except Exception as e:
         print("Sensor connection error:", addr, e)
+        import traceback
+        traceback.print_exc()
     finally:
         conn.close()
 
