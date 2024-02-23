@@ -10,7 +10,6 @@ import RPi.GPIO as GPIO
 import subprocess
 import socket
 import glob
-import serial
 
 # ---------Contreller command handler ---------
 def handle_controller_client(conn, addr):
@@ -340,43 +339,11 @@ def read_temperature(sensor_id):
     except Exception as e:
         print(f"Error reading temperature: {str(e)}")
         return None
-    
-
-def extract_temperature_data(sensor_data):
-    try:
-        start_index = sensor_data.find("Sensor Value:") + len("Sensor Value: ")
-        data_str = sensor_data[start_index:]
-        sensor_values = data_str.split(", ")
-
-        extracted_values = {}
-        for value in sensor_values:
-            key, val = value.split(":")
-            extracted_values[key] = int(val)
-
-        return extracted_values
-    except ValueError:
-        return None
-
 
 # ---------------Sensor Data Transmitter--------------
 def handle_sensor_connection(conn, addr):
     try:
         while True:
-            ser = serial.Serial('/dev/ttyACM0', 9600)  # Adjust port name and baud rate as needed
-
-            line = ser.readline().decode('latin-1').strip()
-            print(f"Sensor Value: {line}")
-
-            values = line.split("Sensor Value: ")[1]
-
-# Splitting values into a list of key-value pairs
-            pairs = values.split(",")
-
-# Creating a dictionary from key-value pairs
-            sensor_data = {pair.split(":")[0].strip(): int(pair.split(":")[1]) for pair in pairs}
-
-            print(sensor_data) 
-            
             # Get CPU temperature
             result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
             cpu_temperature_str = result.stdout.strip()
@@ -389,12 +356,8 @@ def handle_sensor_connection(conn, addr):
             else:
                 ds18b20_temperature = None
 
-            # Read GPS data
           
             temperature_data = f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C]" if ds18b20_temperature is not None else f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND]"
-
-            # Combine with sensor values
-           
 
             # Send data to controller
             try:

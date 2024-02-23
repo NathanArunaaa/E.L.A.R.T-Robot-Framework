@@ -30,6 +30,32 @@ client_socket.connect(server_address)
 
 
 
+#----------------------Artificial Horizon--------------------
+def calculate_horizon_coords(canvas_width, canvas_height, pitch, roll):
+    horizon_length = 100  # You can adjust this length as needed
+    pitch_radians = math.radians(pitch)
+    roll_radians = math.radians(roll)
+
+    # Calculate the coordinates of the two ends of the horizon line
+    x1 = canvas_width / 2 - horizon_length * math.sin(roll_radians)
+    y1 = canvas_height / 2 - horizon_length * math.cos(roll_radians) * math.sin(pitch_radians)
+    x2 = canvas_width / 2 + horizon_length * math.sin(roll_radians)
+    y2 = canvas_height / 2 + horizon_length * math.cos(roll_radians) * math.sin(pitch_radians)
+
+    return x1, y1, x2, y2
+
+def draw_artificial_horizon(canvas, pitch, roll):
+    canvas.delete("horizon")
+
+    # Get the canvas size
+    canvas_width = canvas.winfo_width()
+    canvas_height = canvas.winfo_height()
+
+    # Calculate the coordinates of the horizon line
+    x1, y1, x2, y2 = calculate_horizon_coords(canvas_width, canvas_height, pitch, roll)
+
+    # Draw the horizon line
+    canvas.create_line(x1, y1, x2, y2, fill="white", tags="horizon", width=2, arrow=tk.BOTH)
 
 
 #---------------------Receiving Sensor Data------------------
@@ -158,9 +184,15 @@ def update_camera_feed():
     # Store the PhotoImage object in a custom attribute
                 canvas.photo_image = photo_image
 
-                
+                pitch = 30
+                roll = 30
+
+    # Update the canvas with the new pitch and roll angles
+                draw_artificial_horizon(canvas, pitch, roll)
 
                 canvas_width = canvas.winfo_width()
+                angle_text = f"Pitch: {pitch:.2f}°\nRoll: {roll:.2f}°"
+                canvas.create_text(10, 10, anchor=tk.NW, text=angle_text, fill="white", font=("Arial", 14))
 
                 x_offset = 10
                 y_offset = 10
@@ -394,7 +426,7 @@ etlu_warning.pack(side=tk.TOP, padx=5, pady=5)
 
 
 #----------------------------Camera------------------------------
-canvas = tk.Canvas(root, width=1160, height=790)
+canvas = tk.Canvas(root, width=1180, height=790)
 canvas.pack(side=tk.LEFT)
 
 
