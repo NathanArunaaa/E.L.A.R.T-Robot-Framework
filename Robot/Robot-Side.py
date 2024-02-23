@@ -387,9 +387,7 @@ def handle_sensor_connection(conn, addr):
             temperature_data = f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C]" if ds18b20_temperature is not None else f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND]"
 
             # Combine with sensor values
-            if sensor_values:
-                for key, value in sensor_values.items():
-                    temperature_data += f" [{key}: {value}]"
+            
 
             # Send data to controller
             try:
