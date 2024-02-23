@@ -354,7 +354,7 @@ def handle_sensor_connection(conn, addr):
                 pairs = line.split("|")
 
                 # Creating a dictionary from key-value pairs with special handling for GPS field
-                sensor_data = {}
+                arduino_data = {}
                 for pair in pairs:
                     key_value = pair.split(":")
                     if len(key_value) == 2:
@@ -362,16 +362,16 @@ def handle_sensor_connection(conn, addr):
                         key, value = key.strip(), value.strip()
                         # Special handling for GPS field, don't convert to int
                         if key.lower() == 'gps':
-                            sensor_data[key] = value
+                            arduino_data[key] = value
                         else:
                             try:
-                                sensor_data[key] = int(value)
+                                arduino_data[key] = int(value)
                             except ValueError:
                                 print(f"Invalid value for key {key}: {value}")
                     else:
                         print(f"Invalid key-value pair: {pair}")
 
-                print(sensor_data)
+                print(arduino_data)
             else:
                 print("Empty line received.")
 
@@ -389,11 +389,11 @@ def handle_sensor_connection(conn, addr):
                 ds18b20_temperature = None
 
           
-            temperature_data = f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C]" if ds18b20_temperature is not None else f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND]"
+            sensor_data = f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 TEMP: {ds18b20_temperature:.2f} °C] [ARDUINO: {arduino_data:.2f} °C]" if ds18b20_temperature is not None else f"[CPU TEMP: {cpu_temperature:.2f} °C] [DS18B20 NOT FOUND]"
 
             # Send data to controller
             try:
-                conn.sendall(temperature_data.encode())
+                conn.sendall(sensor_data.encode())
             except (BrokenPipeError, ConnectionResetError):
                 print("Sensor: Client disconnected.")
                 break

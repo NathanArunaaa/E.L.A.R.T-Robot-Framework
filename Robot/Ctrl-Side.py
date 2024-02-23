@@ -61,10 +61,10 @@ def draw_artificial_horizon(canvas, pitch, roll):
 #---------------------Receiving Sensor Data------------------
 def update_sensor_data():
     try:
-       sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-       sensor_client_socket.connect(('192.168.4.1', 86))  
+        sensor_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sensor_client_socket.connect(('192.168.4.1', 86))  
 
-       while True:
+        while True:
             externalTempsensor = sensor_client_socket.recv(240).decode()
             gui_queue.put(externalTempsensor)
             update_temperature_labels(externalTempsensor)
@@ -73,12 +73,10 @@ def update_sensor_data():
             gui_queue.put(rpiTemp)
             update_temperature_labels(rpiTemp)
             
-            rpiTemp = sensor_client_socket.recv(240).decode()
-            gui_queue.put(rpiTemp)
-            update_temperature_labels(rpiTemp)
+            arduinoData = sensor_client_socket.recv(240).decode()
+            gui_queue.put(arduinoData)
+            update_temperature_labels(arduinoData)
 
-
-            
     except Exception as e:
         print("Error updating sensor data:", e)
 
@@ -94,23 +92,17 @@ def extract_cpu_temperature(sensor_data):
     except ValueError:
         return None
     
-def extract_latitude(sensor_data):
+def extract_arduino_data(sensor_data):
     try:
-        latitude_start = sensor_data.find("LATITUDE:") + len("LATITUDE: ")
-        latitude_end = sensor_data.find(",", latitude_start)
-        latitude = float(sensor_data[latitude_start:latitude_end])
-        return latitude
+        # Assuming Arduino data is present in the sensor data
+        arduino_data_start = sensor_data.find("[Arduino Data:") + len("[Arduino Data: ")
+        arduino_data_end = sensor_data.find("]", arduino_data_start)
+        arduino_data = sensor_data[arduino_data_start:arduino_data_end]
+        return arduino_data
     except ValueError:
         return None
 
-def extract_longitude(sensor_data):
-    try:
-        longitude_start = sensor_data.find("LONGITUDE:") + len("LONGITUDE: ")
-        longitude_end = sensor_data.find(" ", longitude_start)
-        longitude = float(sensor_data[longitude_start:longitude_end])
-        return longitude
-    except ValueError:
-        return None
+    
 
 
 # Updated extract_ds18b20_temperature function
@@ -126,17 +118,18 @@ def extract_ds18b20_temperature(sensor_data):
 def update_temperature_labels(sensor_data):
     cpu_temperature = extract_cpu_temperature(sensor_data)
     ds18b20_temperature = extract_ds18b20_temperature(sensor_data)
-    latitude = extract_latitude(sensor_data)
-    longitude = extract_longitude(sensor_data)
-
+    arduino_data = extract_arduino_data(sensor_data)
+    
     if cpu_temperature is not None:
         cpu_temp_label.config(text=f"CPU Temperature: {cpu_temperature:.2f} °C")
 
     if ds18b20_temperature is not None:
         external_temp_label.config(text=f"External Temperature: {ds18b20_temperature:.2f} °C")
+        
+    if arduino_data is not None:
+        arduino_data_label.config(text=f"Arduino Data: {arduino_data}")
 
-    if latitude is not None and longitude is not None:
-        gps_label.config(text=f"GPS: Lat {latitude:.6f}, Lon {longitude:.6f}")
+   
         
 gui_queue = queue.Queue()
  
@@ -319,23 +312,14 @@ def confirm_controller_Shutdown():
 
 #--------------------------Sensor Window------------------------
 def sensor_window():
+    global arduino_data_label  # Reference the global variable
+
     sensor_readings = tk.Toplevel(root, bg='#323232')
     sensor_readings.title("E.L.A.R.T Sensors")
     sensor_readings.geometry(f"{1000}x{700}")
 
-    script_directory = os.path.dirname(os.path.abspath(__file__))
-    database_path = os.path.join(script_directory, "elart.db")
-
-    # Create map widget and use the tiles from the database
-    map_widget = tkintermapview.TkinterMapView(sensor_readings, width=1000, height=700, corner_radius=0, use_database_only=True, max_zoom=17, database_path=database_path)
-    map_widget.pack(fill="both", expand=True)
-
-    # Set the tile server to the local database
-    map_widget.set_tile_server("file://{}/elart.db".format(script_directory))
-
-    # Set the address or location
-    map_widget.set_address("nyc")
-  
+    arduino_data_label = tk.Label(sensor_readings, bg='#323232', fg='white', text="[Arduino Data: N/A]")
+    arduino_data_label.pack()
     
 root = tk.Tk()
 root.title("E.L.A.R.T - Controller")
