@@ -157,18 +157,15 @@ def update_camera_feed():
     # Store the PhotoImage object in a custom attribute
                 canvas.photo_image = photo_image
 
-                pitch = 30
-                roll = 30
-
+                
     # Update the canvas with the new pitch and roll angles
 
-                canvas_width = canvas.winfo_width()
                
                 canvas.create_text(10, 10, anchor=tk.NW,  fill="white", font=("Arial", 14))
 
                 
                 command_text = "\n".join(command_history[-5:])  # Show the last 5 commands
-                canvas.create_text(canvas_width - x_offset, y_offset, anchor=tk.NE, text=command_text, fill="white", font=("Arial", 12))
+                canvas.create_text( anchor=tk.NE, text=command_text, fill="white", font=("Arial", 12))
 
 
     except Exception as e:
