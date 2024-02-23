@@ -10,6 +10,7 @@ import RPi.GPIO as GPIO
 import subprocess
 import socket
 import glob
+import serial
 
 # ---------Contreller command handler ---------
 def handle_controller_client(conn, addr):
@@ -344,6 +345,20 @@ def read_temperature(sensor_id):
 def handle_sensor_connection(conn, addr):
     try:
         while True:
+            
+            ser = serial.Serial('/dev/ttyACM0', 9600)  # Use the correct USB port address
+
+            line = ser.readline().decode('latin-1').strip()
+
+            values = line.split("Sensor Value: ")[1]
+
+# Splitting values into a list of key-value pairs
+            pairs = values.split(",")
+
+# Creating a dictionary from key-value pairs
+            sensor_data = {pair.split(":")[0].strip(): int(pair.split(":")[1]) for pair in pairs}
+
+            print(sensor_data)
             # Get CPU temperature
             result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
             cpu_temperature_str = result.stdout.strip()
