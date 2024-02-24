@@ -346,27 +346,26 @@ def read_temperature(sensor_id):
 def handle_sensor_connection(conn, addr):
     try:
         while True:
-            ser = serial.Serial('/dev/ttyACM0', 9600)  # Adjust port name and baud rate as needed
-            line = ser.readline().decode('latin-1').strip()
+            data = conn.recv(1024).decode()
 
-            # Check if the line is not empty
-            if line:
+            # Check if the received data is not empty
+            if data:
                 # Splitting values into a list of key-value pairs using "|" as separator
-                pairs = line.split("|")
+                pairs = data.split("|")
 
-                # Creating a dictionary from key-value pairs with special handling for GPS field
+                # Creating a dictionary from key-value pairs
                 arduino_data = {}
                 for pair in pairs:
                     key_value = pair.split(":")
                     if len(key_value) == 2:
                         key, value = key_value
                         key, value = key.strip(), value.strip()
-                        # Special handling for GPS field, don't convert to int
-                        if key.lower() == 'gps':
-                            arduino_data[key] = value
+                        # Special handling for Humidity field, don't convert to float
+                        if key.lower() == 'humidity':
+                            arduino_data[key] = int(value)
                         else:
                             try:
-                                arduino_data[key] = int(value)
+                                arduino_data[key] = float(value)
                             except ValueError:
                                 print(f"Invalid value for key {key}: {value}")
                     else:
@@ -376,12 +375,11 @@ def handle_sensor_connection(conn, addr):
             else:
                 print("Empty line received.")
 
-            
             # Get CPU temperature
             result = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
             cpu_temperature_str = result.stdout.strip()
             cpu_temperature = float(cpu_temperature_str.split('=')[1].replace("'C", ""))
-            
+
             # Read DS18B20 temperature
             ds18b20_sensor_id = find_sensor_id()
             if ds18b20_sensor_id:
