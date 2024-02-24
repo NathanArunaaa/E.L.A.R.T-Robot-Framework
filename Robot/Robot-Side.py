@@ -346,7 +346,8 @@ def read_temperature(sensor_id):
 def handle_sensor_connection(conn, addr):
     try:
         while True:
-            data = conn.recv(1024).decode()
+            ser = serial.Serial('/dev/ttyACM0', 9600)  # Adjust port name and baud rate as needed
+            data = ser.readline().decode('latin-1').strip()
 
             # Check if the received data is not empty
             if data:
