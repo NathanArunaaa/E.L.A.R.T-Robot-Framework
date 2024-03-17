@@ -277,81 +277,68 @@ def confirm_controller_Shutdown():
     button_shutdown_no = tk.Button(smaller_window_shutdown, fg='green', text="No", activebackground='tomato', command=smaller_window_shutdown.destroy)
     button_shutdown_no.pack()
 
+def update_graph(i):
+    data = [[0], [0], [0], [0]]  # Initialize each series with one data point
+    fig, ax = plt.subplots()
+    lines = []
 
+    # Generate random data for each series
+    for j in range(len(data)):
+        data[j].append(random.randint(0, 10))  # Append a random value to each series
+
+    # Trim data lists to keep only the latest MAX_DATA_POINTS
+    for j in range(len(data)):
+        data[j] = data[j][-MAX_DATA_POINTS:]
+
+    # Update each line with new data
+    for j in range(len(lines)):
+        lines[j].set_data(list(range(len(data[j]))), data[j])
+
+    # Calculate the maximum value in the data
+    max_value = max(max(series) for series in data)
+
+    # Adjust the y-axis limits to fit the new data
+    ax.set_ylim(0, max_value + 1)  # Add a little buffer space
+
+    # Adjust the x-axis limits to show only the last MAX_DATA_POINTS
+    ax.set_xlim(max(0, len(data[0]) - MAX_DATA_POINTS), len(data[0]) + 1)
+
+    canvas.draw()
 #--------------------------Sensor Window------------------------
 def sensor_window():
-   
+    global arduino_data_label  
+
+    sensor_readings = tk.Toplevel(root, bg='#323232')
+    sensor_readings.title("E.L.A.R.T Sensors")
+    sensor_readings.geometry(f"{1000}x{700}")
     
-    def update_graph(i):
-        # Generate random data for each series
-        for j in range(len(data)):
-            data[j].append(random.randint(0, 10))  # Append a random value to each series
+    fig, ax = plt.subplots()
+    data = [[0], [0], [0], [0]]  # Initialize each series with one data point
+    colors = ['r', 'g', 'b', 'y']
+    labels = ['H2', 'CH4', 'Natural Gas', 'CO']
+    lines = []
+    
+    for i in range(len(data)):
+      line, = ax.plot([], [], color=colors[i], label=labels[i])  # Modify the label here
+      lines.append(line)
 
-        # Trim data lists to keep only the latest MAX_DATA_POINTS
-        for j in range(len(data)):
-            data[j] = data[j][-MAX_DATA_POINTS:]
 
-        # Update each line with new data
-        for j in range(len(lines)):
-            lines[j].set_data(list(range(len(data[j]))), data[j])
+    ax.set_xlabel('X-axis')
+    ax.set_ylabel('PPM Gas Concentration')
+    ax.set_title('E.L.A.R.T Real Time Gas Data')
+    ax.legend()
 
-        # Calculate the maximum value in the data
-        max_value = max(max(series) for series in data)
+    canvas = FigureCanvasTkAgg(fig, master=root)
+    canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
-        # Adjust the y-axis limits to fit the new data
-        ax.set_ylim(0, max_value + 1)  # Add a little buffer space
-
-        # Adjust the x-axis limits to show only the last MAX_DATA_POINTS
-        ax.set_xlim(max(0, len(data[0]) - MAX_DATA_POINTS), len(data[0]) + 1)
-
-        canvas.draw()
-
-    # Create a new window for the sensor data graph
-   
-def update_graph(i):
-        try:
-            sensor_data = gui_queue.get_nowait()
-            if sensor_data:
-                # Extract sensor data from the dictionary
-                hydrogen_ppm = sensor_data['HydrogenPPM']
-                methane_ppm = sensor_data['MethanePPM']
-                co_ppm = sensor_data['COPPM']
-                natural_gas_ppm = sensor_data['Naturalgas PPM']
-
-                # Append sensor data to the data lists
-                data[0].append(hydrogen_ppm)
-                data[1].append(methane_ppm)
-                data[2].append(co_ppm)
-                data[3].append(natural_gas_ppm)
-
-                # Trim data lists to keep only the latest MAX_DATA_POINTS
-                for j in range(len(data)):
-                    data[j] = data[j][-MAX_DATA_POINTS:]
-
-                # Update each line with new data
-                for j in range(len(lines)):
-                    lines[j].set_data(list(range(len(data[j]))), data[j])
-
-                # Calculate the maximum value in the data
-                max_value = max(max(series) for series in data)
-
-                # Adjust the y-axis limits to fit the new data
-                ax.set_ylim(0, max_value + 1)  # Add a little buffer space
-
-                # Adjust the x-axis limits to show only the last MAX_DATA_POINTS
-                ax.set_xlim(max(0, len(data[0]) - MAX_DATA_POINTS), len(data[0]) + 1)
-
-                canvas.draw()
-        except queue.Empty:
-            pass   
+    ani = FuncAnimation(fig, update_graph, interval=1000)
+    
     
     
 root = tk.Tk()
 root.title("E.L.A.R.T - Controller")
 
 root.config(bg='#323232')
-
-
 
 #----------------------------------
 sensor_frame = tk.Frame(root)
@@ -481,30 +468,6 @@ battery_level.pack(side=tk.TOP, padx=5, pady=5)
 battery_value = tk.Label(right_frame,bg='#323232',  fg='white', text=progress_var_battery)
 battery_value.pack(side=tk.TOP)
 
-
-sensor_window = tk.Toplevel(root)
-sensor_window.title("Real-Time Gas Data")
-sensor_window.config(bg='#323232')
-
-    # Create a frame for the graph
-graph_frame = tk.Frame(sensor_window, bg='#323232')
-graph_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
-fig, ax = plt.subplots()
-data = [[0], [0], [0], [0]]
-colors = ['r', 'g', 'b', 'y']
-labels = ['H2', 'CH4', 'Natural Gas', 'CO']
-lines = []
-
-ax.set_xlabel('X-axis')
-ax.set_ylabel('PPM Gas Concentration')
-ax.set_title('Real-Time Gas Data')
-ax.legend()
-
-canvas = FigureCanvasTkAgg(fig, master=graph_frame)
-canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
-ani = FuncAnimation(fig, update_graph, interval=1000)
 
 # ---------Function to start the Sensor + camera thread---------
 def start_sensor_thread():
