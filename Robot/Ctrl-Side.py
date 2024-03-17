@@ -284,11 +284,11 @@ def sensor_window():
         try:
             sensor_data = gui_queue.get_nowait()
             if sensor_data:
-                # Extract sensor data from the JSON string
-                hydrogen_ppm = sensor_data.get("HydrogenPPM", "N/A")
-                methane_ppm = sensor_data.get("MethanePPM", "N/A")
-                co_ppm = sensor_data.get("COPPM", "N/A")
-                natural_gas_ppm = sensor_data.get("Naturalgas PPM", "N/A")
+                # Extract sensor data from the dictionary
+                hydrogen_ppm = sensor_data['HydrogenPPM']
+                methane_ppm = sensor_data['MethanePPM']
+                co_ppm = sensor_data['COPPM']
+                natural_gas_ppm = sensor_data['Naturalgas PPM']
 
                 # Append sensor data to the data lists
                 data[0].append(hydrogen_ppm)
@@ -341,7 +341,7 @@ def sensor_window():
     canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
     ani = FuncAnimation(fig, update_graph, interval=1000)
-    
+
     
     
 root = tk.Tk()
