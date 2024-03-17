@@ -281,28 +281,41 @@ def confirm_controller_Shutdown():
 #--------------------------Sensor Window------------------------
 def sensor_window():
     def update_graph(i):
-        # Generate random data for each series
-        for j in range(len(data)):
-            data[j].append(random.randint(0, 10))  # Append a random value to each series
+        try:
+            sensor_data = gui_queue.get_nowait()
+            if sensor_data:
+                # Extract sensor data from the JSON string
+                hydrogen_ppm = sensor_data.get("HydrogenPPM", "N/A")
+                methane_ppm = sensor_data.get("MethanePPM", "N/A")
+                co_ppm = sensor_data.get("COPPM", "N/A")
+                natural_gas_ppm = sensor_data.get("Naturalgas PPM", "N/A")
 
-        # Trim data lists to keep only the latest MAX_DATA_POINTS
-        for j in range(len(data)):
-            data[j] = data[j][-MAX_DATA_POINTS:]
+                # Append sensor data to the data lists
+                data[0].append(hydrogen_ppm)
+                data[1].append(methane_ppm)
+                data[2].append(co_ppm)
+                data[3].append(natural_gas_ppm)
 
-        # Update each line with new data
-        for j in range(len(lines)):
-            lines[j].set_data(list(range(len(data[j]))), data[j])
+                # Trim data lists to keep only the latest MAX_DATA_POINTS
+                for j in range(len(data)):
+                    data[j] = data[j][-MAX_DATA_POINTS:]
 
-        # Calculate the maximum value in the data
-        max_value = max(max(series) for series in data)
+                # Update each line with new data
+                for j in range(len(lines)):
+                    lines[j].set_data(list(range(len(data[j]))), data[j])
 
-        # Adjust the y-axis limits to fit the new data
-        ax.set_ylim(0, max_value + 1)  # Add a little buffer space
+                # Calculate the maximum value in the data
+                max_value = max(max(series) for series in data)
 
-        # Adjust the x-axis limits to show only the last MAX_DATA_POINTS
-        ax.set_xlim(max(0, len(data[0]) - MAX_DATA_POINTS), len(data[0]) + 1)
+                # Adjust the y-axis limits to fit the new data
+                ax.set_ylim(0, max_value + 1)  # Add a little buffer space
 
-        canvas.draw()
+                # Adjust the x-axis limits to show only the last MAX_DATA_POINTS
+                ax.set_xlim(max(0, len(data[0]) - MAX_DATA_POINTS), len(data[0]) + 1)
+
+                canvas.draw()
+        except queue.Empty:
+            pass
 
     # Create a new window for the sensor data graph
     sensor_window = tk.Toplevel(root)
