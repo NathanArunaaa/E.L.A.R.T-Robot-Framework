@@ -280,7 +280,35 @@ def confirm_controller_Shutdown():
 
 #--------------------------Sensor Window------------------------
 def sensor_window():
+   
+    
     def update_graph(i):
+        # Generate random data for each series
+        for j in range(len(data)):
+            data[j].append(random.randint(0, 10))  # Append a random value to each series
+
+        # Trim data lists to keep only the latest MAX_DATA_POINTS
+        for j in range(len(data)):
+            data[j] = data[j][-MAX_DATA_POINTS:]
+
+        # Update each line with new data
+        for j in range(len(lines)):
+            lines[j].set_data(list(range(len(data[j]))), data[j])
+
+        # Calculate the maximum value in the data
+        max_value = max(max(series) for series in data)
+
+        # Adjust the y-axis limits to fit the new data
+        ax.set_ylim(0, max_value + 1)  # Add a little buffer space
+
+        # Adjust the x-axis limits to show only the last MAX_DATA_POINTS
+        ax.set_xlim(max(0, len(data[0]) - MAX_DATA_POINTS), len(data[0]) + 1)
+
+        canvas.draw()
+
+    # Create a new window for the sensor data graph
+   
+def update_graph(i):
         try:
             sensor_data = gui_queue.get_nowait()
             if sensor_data:
@@ -315,33 +343,7 @@ def sensor_window():
 
                 canvas.draw()
         except queue.Empty:
-            pass
-
-    # Create a new window for the sensor data graph
-    sensor_window = tk.Toplevel(root)
-    sensor_window.title("Real-Time Gas Data")
-    sensor_window.config(bg='#323232')
-
-    # Create a frame for the graph
-    graph_frame = tk.Frame(sensor_window, bg='#323232')
-    graph_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
-    fig, ax = plt.subplots()
-    data = [[0], [0], [0], [0]]
-    colors = ['r', 'g', 'b', 'y']
-    labels = ['H2', 'CH4', 'Natural Gas', 'CO']
-    lines = []
-
-    ax.set_xlabel('X-axis')
-    ax.set_ylabel('PPM Gas Concentration')
-    ax.set_title('Real-Time Gas Data')
-    ax.legend()
-
-    canvas = FigureCanvasTkAgg(fig, master=graph_frame)
-    canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
-    ani = FuncAnimation(fig, update_graph, interval=1000)
-
+            pass   
     
     
 root = tk.Tk()
@@ -479,6 +481,30 @@ battery_level.pack(side=tk.TOP, padx=5, pady=5)
 battery_value = tk.Label(right_frame,bg='#323232',  fg='white', text=progress_var_battery)
 battery_value.pack(side=tk.TOP)
 
+
+sensor_window = tk.Toplevel(root)
+sensor_window.title("Real-Time Gas Data")
+sensor_window.config(bg='#323232')
+
+    # Create a frame for the graph
+graph_frame = tk.Frame(sensor_window, bg='#323232')
+graph_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+fig, ax = plt.subplots()
+data = [[0], [0], [0], [0]]
+colors = ['r', 'g', 'b', 'y']
+labels = ['H2', 'CH4', 'Natural Gas', 'CO']
+lines = []
+
+ax.set_xlabel('X-axis')
+ax.set_ylabel('PPM Gas Concentration')
+ax.set_title('Real-Time Gas Data')
+ax.legend()
+
+canvas = FigureCanvasTkAgg(fig, master=graph_frame)
+canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+ani = FuncAnimation(fig, update_graph, interval=1000)
 
 # ---------Function to start the Sensor + camera thread---------
 def start_sensor_thread():
