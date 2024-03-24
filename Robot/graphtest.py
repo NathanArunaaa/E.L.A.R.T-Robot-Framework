@@ -8,10 +8,10 @@ MAX_DATA_POINTS = 20
 
 # Define the limits for each gas concentration
 GAS_LIMITS = {
-    'H2': (0, 10),
-    'CH4': (0, 10),
-    'Natural Gas': (0, 10),
-    'CO': (0, 10)
+    'H2': (0.7, 1.1),
+    'CH4': (1.5, 2.4),
+    'Natural Gas': (0, 0.08),
+    'CO': (0, 0.3)
 }
 
 def generate_gas_data():

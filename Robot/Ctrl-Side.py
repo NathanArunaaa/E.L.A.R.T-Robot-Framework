@@ -91,6 +91,7 @@ def update_sensor_data():
     finally:
         sensor_client_socket.close()
 
+
 def update_gui_labels(sensor_data):
     # Extract values from the sensor data dictionary
     cpu_temperature = sensor_data.get("CPU_TEMP", "N/A")
@@ -103,6 +104,12 @@ def update_gui_labels(sensor_data):
     external_temp_label.config(text=f"External Temperature: {ds18b20_temperature:.2f} °C")
     arduino_data_label.config(text=f"Arduino Data: {arduino_data}")
     time_label.config(text=f"Current Time: {timestamp}")
+
+    # Write sensor data to a file
+    with open("sensor_data.txt", 'a') as file:
+        file.write(f"Timestamp: {timestamp}, Arduino Data: {arduino_data}\n")
+
+
          
 
     
@@ -277,62 +284,62 @@ def confirm_controller_Shutdown():
     button_shutdown_no = tk.Button(smaller_window_shutdown, fg='green', text="No", activebackground='tomato', command=smaller_window_shutdown.destroy)
     button_shutdown_no.pack()
 
-def update_graph(i):
-    data = [[0], [0], [0], [0]]  # Initialize each series with one data point
-    fig, ax = plt.subplots()
-    lines = []
-
-    # Generate random data for each series
-    for j in range(len(data)):
-        data[j].append(random.randint(0, 10))  # Append a random value to each series
-
-    # Trim data lists to keep only the latest MAX_DATA_POINTS
-    for j in range(len(data)):
-        data[j] = data[j][-MAX_DATA_POINTS:]
-
-    # Update each line with new data
-    for j in range(len(lines)):
-        lines[j].set_data(list(range(len(data[j]))), data[j])
-
-    # Calculate the maximum value in the data
-    max_value = max(max(series) for series in data)
-
-    # Adjust the y-axis limits to fit the new data
-    ax.set_ylim(0, max_value + 1)  # Add a little buffer space
-
-    # Adjust the x-axis limits to show only the last MAX_DATA_POINTS
-    ax.set_xlim(max(0, len(data[0]) - MAX_DATA_POINTS), len(data[0]) + 1)
-
-    canvas.draw()
-#--------------------------Sensor Window------------------------
-def sensor_window():
-    global arduino_data_label  
-
+def sensor_window(sensor_data):
+    # Create the sensor readings window
     sensor_readings = tk.Toplevel(root, bg='#323232')
     sensor_readings.title("E.L.A.R.T Sensors")
-    sensor_readings.geometry(f"{1000}x{700}")
-    
+    sensor_readings.geometry("1000x700")
+
+    # Create a matplotlib figure and axis
     fig, ax = plt.subplots()
-    data = [[0], [0], [0], [0]]  # Initialize each series with one data point
-    colors = ['r', 'g', 'b', 'y']
-    labels = ['H2', 'CH4', 'Natural Gas', 'CO']
-    lines = []
-    
-    for i in range(len(data)):
-      line, = ax.plot([], [], color=colors[i], label=labels[i])  # Modify the label here
-      lines.append(line)
 
+    # Set labels and title
+    ax.set_xlabel('Gas')
+    ax.set_ylabel('PPM')
+    ax.set_title('Gas Concentrations')
+    ax.grid(True)
 
-    ax.set_xlabel('X-axis')
-    ax.set_ylabel('PPM Gas Concentration')
-    ax.set_title('E.L.A.R.T Real Time Gas Data')
-    ax.legend()
+    plt.tight_layout()
 
-    canvas = FigureCanvasTkAgg(fig, master=root)
+    # Embed the matplotlib figure into the tkinter application
+    canvas = FigureCanvasTkAgg(fig, master=sensor_readings)
     canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
-    ani = FuncAnimation(fig, update_graph, interval=1000)
-    
+    # Define a function to update the graph with Arduino data
+    def update_graph(i):
+
+        arduino_data = update_gui_labels(sensor_data)
+
+        print(arduino_data)
+        print("working")
+
+        # Extract data from the dictionary
+        hydrogen_ppm = 1
+        methane_ppm = 2
+        co_ppm = 3
+        natural_gas_ppm = 5
+        humidity = 5
+        print("data received")
+
+        # Update the plot with the new data
+        x = ['Hydrogen', 'Methane', 'CO', 'Natural Gas', 'Humidity']
+        y = [hydrogen_ppm, methane_ppm, co_ppm, natural_gas_ppm, humidity]
+
+        # Clear the plot
+        ax.clear()
+
+        # Plot the new data
+        ax.bar(x, y)
+
+        # Redraw the plot
+        canvas.draw()
+
+    # Call the update_graph function once to initialize the plot
+    update_graph(0)
+
+    # Return the animation object
+    return FuncAnimation(fig, update_graph, interval=1000)
+
     
     
 root = tk.Tk()
@@ -401,7 +408,7 @@ button_headlight1.pack(side=tk.TOP, padx=5, pady=0)
 divider = tk.Label(left_frame,  bg='#323232', text="-----------------------", font=("Helvetica", 12), fg='grey', )
 divider.pack()
 
-button_console = tk.Button(left_frame, bg='#323232',  fg='green', text="SENSORS", command=sensor_window)
+button_console = tk.Button(left_frame, bg='#323232', fg='green', text="SENSORS", command=lambda: sensor_window(arduino_data_label.cget("text")))
 button_console.pack(side=tk.TOP, padx=5, pady=0)
 
 
@@ -490,6 +497,7 @@ def start_input_thread():
 
 
 # ---------Starting all the funcitons ---------
+
 start_input_thread()
 start_sensor_thread()
 update_time()
