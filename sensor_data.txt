@@ -1032,3 +1032,5 @@ Timestamp: 2024-04-18 09:52:42, Arduino Data: {'Naturalgas PPM': 0.05}
 Timestamp: 2024-04-18 09:52:42, Arduino Data: {'Naturalgas PPM': 0.05}
 Timestamp: 2024-04-18 09:53:08, Arduino Data: {}
 Timestamp: 2024-04-18 09:53:08, Arduino Data: {}
+Timestamp: 2024-04-18 10:08:48, Arduino Data: {'Naturalgas PPM': 0.05}
+Timestamp: 2024-04-18 10:08:48, Arduino Data: {'Naturalgas PPM': 0.05}
