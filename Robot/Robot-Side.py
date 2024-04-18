@@ -239,12 +239,12 @@ def handle_controller_client(conn, addr):
             speed = 100  # Set the speed as a percentage (-100 to 100)
             set_motor_speed(motor1_pwm_obj, motor1_in1, motor1_in2, -speed)
             set_motor_speed(motor2_pwm_obj, motor2_in1, motor2_in2, -speed)
-            time.sleep(1.5)
+            time.sleep(2)
             set_motor_speed(motor1_pwm_obj, motor1_in1, motor1_in2, speed)
+            time.sleep(3)
             set_motor_speed(motor2_pwm_obj, motor2_in1, motor2_in2, speed)
             time.sleep(4)
             set_motor_speed(motor1_pwm_obj, motor1_in1, motor1_in2, -speed)
-            set_motor_speed(motor2_pwm_obj, motor2_in1, motor2_in2, -speed)
             
         finally:
             motor2_pwm_obj.stop()
