@@ -200,7 +200,7 @@ def handle_controller_client(conn, addr):
 
 
     def liquid_sample_collection():
-        motor_pin_cleanup = [17, 18, 19, 27, 20, 12]
+        motor_pin_cleanup = [17, 5, 6, 27, 25, 24]
         
         GPIO.setmode(GPIO.BCM)
         motor1_pwm = 17  
@@ -310,6 +310,7 @@ def handle_controller_client(conn, addr):
                     
                 elif data == 'shutdown':
                     sysShutdown()
+                    
                 
                 elif data == 'front':
                     motor_front_thread = threading.Thread(target=motor_front)
@@ -326,6 +327,10 @@ def handle_controller_client(conn, addr):
                 elif data == 'right':
                     motor_right_thread = threading.Thread(target=motor_right)
                     motor_right_thread.start()
+
+                elif data == 'collect-liquid':
+                    liquid_sample_collection_thread = threading.Thread(target=liquid_sample_collection)
+                    liquid_sample_collection_thread.start()
                     
                 elif data == 'motortest':
                     motor_test_thread = threading.Thread(target=motor_front)

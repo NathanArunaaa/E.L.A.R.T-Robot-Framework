@@ -1028,3 +1028,7 @@ Timestamp: 2024-03-25 15:17:06, Arduino Data: {'HydrogenPPM': 0.09, 'MethanePPM'
 Timestamp: 2024-03-25 15:17:06, Arduino Data: {'HydrogenPPM': 0.09, 'MethanePPM': 1.42, 'COPPM': 0.1, 'Naturalgas PPM': 0.05, 'Humidity': 20}
 Timestamp: 2024-03-25 15:17:11, Arduino Data: {'HydrogenPPM': 0.09, 'MethanePPM': 1.5, 'COPPM': 0.1, 'Naturalgas PPM': 0.05, 'Humidity': 20}
 Timestamp: 2024-03-25 15:17:11, Arduino Data: {'HydrogenPPM': 0.09, 'MethanePPM': 1.5, 'COPPM': 0.1, 'Naturalgas PPM': 0.05, 'Humidity': 20}
+Timestamp: 2024-04-18 09:52:42, Arduino Data: {'Naturalgas PPM': 0.05}
+Timestamp: 2024-04-18 09:52:42, Arduino Data: {'Naturalgas PPM': 0.05}
+Timestamp: 2024-04-18 09:53:08, Arduino Data: {}
+Timestamp: 2024-04-18 09:53:08, Arduino Data: {}

@@ -290,10 +290,10 @@ def collection_unit_window():
     smaller_window_shutdown.title("Sample Collection")
     smaller_window_shutdown.geometry("250x100") 
 
-    label = tk.Label(smaller_window_shutdown,  bg='#323232', fg='white', text="PLEASE SELECT A SAMPLE TYPE")
+    label = tk.Label(smaller_window_shutdown,  bg='#323232', fg='white', text="PLEASE SELECT A SAMPLE")
     label.pack()
     
-    solid_sample = tk.Button(smaller_window_shutdown, fg='blue', text="Collect Solid Sample", activebackground='tomato' )
+    solid_sample = tk.Button(smaller_window_shutdown, fg='blue', text="Collect Solid Sample", activebackground='tomato', command=lambda:  button_click_thread("collect-liquid"))
     solid_sample.pack()
     liquid_sample = tk.Button(smaller_window_shutdown, fg='pink', text="Collect Liquid Sample", activebackground='tomato')
     liquid_sample.pack()
