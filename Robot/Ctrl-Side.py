@@ -284,6 +284,20 @@ def confirm_controller_Shutdown():
     button_shutdown_no = tk.Button(smaller_window_shutdown, fg='green', text="No", activebackground='tomato', command=smaller_window_shutdown.destroy)
     button_shutdown_no.pack()
 
+#--------------------------Collection Unit Window-----------------------
+def collection_unit_window():
+    smaller_window_shutdown = tk.Toplevel(root, bg='#323232')
+    smaller_window_shutdown.title("Sample Collection")
+    smaller_window_shutdown.geometry("250x100") 
+
+    label = tk.Label(smaller_window_shutdown,  bg='#323232', fg='white', text="PLEASE SELECT A SAMPLE TYPE")
+    label.pack()
+    
+    solid_sample = tk.Button(smaller_window_shutdown, fg='blue', text="Collect Solid Sample", activebackground='tomato' )
+    solid_sample.pack()
+    liquid_sample = tk.Button(smaller_window_shutdown, fg='pink', text="Collect Liquid Sample", activebackground='tomato')
+    liquid_sample.pack()
+
 def sensor_window(sensor_data):
     # Create the sensor readings window
     sensor_readings = tk.Toplevel(root, bg='#323232')
@@ -461,7 +475,7 @@ divider.pack()
 button_motortest = tk.Button(right_frame, bg='#323232', fg='green', text="MOTORTEST", command=lambda:  button_click_thread("motortest"))
 button_motortest.pack(side=tk.TOP, padx=5, pady=5)
 
-button_auto = tk.Button(right_frame, bg='#323232', fg='green', text="AUTO", command=lambda: button_click_thread("auto"))
+button_auto = tk.Button(right_frame, bg='#323232', fg='green', text="SAMPLE COLLECT", command=collection_unit_window)
 button_auto.pack(side=tk.TOP, padx=5, pady=5)
 
 progress_var_battery = tk.DoubleVar(right_frame)

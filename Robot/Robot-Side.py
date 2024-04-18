@@ -198,6 +198,52 @@ def handle_controller_client(conn, addr):
             motor2_pwm_obj.stop()
             GPIO.cleanup(motor_pin_cleanup)
 
+
+    def liquid_sample_collection():
+        motor_pin_cleanup = [17, 18, 19, 27, 20, 12]
+        
+        GPIO.setmode(GPIO.BCM)
+        motor1_pwm = 17  
+        motor1_in1 = 5 
+        motor1_in2 = 6 
+
+        motor2_pwm = 27 
+        motor2_in1 = 25  
+        motor2_in2 = 24
+        
+    # Motor 1
+        GPIO.setup(motor1_pwm, GPIO.OUT)
+        GPIO.setup(motor1_in1, GPIO.OUT)
+        GPIO.setup(motor1_in2, GPIO.OUT)
+    # Motor 2
+        GPIO.setup(motor2_pwm, GPIO.OUT)
+        GPIO.setup(motor2_in1, GPIO.OUT)
+        GPIO.setup(motor2_in2, GPIO.OUT)
+    
+        motor1_pwm_obj = GPIO.PWM(motor1_pwm, 1000)  
+        motor2_pwm_obj = GPIO.PWM(motor2_pwm, 1000)
+        motor1_pwm_obj.start(0) 
+        motor2_pwm_obj.start(0)
+    # Function to set motor speed
+        def set_motor_speed(pwm_obj, in1, in2, speed):
+            if speed >= 0:
+                GPIO.output(in1, GPIO.HIGH)
+                GPIO.output(in2, GPIO.LOW)
+            else:
+                GPIO.output(in1, GPIO.LOW)
+                GPIO.output(in2, GPIO.HIGH)
+            pwm_obj.ChangeDutyCycle(abs(speed))
+
+        try:
+            speed = 100  # Set the speed as a percentage (-100 to 100)
+            set_motor_speed(motor1_pwm_obj, motor1_in1, motor1_in2, speed)
+            set_motor_speed(motor2_pwm_obj, motor2_in1, motor2_in2, speed)
+            time.sleep(2)
+            
+        finally:
+            motor2_pwm_obj.stop()
+            GPIO.cleanup(motor_pin_cleanup)
+
     
     # Function to turn on/off navigation lights
     def navLightsOn():
